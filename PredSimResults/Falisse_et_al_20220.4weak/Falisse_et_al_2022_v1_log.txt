@@ -1,0 +1,267 @@
+ 
+Subject name: Falisse_et_al_2022
+OpenSim model: C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim
+ 
+ 
+Start PreProcessing...
+ 
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\run_pred_sim.m',105,1)">105 </a>t0 = tic;
+if system_dependent('IsDebugMode')==1, dbstep; end
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\PreProcessing.m',30,1)">30  </a>[S] = updateExport3DPositionsVelocities(S,osim_path);
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\updateExport3DPositionsVelocities.m',28,1)">28  </a>if ~isempty(S.bounds.SLL.upper)
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+   Using existing external function: 
+      C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\F_Falisse_et_al_2022.dll
+uiopen('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\osim2dll.m',1)
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbquit; end
+ 
+Subject name: Falisse_et_al_2022
+OpenSim model: C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim
+ 
+ 
+Start PreProcessing...
+ 
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\PreProcessing.m',30,1)">30  </a>[S] = updateExport3DPositionsVelocities(S,osim_path);
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\updateExport3DPositionsVelocities.m',28,1)">28  </a>if ~isempty(S.bounds.SLL.upper)
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbquit; end
+updateExport3DPositionsVelocities
+if system_dependent('IsDebugMode')==1, dbstep; end
+{Not enough input arguments.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('updateExport3DPositionsVelocities', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\updateExport3DPositionsVelocities.m', 28)" style="font-weight:bold">updateExport3DPositionsVelocities</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\updateExport3DPositionsVelocities.m',28,0)">line 28</a>)
+if ~isempty(S.bounds.SLL.upper)
+} 
+main
+Initialising settings from "C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\settings_Falisse_et_al_2022.m".
+Using C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\IK_Guess_Full_GC.mot as initial guess.
+ 
+Subject name: Falisse_et_al_2022
+OpenSim model: C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim
+ 
+ 
+Start PreProcessing...
+ 
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\PreProcessing.m',31,1)">31  </a>[S] = updateExport3DPositionsVelocities(S,osim_path);
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+ 
+Subject name: Falisse_et_al_2022
+OpenSim model: C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim
+ 
+ 
+Start PreProcessing...
+ 
+   Using existing external function: 
+      C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\F_Falisse_et_al_2022.dll
+   using existing MSK geometry Falisse_et_al_2022_f_lMT_vMT_dM_poly_3_9
+ 
+...PreProcessing done. Time elapsed 5.14 s
+ 
+ 
+Start creating CasADi functions...
+ 
+ 
+...CasADi functions created. Time elapsed 2.24 s
+ 
+ 
+Start formulating OCP...
+ 
+...OCP formulation done. Time elapsed 1.06 s
+ 
+Starting NLP solver...
+ 
+{Operation terminated by user during <a href="matlab:matlab.internal.language.introspective.errorDocCallback('casadi.GenericMatrixCommon/jacobian')" style="font-weight:bold">casadi.GenericMatrixCommon/jacobian</a>
+
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('solve_NLPSOL', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\solve_NLPSOL.m', 39)" style="font-weight:bold">solve_NLPSOL</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\solve_NLPSOL.m',39,0)">line 39</a>)
+sp = sparse(DM(sparsity(jacobian(opti.g,opti.x)),1));
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('OCP_formulation', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\OCP_formulation.m', 625)" style="font-weight:bold">OCP_formulation</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\OCP_formulation.m',625,0)">line 625</a>)
+    [w_opt,stats] = solve_NLPSOL(opti,options);
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('run_pred_sim', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\run_pred_sim.m', 127)" style="font-weight:bold">run_pred_sim</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\run_pred_sim.m',127,0)">line 127</a>)
+    OCP_formulation(S,model_info,f_casadi);
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m', 145)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m',145,0)">line 145</a>)
+    [savename] = run_pred_sim(S,osim_path);
+} 
+main
+[Warning: There is a more recent version of this branch on the
+remote:
+https://github.com/KULeuvenNeuromechanics/PredSim/tree/fatal:
+ambiguous argument 'origin/': unknown revision or path not in
+the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+origin/
+] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('get_git_hash', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\get_git_hash.m', 49)" style="font-weight:bold">get_git_hash</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\get_git_hash.m',49,0)">line 49</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('initializeSettings', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\initializeSettings.m', 44)" style="font-weight:bold">initializeSettings</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\initializeSettings.m',44,0)">line 44</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m', 19)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m',19,0)">line 19</a>)] 
+Initialising settings from "C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\settings_Falisse_et_al_2022.m".
+Using C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\IK_Guess_Full_GC.mot as initial guess.
+ 
+Subject name: Falisse_et_al_2022
+OpenSim model: C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim
+ 
+ 
+Start PreProcessing...
+ 
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\PreProcessing.m',35,1)">35  </a>S = osim2dll(S,osim_path);
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\osim2dll.m',30,1)">30  </a>[~,osim_file_name,~] = fileparts(osim_path);
+if system_dependent('IsDebugMode')==1, dbcont; end
+   Using existing external function: 
+      C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\F_Falisse_et_al_2022.dll
+   using existing MSK geometry Falisse_et_al_2022_f_lMT_vMT_dM_poly_3_9
+ 
+...PreProcessing done. Time elapsed 17.15 s
+ 
+ 
+Start creating CasADi functions...
+ 
+ 
+...CasADi functions created. Time elapsed 1.12 s
+ 
+ 
+Start formulating OCP...
+ 
+...OCP formulation done. Time elapsed 0.68 s
+ 
+Starting NLP solver...
+ 
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit http://projects.coin-or.org/Ipopt
+******************************************************************************
+
+This is Ipopt version 3.12.3, running with linear solver mumps.
+NOTE: Other linear solvers might be more efficient (see Ipopt documentation).
+
+Number of nonzeros in equality constraint Jacobian...:   673154
+Number of nonzeros in inequality constraint Jacobian.:    65250
+Number of nonzeros in Lagrangian Hessian.............:        0
+
+Exception of type: IpoptException in file "Unknown File" at line -1:
+ Exception message: Unknown Exception caught in Ipopt
+      solver  :   t_proc      (avg)   t_wall      (avg)    n_eval
+       nlp_g  |  16.00ms ( 16.00ms)  15.24ms ( 15.24ms)         1
+  nlp_grad_f  |  50.00ms ( 50.00ms)  50.16ms ( 50.16ms)         1
+   nlp_jac_g  |   1.26 s (631.50ms)   1.26 s (631.38ms)         2
+       total  |   1.38 s (  1.38 s)   1.38 s (  1.38 s)         1
+ 
+...Exit NLP solver. Time elapsed 11.31 s
+ 
+ 
+Retrieving solution...
+ 
+Issue when reconstructing average speed
+{Unrecognized field name "iterations".
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('OCP_formulation', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\OCP_formulation.m', 946)" style="font-weight:bold">OCP_formulation</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\OCP_formulation.m',946,0)">line 946</a>)
+assertCost2 = abs(stats.iterations.obj(end) - J_optf);
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('run_pred_sim', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\run_pred_sim.m', 127)" style="font-weight:bold">run_pred_sim</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\run_pred_sim.m',127,0)">line 127</a>)
+    OCP_formulation(S,model_info,f_casadi);
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m', 145)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m',145,0)">line 145</a>)
+    [savename] = run_pred_sim(S,osim_path);
+} 
+main
+[Warning: There is a more recent version of this branch on the
+remote:
+https://github.com/KULeuvenNeuromechanics/PredSim/tree/fatal:
+ambiguous argument 'origin/': unknown revision or path not in
+the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+origin/
+] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('get_git_hash', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\get_git_hash.m', 49)" style="font-weight:bold">get_git_hash</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\get_git_hash.m',49,0)">line 49</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('initializeSettings', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\initializeSettings.m', 44)" style="font-weight:bold">initializeSettings</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\DefaultSettings\initializeSettings.m',44,0)">line 44</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m', 19)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m',19,0)">line 19</a>)] 
+Initialising settings from "C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\settings_Falisse_et_al_2022.m".
+Using C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\IK_Guess_Full_GC.mot as initial guess.

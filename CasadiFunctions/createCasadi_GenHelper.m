@@ -12,7 +12,7 @@ function [f_casadi] = createCasadi_GenHelper(S,model_info)
 %
 % OUTPUT:
 %   - f_casadi -
-%   * Struct that contains all casadi functions.
+%   * Struct that contains all casadi functions. 
 %
 % Original authors: Dhruv Gupta, Lars D'Hondt, Tom Buurke
 % Original date: 01/12/2021
@@ -37,6 +37,7 @@ if N_arms_dof > 0
         J_temp_arms_dof = J_temp_arms_dof + e_temp_arms_dof(i).^2;
     end
     J_temp_arms_dof = J_temp_arms_dof/N_arms_dof;
+	% create a CasADi function named 'f_J_arms_dof' with inputs 'e_temp_arms_dof' and outputs 'J_temp_arms_dof'. 
     f_casadi.J_arms_dof = Function('f_J_arms_dof',{e_temp_arms_dof},{J_temp_arms_dof});
 end
 
@@ -66,6 +67,7 @@ end
 J_temp_pass_dof = J_temp_pass_dof/N_pass_dof;
 f_casadi.J_lim_torq = Function('f_J_lim_torq',{e_temp_pass_dof},{J_temp_pass_dof});
 
+
 % Function for 2 elements
 etemp2 = SX.sym('etemp2',2);
 Jtemp2 = 0;
@@ -74,6 +76,7 @@ for i=1:length(etemp2)
 end
 Jtemp2 = Jtemp2/2;
 f_casadi.J_2 = Function('f_J_2',{etemp2},{Jtemp2});
+
 
 % Function for all muscles
 e_temp_N_muscles = SX.sym('e_temp_N_muscles',N_muscles);

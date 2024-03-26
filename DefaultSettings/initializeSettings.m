@@ -53,6 +53,7 @@ S.misc.computername = getenv('COMPUTERNAME');
 %%
 if ~isempty(varargin)
 
+    % find file in "\Subjects\*"
     [pathDefaultSettings,~,~] = fileparts(mfilename('fullpath'));
     [pathRepo,~,~] = fileparts(pathDefaultSettings);
 

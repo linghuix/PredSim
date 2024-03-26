@@ -27,6 +27,7 @@ function [S,model_info] = PreProcessing(S,osim_path)
 % --------------------------------------------------------------------------
 
 % Update settings about points that need to be exported from external function
+% S.bounds.points
 [S] = updateExport3DPositionsVelocities(S,osim_path);
 
 % Create external function to describe the rigid-body skeletal dynamics and

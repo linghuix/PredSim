@@ -1,0 +1,45 @@
+ 
+Subject name: weak_Falisse_et_al_2022
+OpenSim model: C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\weak_Falisse_et_al_2022\weak_Falisse_et_al_2022.osim
+ 
+ 
+Start PreProcessing...
+ 
+   Creating new external function...
+   ... external function created (61.67 s)
+{Operation terminated by user during <a href="matlab:matlab.internal.language.introspective.errorDocCallback('muscleAnalysisAPI')" style="font-weight:bold">muscleAnalysisAPI</a>
+
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('get_musculoskeletal_geometry_approximation', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\get_musculoskeletal_geometry_approximation.m', 44)" style="font-weight:bold">get_musculoskeletal_geometry_approximation</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\get_musculoskeletal_geometry_approximation.m',44,0)">line 44</a>)
+        muscle_data = muscleAnalysisAPI(S,osim_path,model_info);
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('PreProcessing', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\PreProcessing.m', 51)" style="font-weight:bold">PreProcessing</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\PreProcessing.m',51,0)">line 51</a>)
+model_info = get_musculoskeletal_geometry_approximation(S,osim_path,model_info);
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('run_pred_sim', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\run_pred_sim.m', 106)" style="font-weight:bold">run_pred_sim</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\run_pred_sim.m',106,0)">line 106</a>)
+[S,model_info] = PreProcessing(S,osim_path);
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m', 138)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\main.m',138,0)">line 138</a>)
+    [savename] = run_pred_sim(S,osim_path);
+} 
+main
+Initialising settings from "C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\settings_Falisse_et_al_2022.m".
+
+uiimport('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\PredSimResults\weak_Falisse_et_al_2022\weak_Falisse_et_al_2022_job1.mat',1)
+load('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\PredSimResults\weak_Falisse_et_al_2022\weak_Falisse_et_al_2022_job1.mat')
+uiimport('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\PredSimResults\weak_Falisse_et_al_2022\weak_Falisse_et_al_2022_job1.mat',1)
+xlh_weakness = 0.2
+
+xlh_weakness =
+
+    0.2000
+
+num2str(xlh_weakness)
+
+ans =
+
+    '0.2'
+
+main
+Initialising settings from "C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\settings_Falisse_et_al_2022.m".
+Using C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\OCP\IK_Guess_Full_GC.mot as initial guess.

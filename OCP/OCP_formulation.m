@@ -360,7 +360,7 @@ for j=1:d
             FTj_coord_i = FTj(mai(i).mus',1);
             % total muscle moment
             M_mus_i = f_casadi.(['musc_cross_' num2str(sumCross(i))])...
-            (MA_j.(model_info.ExtFunIO.coord_names.all{i}),FTj_coord_i);
+                (MA_j.(model_info.ExtFunIO.coord_names.all{i}),FTj_coord_i);
             % add to total moment
             Ti = Ti + M_mus_i;
         end

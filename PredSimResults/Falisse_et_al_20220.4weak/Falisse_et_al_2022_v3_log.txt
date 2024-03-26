@@ -1,0 +1,836 @@
+ 
+Subject name: Falisse_et_al_2022
+OpenSim model: C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim
+ 
+ 
+Start PreProcessing...
+ 
+   Creating new external function...
+<a href="matlab: opentoline('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PreProcessing\osim2dll.m',160,1)">160 </a>    generateExternalFunction(osim_path, S.misc.subject_path,...
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+pathOpenSimModel
+
+pathOpenSimModel =
+
+    'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim'
+
+outputDir
+
+outputDir =
+
+    'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022'
+
+outputFilename
+
+outputFilename =
+
+    'F_Falisse_et_al_2022'
+
+verbose_mode
+
+verbose_mode =
+
+     0
+
+if system_dependent('IsDebugMode')==1, dbcont; end
+ID_osim
+
+ID_osim =
+
+   1.0e+05 *
+
+   -1.2386
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+         0
+
+ID_F
+
+ID_F =
+
+   1.0e+05 *
+
+   -1.2386
+   -0.4860
+   -0.0376
+    0.0000
+   -9.8886
+         0
+   -0.9543
+   -0.3423
+   -0.0579
+   -0.7799
+   -0.4460
+    0.0739
+   -0.0853
+   -0.9469
+    0.0573
+   -0.0081
+   -0.7659
+   -0.4530
+    0.1138
+   -0.0853
+   -0.0001
+   -0.0001
+   -0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+   -0.0000
+    0.0000
+    0.0000
+
+ID_osim - ID_F
+
+ans =
+
+   1.0e+05 *
+
+    0.0000
+    0.4860
+    0.0376
+   -0.0000
+    9.8886
+         0
+    0.9543
+    0.3423
+    0.0579
+    0.7799
+    0.4460
+   -0.0739
+    0.0853
+    0.9469
+   -0.0573
+    0.0081
+    0.7659
+    0.4530
+   -0.1138
+    0.0853
+    0.0001
+    0.0001
+    0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+    0.0000
+   -0.0000
+   -0.0000
+
+max(abs(ID_osim - ID_F))
+
+ans =
+
+   9.8886e+05
+
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+coordinatesOrder
+
+coordinatesOrder =
+
+  31×1 <a href="matlab:helpPopup cell" style="font-weight:bold">cell</a> array
+
+    {'pelvis_tilt'     }
+    {'pelvis_list'     }
+    {'pelvis_rotation' }
+    {'pelvis_tx'       }
+    {'pelvis_ty'       }
+    {'pelvis_tz'       }
+    {'hip_flexion_r'   }
+    {'hip_adduction_r' }
+    {'hip_rotation_r'  }
+    {'knee_angle_r'    }
+    {'ankle_angle_r'   }
+    {'subtalar_angle_r'}
+    {'mtp_angle_r'     }
+    {'hip_flexion_l'   }
+    {'hip_adduction_l' }
+    {'hip_rotation_l'  }
+    {'knee_angle_l'    }
+    {'ankle_angle_l'   }
+    {'subtalar_angle_l'}
+    {'mtp_angle_l'     }
+    {'lumbar_extension'}
+    {'lumbar_bending'  }
+    {'lumbar_rotation' }
+    {'arm_flex_r'      }
+    {'arm_add_r'       }
+    {'arm_rot_r'       }
+    {'elbow_flex_r'    }
+    {'arm_flex_l'      }
+    {'arm_add_l'       }
+    {'arm_rot_l'       }
+    {'elbow_flex_l'    }
+
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+max(abs(ID_osim - ID_F)) 
+
+ans =
+
+   9.5425e+04
+
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+max(abs(ID_osim - ID_F))
+
+ans =
+
+   5.3988e-09
+
+ID_osim
+
+ID_osim =
+
+   1.0e+05 *
+
+   -1.2386
+   -0.4860
+   -0.0376
+         0
+   -9.8886
+         0
+   -0.9543
+   -0.3423
+   -0.0579
+   -0.7799
+   -0.4460
+    0.0739
+   -0.0853
+   -0.9469
+    0.0573
+   -0.0081
+   -0.7659
+   -0.4530
+    0.1138
+   -0.0853
+   -0.0001
+   -0.0001
+   -0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+   -0.0000
+    0.0000
+    0.0000
+
+plot(ID_osim)
+ID_F
+
+ID_F =
+
+   1.0e+05 *
+
+   -1.2386
+   -0.4860
+   -0.0376
+    0.0000
+   -9.8886
+         0
+   -0.9543
+   -0.3423
+   -0.0579
+   -0.7799
+   -0.4460
+    0.0739
+   -0.0853
+   -0.9469
+    0.0573
+   -0.0081
+   -0.7659
+   -0.4530
+    0.1138
+   -0.0853
+   -0.0001
+   -0.0001
+   -0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+   -0.0000
+    0.0000
+    0.0000
+
+plot(ID_osim); hold on; plot(ID_F); 
+pathGenericIDSetupFile = fullfile(pathID, 'SetupID.xml');
+idTool = InverseDynamicsTool(pathGenericIDSetupFile);
+idTool.setName('ID_withOsimAndIDTool');
+idTool.setModelFileName(pathOpenSimModel);
+idTool.setResultsDir(outputDir);
+idTool.setCoordinatesFileName(path_mot);
+idTool.setOutputGenForceFileName('ID_withOsimAndIDTool.sto');
+pathSetupID = fullfile(outputDir, 'SetupID.xml');
+idTool.print(pathSetupID);
+
+command = ['opensim-cmd', ' run-tool ', '"' pathSetupID '"'];
+if verbose_mode
+    system(command);
+else
+    [~,~] = system(command);
+end
+pathGenericIDSetupFile = fullfile(pathID, 'SetupID.xml');
+idTool = InverseDynamicsTool(pathGenericIDSetupFile);
+idTool.setName('ID_withOsimAndIDTool');
+idTool.setModelFileName(pathOpenSimModel);
+idTool.setResultsDir(outputDir);
+idTool.setCoordinatesFileName(path_mot);
+idTool.setOutputGenForceFileName('ID_withOsimAndIDTool.sto');
+pathSetupID = fullfile(outputDir, 'SetupID.xml');
+idTool.print(pathSetupID);
+
+command = ['opensim-cmd', ' run-tool ', '"' pathSetupID '"'];
+if verbose_mode
+    system(command);
+else
+    [~,~] = system(command);
+end
+command
+
+command =
+
+    'opensim-cmd run-tool "C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\SetupID.xml"'
+
+F
+
+F = 
+
+F:(i0[93])->(o0[121]) External
+replace(fullfile(outputDir, [outputFilename, '.dll']),'\','/')
+
+ans =
+
+    'C:/Users/lingh/OneDrive - KTH/ExMaterials/7-Doctor/Research/2-simulation/Subjects/Falisse_et_al_2022/F_Falisse_et_al_2022.dll'
+
+IO.input.Qs
+
+ans = 
+
+  <a href="matlab:helpPopup struct" style="font-weight:bold">struct</a> with fields:
+
+         pelvis_tilt: 1
+         pelvis_list: 3
+     pelvis_rotation: 5
+           pelvis_tx: 7
+           pelvis_ty: 9
+           pelvis_tz: 11
+       hip_flexion_r: 13
+     hip_adduction_r: 15
+      hip_rotation_r: 17
+        knee_angle_r: 19
+       ankle_angle_r: 21
+    subtalar_angle_r: 23
+         mtp_angle_r: 25
+       hip_flexion_l: 27
+     hip_adduction_l: 29
+      hip_rotation_l: 31
+        knee_angle_l: 33
+       ankle_angle_l: 35
+    subtalar_angle_l: 37
+         mtp_angle_l: 39
+    lumbar_extension: 41
+      lumbar_bending: 43
+     lumbar_rotation: 45
+          arm_flex_r: 47
+           arm_add_r: 49
+           arm_rot_r: 51
+        elbow_flex_r: 53
+          arm_flex_l: 55
+           arm_add_l: 57
+           arm_rot_l: 59
+        elbow_flex_l: 61
+
+size(IO.input.Qs)
+
+ans =
+
+     1     1
+
+size(IO.input.Qs)
+
+ans =
+
+     1     1
+
+length(IO.input.Qs)
+
+ans =
+
+     1
+
+numel(IO.input.Qs)
+
+ans =
+
+     1
+
+num(IO.input.Qs)
+{Unrecognized function or variable 'num'.
+} 
+IO.input.Qs.pelvis_ty
+
+ans =
+
+     9
+
+helpPopup struct
+filednmae(IO.input.Qs)
+{Unrecognized function or variable 'filednmae'.
+} 
+filedname(IO.input.Qs)
+{Unrecognized function or variable 'filedname'.
+} 
+fieldname(IO.input.Qs)
+{Unrecognized function or variable 'fieldname'.
+} 
+fieldnames(IO.input.Qs)
+
+ans =
+
+  31×1 <a href="matlab:helpPopup cell" style="font-weight:bold">cell</a> array
+
+    {'pelvis_tilt'     }
+    {'pelvis_list'     }
+    {'pelvis_rotation' }
+    {'pelvis_tx'       }
+    {'pelvis_ty'       }
+    {'pelvis_tz'       }
+    {'hip_flexion_r'   }
+    {'hip_adduction_r' }
+    {'hip_rotation_r'  }
+    {'knee_angle_r'    }
+    {'ankle_angle_r'   }
+    {'subtalar_angle_r'}
+    {'mtp_angle_r'     }
+    {'hip_flexion_l'   }
+    {'hip_adduction_l' }
+    {'hip_rotation_l'  }
+    {'knee_angle_l'    }
+    {'ankle_angle_l'   }
+    {'subtalar_angle_l'}
+    {'mtp_angle_l'     }
+    {'lumbar_extension'}
+    {'lumbar_bending'  }
+    {'lumbar_rotation' }
+    {'arm_flex_r'      }
+    {'arm_add_r'       }
+    {'arm_rot_r'       }
+    {'elbow_flex_r'    }
+    {'arm_flex_l'      }
+    {'arm_add_l'       }
+    {'arm_rot_l'       }
+    {'elbow_flex_l'    }
+
+length ( fieldnames(IO.input.Qs) )
+
+ans =
+
+    31
+
+length ( fieldnames(IO.input.Qdots) )
+
+ans =
+
+    31
+
+length ( fieldnames(IO.input.Qdotdots) )
+
+ans =
+
+    31
+
+vec1 = zeros(IO.input.nInputs, 1);
+vec1(1:2:2*nCoordinates) = 0.5;
+if isfield(IO.input.Qs, 'pelvis_ty')
+    vec1(IO.input.Qs.pelvis_ty) = -0.05;
+end
+
+ID_F = full(F(vec1));
+ID_F = ID_F(1:nCoordinates);
+
+%% opensim tool
+% Generate .mot file with same position inputs
+mot_file = ['Verify_', outputFilename, '.mot'];
+path_mot = fullfile(pathID, mot_file);
+
+if ~exist(path_mot, 'file')
+    labels = [{'time'}, coordinatesOrder'];
+    vec4 = vec1(1:2:2*nCoordinates);
+    data_coords = repmat(vec4, 1, 10);
+    data_time = zeros(1, 10);
+    data_time(1, :) = 0.01:0.01:0.1;
+    data = [data_time', data_coords'];
+
+    q.labels = labels;
+    q.data = data;
+    q.inDeg = 'no';
+    write_motionFile_v40(q, path_mot)
+end
+
+% generate SetupID.xml file
+pathGenericIDSetupFile = fullfile(pathID, 'SetupID.xml');
+idTool = InverseDynamicsTool(pathGenericIDSetupFile);
+idTool.setName('ID_withOsimAndIDTool');
+idTool.setModelFileName(pathOpenSimModel);
+idTool.setResultsDir(outputDir);
+idTool.setCoordinatesFileName(path_mot);
+idTool.setOutputGenForceFileName('ID_withOsimAndIDTool.sto');
+pathSetupID = fullfile(outputDir, 'SetupID.xml');
+idTool.print(pathSetupID);
+
+% Run Inverse Dynamics Tool in cmd
+% 'opensim-cmd run-tool "2-simulation\Subjects\Falisse_et_al_2022\SetupID.xml"'
+command = ['opensim-cmd', ' run-tool ', '"' pathSetupID '"'];
+if verbose_mode
+    system(command);
+else
+    [~,~] = system(command);
+end
+
+% Extract torques from .osim + ID tool.
+data = importdata(fullfile(outputDir, 'ID_withOsimAndIDTool.sto'));
+
+ID_osim = zeros(nCoordinates, 1);
+for count = 1:numel(coordinatesOrder)
+    coordinateOrder = coordinatesOrder{count};
+    if any(all_coordi.(coordinateOrder) == joint_isTra)
+        suffix_header = '_force';
+    else
+        suffix_header = '_moment';
+    end
+    ID_osim(count) = data.data(1,strcmp(data.colheaders,[coordinateOrder,suffix_header]));
+
+end
+max(abs(ID_osim - ID_F))
+
+ans =
+
+   9.1609e+05
+
+ID_F
+
+ID_F =
+
+   1.0e+04 *
+
+   -4.2585
+   -1.7210
+   -1.2166
+    0.0000
+   -7.2768
+         0
+   -1.2893
+   -0.5361
+    0.1053
+   -0.8375
+   -0.0358
+    0.0397
+    0.0092
+   -3.2951
+   -0.5178
+    0.5903
+   -2.0867
+   -0.0934
+    0.1932
+    0.0275
+   -0.0061
+   -0.0023
+   -0.0001
+    0.0007
+   -0.0002
+   -0.0001
+    0.0001
+    0.0007
+    0.0000
+   -0.0001
+    0.0001
+
+ID_osim
+
+ID_osim =
+
+   1.0e+05 *
+
+   -1.2386
+   -0.4860
+   -0.0376
+         0
+   -9.8886
+         0
+   -0.9543
+   -0.3423
+   -0.0579
+   -0.7799
+   -0.4460
+    0.0739
+   -0.0853
+   -0.9469
+    0.0573
+   -0.0081
+   -0.7659
+   -0.4530
+    0.1138
+   -0.0853
+   -0.0001
+   -0.0001
+   -0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+   -0.0000
+    0.0000
+    0.0000
+
+vec1 = zeros(IO.input.nInputs, 1);
+vec1(1:2:2*nCoordinates) = 0.5;
+if isfield(IO.input.Qs, 'pelvis_ty')
+    vec1(IO.input.Qs.pelvis_ty) = -0.05;
+end
+
+ID_F = full(F(vec1));
+ID_F = ID_F(1:nCoordinates);
+
+%% opensim tool
+% Generate .mot file with same position inputs
+mot_file = ['Verify_', outputFilename, '.mot'];
+path_mot = fullfile(pathID, mot_file);
+
+if ~exist(path_mot, 'file')
+    labels = [{'time'}, coordinatesOrder'];
+    vec4 = vec1(1:2:2*nCoordinates);
+    data_coords = repmat(vec4, 1, 10);
+    data_time = zeros(1, 10);
+    data_time(1, :) = 0.01:0.01:0.1;
+    data = [data_time', data_coords'];
+
+    q.labels = labels;
+    q.data = data;
+    q.inDeg = 'no';
+    write_motionFile_v40(q, path_mot)
+end
+
+% generate SetupID.xml file
+pathGenericIDSetupFile = fullfile(pathID, 'SetupID.xml');
+idTool = InverseDynamicsTool(pathGenericIDSetupFile);
+idTool.setName('ID_withOsimAndIDTool');
+idTool.setModelFileName(pathOpenSimModel);
+idTool.setResultsDir(outputDir);
+idTool.setCoordinatesFileName(path_mot);
+idTool.setOutputGenForceFileName('ID_withOsimAndIDTool.sto');
+pathSetupID = fullfile(outputDir, 'SetupID.xml');
+idTool.print(pathSetupID);
+
+% Run Inverse Dynamics Tool in cmd
+% 'opensim-cmd run-tool "2-simulation\Subjects\Falisse_et_al_2022\SetupID.xml"'
+command = ['opensim-cmd', ' run-tool ', '"' pathSetupID '"'];
+if verbose_mode
+    system(command);
+else
+    [~,~] = system(command);
+end
+
+% Extract torques from .osim + ID tool.
+data = importdata(fullfile(outputDir, 'ID_withOsimAndIDTool.sto'));
+
+ID_osim = zeros(nCoordinates, 1);
+for count = 1:numel(coordinatesOrder)
+    coordinateOrder = coordinatesOrder{count};
+    if any(all_coordi.(coordinateOrder) == joint_isTra)
+        suffix_header = '_force';
+    else
+        suffix_header = '_moment';
+    end
+    ID_osim(count) = data.data(1,strcmp(data.colheaders,[coordinateOrder,suffix_header]));
+
+end
+plot(ID_osim); hold on; plot(ID_F);
+max(abs(ID_osim - ID_F))
+
+ans =
+
+   1.2704e-08
+
+dbup 1;
+dbup 1;
+dbdown 2;
+if system_dependent('IsDebugMode')==1, dbquit; end
+xlh_test_dynamicEquation
+if system_dependent('IsDebugMode')==1, dbquit; end
+xlh_test_dynamicEquation
+if system_dependent('IsDebugMode')==1, dbquit; end
+xlh_test_dynamicEquation
+[info] Preparing to run InverseDynamicsTool. 
+[info] Loaded model Falisse_et_al_2022_AdaptedForPredSim from file C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects\Falisse_et_al_2022\Falisse_et_al_2022.osim 
+[warning] Couldn't find file 'sacrum.vtp'. 
+[warning] Couldn't find file 'pelvis.vtp'. 
+[warning] Couldn't find file 'l_pelvis.vtp'. 
+[warning] Couldn't find file 'femur_r.vtp'. 
+[warning] Couldn't find file 'tibia_r.vtp'. 
+[warning] Couldn't find file 'fibula_r.vtp'. 
+[warning] Couldn't find file 'talus_rv.vtp'. 
+[warning] Couldn't find file 'foot.vtp'. 
+[warning] Couldn't find file 'bofoot.vtp'. 
+[warning] Couldn't find file 'femur_l.vtp'. 
+[warning] Couldn't find file 'tibia_l.vtp'. 
+[warning] Couldn't find file 'fibula_l.vtp'. 
+[warning] Couldn't find file 'talus_lv.vtp'. 
+[warning] Couldn't find file 'l_foot.vtp'. 
+[warning] Couldn't find file 'l_bofoot.vtp'. 
+[warning] Couldn't find file 'hat_spine.vtp'. 
+[warning] Couldn't find file 'hat_jaw.vtp'. 
+[warning] Couldn't find file 'hat_skull.vtp'. 
+[warning] Couldn't find file 'hat_ribs_scap.vtp'. 
+[warning] Couldn't find file 'humerus_rv.vtp'. 
+[warning] Couldn't find file 'ulna_rv.vtp'. 
+[warning] Couldn't find file 'radius_rv.vtp'. 
+[warning] Couldn't find file 'pisiform_rvs.vtp'. 
+[warning] Couldn't find file 'lunate_rvs.vtp'. 
+[warning] Couldn't find file 'scaphoid_rvs.vtp'. 
+[warning] Couldn't find file 'triquetrum_rvs.vtp'. 
+[warning] Couldn't find file 'hamate_rvs.vtp'. 
+[warning] Couldn't find file 'capitate_rvs.vtp'. 
+[warning] Couldn't find file 'trapezoid_rvs.vtp'. 
+[warning] Couldn't find file 'trapezium_rvs.vtp'. 
+[warning] Couldn't find file 'metacarpal2_rvs.vtp'. 
+[warning] Couldn't find file 'index_proximal_rvs.vtp'. 
+[warning] Couldn't find file 'index_medial_rvs.vtp'. 
+[warning] Couldn't find file 'index_distal_rvs.vtp'. 
+[warning] Couldn't find file 'metacarpal3_rvs.vtp'. 
+[warning] Couldn't find file 'middle_proximal_rvs.vtp'. 
+[warning] Couldn't find file 'middle_medial_rvs.vtp'. 
+[warning] Couldn't find file 'middle_distal_rvs.vtp'. 
+[warning] Couldn't find file 'metacarpal4_rvs.vtp'. 
+[warning] Couldn't find file 'ring_proximal_rvs.vtp'. 
+[warning] Couldn't find file 'ring_medial_rvs.vtp'. 
+[warning] Couldn't find file 'ring_distal_rvs.vtp'. 
+[warning] Couldn't find file 'metacarpal5_rvs.vtp'. 
+[warning] Couldn't find file 'little_proximal_rvs.vtp'. 
+[warning] Couldn't find file 'little_medial_rvs.vtp'. 
+[warning] Couldn't find file 'little_distal_rvs.vtp'. 
+[warning] Couldn't find file 'metacarpal1_rvs.vtp'. 
+[warning] Couldn't find file 'thumb_proximal_rvs.vtp'. 
+[warning] Couldn't find file 'thumb_distal_rvs.vtp'. 
+[warning] Couldn't find file 'humerus_lv.vtp'. 
+[warning] Couldn't find file 'ulna_lv.vtp'. 
+[warning] Couldn't find file 'radius_lv.vtp'. 
+[warning] Couldn't find file 'pisiform_lvs.vtp'. 
+[warning] Couldn't find file 'lunate_lvs.vtp'. 
+[warning] Couldn't find file 'scaphoid_lvs.vtp'. 
+[warning] Couldn't find file 'triquetrum_lvs.vtp'. 
+[warning] Couldn't find file 'hamate_lvs.vtp'. 
+[warning] Couldn't find file 'capitate_lvs.vtp'. 
+[warning] Couldn't find file 'trapezoid_lvs.vtp'. 
+[warning] Couldn't find file 'trapezium_lvs.vtp'. 
+[warning] Couldn't find file 'metacarpal2_lvs.vtp'. 
+[warning] Couldn't find file 'index_proximal_lvs.vtp'. 
+[warning] Couldn't find file 'index_medial_lvs.vtp'. 
+[warning] Couldn't find file 'index_distal_lvs.vtp'. 
+[warning] Couldn't find file 'metacarpal3_lvs.vtp'. 
+[warning] Couldn't find file 'middle_proximal_lvs.vtp'. 
+[warning] Couldn't find file 'middle_medial_lvs.vtp'. 
+[warning] Couldn't find file 'middle_distal_lvs.vtp'. 
+[warning] Couldn't find file 'metacarpal4_lvs.vtp'. 
+[warning] Couldn't find file 'ring_proximal_lvs.vtp'. 
+[warning] Couldn't find file 'ring_medial_lvs.vtp'. 
+[warning] Couldn't find file 'ring_distal_lvs.vtp'. 
+[warning] Couldn't find file 'metacarpal5_lvs.vtp'. 
+[warning] Couldn't find file 'little_proximal_lvs.vtp'. 
+[warning] Couldn't find file 'little_medial_lvs.vtp'. 
+[warning] Couldn't find file 'little_distal_lvs.vtp'. 
+[warning] Couldn't find file 'metacarpal1_lvs.vtp'. 
+[warning] Couldn't find file 'thumb_proximal_lvs.vtp'. 
+[warning] Couldn't find file 'thumb_distal_lvs.vtp'. 
+
+               MODEL: Falisse_et_al_2022_AdaptedForPredSim
+         coordinates: 31
+              forces: 112
+           actuators: 100
+             muscles: 92
+            analyses: 0
+              probes: 0
+              bodies: 20
+              joints: 20
+         constraints: 0
+             markers: 47
+         controllers: 0
+  contact geometries: 13
+misc modelcomponents: 0 
+[info] Running tool ID_withOsimAndIDTool... 
+[info] No external loads will be applied (external loads file not specified). 
+[info] Storage: read data file = C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\opensimAD\InverseDynamics\Verify_F_Falisse_et_al_2022.mot (nr=10 nc=32) 
+[info] InverseDynamicsTool: 10 time frames in 1 millisecond(s). 
+Inverse dynamics from "F_Falisse_et_al_2022.dll" matches IDTool for "Falisse_et_al_2022.osim".
+xlh_test_dynamicEquation
+Inverse dynamics from "F_Falisse_et_al_2022.dll" matches IDTool for "Falisse_et_al_2022.osim".

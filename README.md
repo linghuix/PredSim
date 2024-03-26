@@ -16,7 +16,7 @@ This repository is a work in progress
 Please cite the original authors if you use this simulation framework.
 
 1. Falisse A, Serrancoli G, Dembia C, Gillis J, Jonkers J, De Groote F. 2019 Rapid predictive simulations with complex musculoskeletal models suggest that diverse healthy and pathological human gaits can emerge from similar control strategies. Journal of the Royal Society Interface 16: 20190402. http://dx.doi.org/10.1098/rsif.2019.0402. You can find the original repository here: https://github.com/antoinefalisse/3dpredictsim (MATLAB)
- 
+
 2. Falisse A, Afschrift M, De Groote F. 2022 Modeling toes contributes to realistic stance knee mechanics in three-dimensional predictive simulations of walking. PLoS ONE 17(1): e0256311. https://doi.org/10.1371/journal.pone.0256311. You can find the original repository here: https://github.com/antoinefalisse/3dpredictsim_mtp (python)
 
 
@@ -70,6 +70,8 @@ The code is written such that as a user you only have to interact with [*main.m*
 
 All user-defined settings are stored in structure *S*. In main.m you have to specify the required settings and are free to change/add the optional settings. 
 
+
+
 ### Before running a simulations
 
 This code can automatically convert an OpenSim model to the external function used in the simulations. This greatly simplifies the process of going from a subject-specific model to a predictive simulation. Nevertheless, you should take care of the model you use since **not all OpenSim models are suported**: 
@@ -80,6 +82,8 @@ This code can automatically convert an OpenSim model to the external function us
 - Your model needs to have contact elements that interact with the ground. Only *SmoothSphereHalfSpaceForce* contact forces are supported. You can use [_AdaptOpenSimModel.m_](./AdaptOpenSimModel/AdaptOpenSimModel.m) to add contact geometries and forces to your model. You can also scale the radius, stiffness and dissipation of the contact spheres.
 - Your model can have any Hill-type muscle model, but it will be implemented as a [DeGroote-Fregly muscle](https://doi.org/10.1007/s10439-016-1591-9).
 - Torque/force actuators of the class *ActivationCoordinateActuator* are supported. You can add actuators by running [_AdaptOpenSimModel.m_](./AdaptOpenSimModel/AdaptOpenSimModel.m). Actuators are not required.
+
+
 
 
 ### Required Settings
@@ -102,20 +106,28 @@ This code can automatically convert an OpenSim model to the external function us
 #### S.bounds
 
 - **S.bounds.activation_all_muscles.lower**: 
+	
 	- minimal muscle activation. Provide a number between 0 and 1. Default is *0.05* [double]
 - **S.bounds.activation_all_muscles.upper**: 
+	
 	- maximal muscle activation. Provide a number between 0 and 1. Default is *1* [double]
 - **S.bounds.activation_selected_muscles**:
+	
 	- Cell array where 1st entry is muscle name(s) , 2nd entry is its lower bound, and 3rd entry is its upper bound. Insert 'nan' or [] to lower bounds to only overwrite upper bounds, or vice versa. For another bound, add 3 more entries.
 - **S.bounds.SLL.upper**: 
+	
 	- upper bound on left step length in meters. If not specified, no bound is implemented on left step length. 
 - **S.bounds.SLR.upper**: 
+	
 	- upper bound on right step length in meters. If not specified, no bound is implemented on left step length.
 - **S.bounds.dist_trav.lower**: 
+	
 	- lower bound on distance travelled over 1 gait cycle in meters. Note that if half gait cycle is being simulated, half of S.bounds.dist_trav.lower serves as the lower bound for total distance travelled. If not specified, no bound is implemented on left step length.
 - **S.bounds.t_final.lower**: 
+	
 	- lower bound on final time in seconds. Default is *0.1* s [double].
 - **S.bounds.t_final.upper**: 
+	
 	- upper bound on final time in seconds for full gait cycle simulation. Default is *2* s [double]. For half gait cycle simulation, half of this value gets implemented as upper bound for final time.
 - **S.bounds.points**:
 	- Cell array of structs where each cell defines a point. Points are used to define distanceconstraints. Each struct has the following fields:
@@ -133,16 +145,22 @@ This code can automatically convert an OpenSim model to the external function us
 	- Cell array where 1st entry is dof name(s) , 2nd entry is its lower bound, and 3rd entry is its upper bound. In ° or m.
 	Insert 'nan' or [] to lower bounds to only overwrite upper bounds, or vice versa. For another bound, add 3 more entries. For example, {{'knee_angle_r','knee_angle_l'},-120,10,'pelvis_tilt',[],30} implements limit of -120° and 10° on knee angles, and default lower bound with 30° upper bound for pelvis_tilt. This setting changes the bounds of the optimization variables. When formulating the OCP, the variables are scaled w.r.t. their bounds to improve conditioning. Changing these bounds can have a strong influence on convergence.
 - **S.bounds.Qdots**: 
+	
 	- Same as S.bounds.Qs, but for velocities.
 - **S.bounds.Qdotdots**: 
+	
 	- Same as S.bounds.Qs, but for accelerations.
 - **S.bounds.default_coordinate_bounds**:
+	
 	- Table with default values of bounds on Qs, Qdots, and Qdotdots. Default is *Default_Coordinate_Bounds.csv*. [string] Values in the file are assumed in rad or m.
 - **S.bounds.Qdots_factor_RoM**:
+	
 	- Velocity bounds that are not given by another setting, will be taken symmetric and proportional to the range of motion. Default is *10* [double]
 - **S.bounds.Qdotdots_factor_RoM**:
+	
 	- Acceleration bounds that are not given by another setting, will be taken symmetric and proportional to the range of motion. Default is *155* [double]
 - **S.bounds.factor_IG_pelvis_ty.lower**:
+	
 	- Set lower bound op vertical position of floating base proportional to IG_pelvis_y. Default is *0.5* [double] Set to empty [] to not use this.
 - **S.bounds.factor_IG_pelvis_ty.upper**:
 	- Set upper bound op vertical position of floating base proportional to IG_pelvis_y. Default is *1.2* [double] Set to empty [] to not use this.
@@ -167,16 +185,22 @@ This code can automatically convert an OpenSim model to the external function us
 #### S.misc - miscellanious
 
 - **S.misc.gaitmotion_type**: 
+	
 	- type of gait simulation. Default is *HalfGaitCycle* [char]. Other option is *FullGaitCycle* [char]. Simulating a half gait cycle reduces computation time, but is limited to symmetric models. Post-processing will always reconstruct a full gait cycle starting at right heel strike.
 - **S.misc.msk_geom_eq**: 
+	
 	- type of equation to approximate musculo-skeletal geometry (moment arm and muscle-tendon lengths wrt. joint angle). Default is *polynomials* [char]
 - **S.misc.threshold_lMT_fit**: 
+	
 	- Threshold RMSE on muscle-tendon length to accept the polynomial fit. Default is *0.003* m [double]
 - **S.misc.threshold_dM_fit**: 
+	
 	- Threshold RMSE on muscle-tendon moment arm to accept the polynomial fit. Default is *0.003* m [double]
 - **S.misc.poly_order.lower**: 
+	
 	- minimal order of polynomial function. Default is *3* [double]
 - **S.misc.poly_order.upper**: 
+	
 	- maximal order of polynomial function. Default is *9* [double]
 - **S.misc.default_msk_geom_bound**:
 	- file with default values for upper and lower bounds for approximating musculoskeletal geometry. Rotations are assumed in degrees, translations in meters. Default is *'default_msk_geom_bounds.csv'* [char].
@@ -188,31 +212,44 @@ This code can automatically convert an OpenSim model to the external function us
 	> 2. Default bounds from table (S.misc.default_msk_geom_bound)
 	> 3. Read from model file. Qs: min and max coordinate values
 - **S.misc.msk_geom_n_samples**:
-	- Number of samples for the dummy motion that is used to fit the approximated musculoskeletal geometry. Default is *5000* [double]
-
+	
+- Number of samples for the dummy motion that is used to fit the approximated musculoskeletal geometry. Default is *5000* [double]
+	
 - **S.misc.visualize_bounds**: 
+	
 	- specify if bounds and initial guess are visualized (0 or 1). Default is *0* [double]
 - **S.misc.dampingCoefficient**: 
+	
 	- damping coefficient of muscles. Default is *0.01* [double]. Used as damping value that is multiplied by the normalized muscle velocity, in the muscle velocity dependent term in calculation of normalized contractile element force of the muscle.
 - **S.misc.constant_pennation_angle**: 
+	
 	- specify if pennation angle of the muscles is supposed to stay constant (0 or 1). Default is *0* [double]
 - **S.misc.default_scaling_NLP**:
+	
 	- Filename with table that contains scale factors for Qs, Qdots, Qdotdots, and Moments in its columns. The first column should contain the coordinate names for its corresponding row. Default is *''*, i.e. scale factors are derived from bounds. [char]
 - **S.misc.scaling_Qs**:
+	
 	- cell array of name-value pairs of coordinate names and the scale factor for the optimisation variables corresponding to their position.
 - **S.misc.scaling_Qdots**:
+	
 	- cell array of name-value pairs of coordinate names and the scale factor for the optimisation variables corresponding to their velocity.
 - **S.misc.scaling_Qdotdots**:
+	
 	- cell array of name-value pairs of coordinate names and the scale factor for the optimisation variables corresponding to their acceleration.
 - **S.misc.scaling_moments**:
+	
 	- cell array of name-value pairs of coordinate names and the scale factor for the constraint violation on their moment equilibrium.
 - **S.misc.git.local_hash**: 
+	
 	- hash of the local instance [char]. This is the identifier of the version of the code on your machine. You cannot change this setting.
 - **S.misc.git.branch_name**: 
+	
 	- current branch of the local instance [char]. You cannot change this setting.
 - **S.misc.git.remote_hash**: 
+	
 	- hash of the last commit on the remote [char]. This is the identifier of the latest version on the remote, i.e. GitHub. You cannot change this setting.
 - **S.misc.computername**: 
+	
 	- name of the computer on which the simulation was run [char]. You cannot change this setting.
 
 
@@ -234,7 +271,7 @@ This code can automatically convert an OpenSim model to the external function us
 - **S.solver.tol_ipopt**: 
 	- the power (10^-x) the tolerance ipopt has to reach before the OCP can be regarded as solved; a higher number gives a more precise answer. Default is *4* [double]
 - **S.solver.max_iter**: 
-	- maximal amount of iterations after wich the solver will stop. Default is *10000* [double]
+	- maximal amount of iterations after which the solver will stop. Default is *10000* [double]
 - **S.solver.parallel_mode**: 
 	- type of parallel computing. Default is *thread* [char].
 - **S.solver.N_threads**: 
@@ -344,3 +381,61 @@ These settings are passed to OpenSimAD.
 - **S.OpenSimADOptions.exportContactPowers**: 
 	- Export power due to vertical compression of each contact element. Default is *true* [bool]
 
+
+
+
+
+![](README.assets/image-20240320222757504.png)
+
+![image-20240320222807517](README.assets/image-20240320222807517.png)
+
+![image-20240320222814574](README.assets/image-20240320222814574.png)
+
+![image-20240320222824244](README.assets/image-20240320222824244.png)
+
+![image-20240320222830552](README.assets/image-20240320222830552.png)
+
+![image-20240320222835736](README.assets/image-20240320222835736.png)
+
+![image-20240320222843145](README.assets/image-20240320222843145.png)
+
+![image-20240320222850602](README.assets/image-20240320222850602.png)
+
+![image-20240320222903916](README.assets/image-20240320222903916.png)
+
+
+
+
+
+![image-20240320222855779](README.assets/image-20240320222855779.png)
+
+
+
+This MATLAB function, `updateExport3DPositionsVelocities`, serves to update a setting structure `S` related to OpenSim (OpenSim is a biomechanical modeling software) with additional information required for exporting 3D positions and velocities. Let's break down what the code does:
+
+1. **Adding Calculation Origins for Step Length Constraints**:
+   - Checks if there are upper bounds defined for step lengths (`S.bounds.SLL.upper` and `S.bounds.SLR.upper`), and if so, adds points for the left and right calcaneus (`calcn_l` and `calcn_r`) to the `S.bounds.points`.
+2. **Filling Blank Inputs in Points Definitions**:
+   - Iterates through each point in `S.bounds.points`.
+   - Ensures that each point has a specified body, point in the body, and a name.
+   - If any of these are missing, it raises an error or fills in default values.
+3. **Filling Blank Inputs in Distance Constraints**:
+   - Similar to points, ensures that each distance constraint has specified points (`point1` and `point2`), direction, and bounds.
+   - Adds default values if any of these are missing.
+4. **Removing Duplicate Points**:
+   - Removes duplicate points from `S.bounds.points`.
+5. **Adding Points for Constraints to Export 3D Positions**:
+   - Appends the defined points to `S.OpenSimADOptions.export3DPositions`.
+6. **Testing if Bodies Exist in the OpenSim Model**:
+   - Uses the provided path to the OpenSim model (`osim_path`) to check if the bodies referenced in `S.OpenSimADOptions.export3DPositions` and `S.OpenSimADOptions.export3DVelocities` exist.
+   - Removes bodies that are not found, except for "ground".
+7. **Removing Constraints That Rely on Undefined Points**:
+   - Removes constraints that reference points not defined in `S.OpenSimADOptions.export3DPositions`.
+   - Adds points in "ground" to the list of defined points.
+   - Removes invalid constraints and warns about them.
+8. **Adding Field with Indices of Direction of Distance**:
+   - Converts directions (e.g., "x", "y", "z", "sagittal", "coronal", "transverse") to direction vector indices.
+9. **Adjusting Bounds**:
+   - If the direction involves 2D or 3D distances, it squares the bounds to avoid calculating square roots.
+
+The function then returns the updated setting structure `S`.
