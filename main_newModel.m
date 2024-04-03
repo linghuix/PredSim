@@ -23,11 +23,23 @@ addpath(fullfile(S.misc.main_path,'VariousFunctions'))
 
 %% Required inputs
 % name of the subject
-% S.subject.name = 'DHondt_2023_3seg';
+S.subject.name = 'DHondt_2023_3seg';
+
 xlh_weakness = 0.2;
-% 
+
+% Exoskeleton simulation
+S.Exo.Hip.available = true;
+S.Exo.Hip.maxTor = 25.0;
+%S.Exo.Hip.TorLeft = @torqueProfileL;
+%S.Exo.Hip.TorRight = @torqueProfileR; 
+
+
 % % path to folder where you want to store the results of the OCP
-S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name num2str(xlh_weakness) 'weak']); 
+S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_' num2str(xlh_weakness) 'weak']); 
+if S.Exo.Hip.available
+    S.subject.save_folder = fullfile(S.subject.save_folder, ['_' num2str(S.Exo.Hip.maxTor) 'hipAssistance'] );
+end
+
 % 
 % % either choose "quasi-random" or give the path to a .mot file you want to use as initial guess
 % % S.subject.IG_selection = 'quasi-random';
@@ -72,7 +84,7 @@ S.solver.run_as_batch_job = 0;
 % % S.misc.gaitmotion_type = 'FullGaitCycle';
 % 
 % % % S.post_process
-S.post_process.make_plot = 1;
+S.post_process.make_plot = 0;
 % % S.post_process.savename  = 'datetime';
 % % S.post_process.load_prev_opti_vars = 1;
 % % S.post_process.rerun   = 1;
@@ -80,27 +92,27 @@ S.post_process.make_plot = 1;
 % 
 % % % S.solver
 % % S.solver.linear_solver  = '';
-% % S.solver.tol_ipopt      = ;
+S.solver.tol_ipopt      = 6;
 % % S.solver.max_iter       = 5;
-% % S.solver.parallel_mode  = '';
-% % S.solver.N_threads      = 6;
+S.solver.parallel_mode  = 'thread';
+S.solver.N_threads      = 6;
 % % S.solver.N_meshes       = 100;
 % % S.solver.par_cluster_name = ;
-% S.solver.CasADi_path    = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
+S.solver.CasADi_path    = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
 % 
 % 
 % % % S.subject
 % % S.subject.mass              = ;
-% % S.subject.IG_pelvis_y       = ;
-% S.subject.adapt_IG_pelvis_y = 1;
-% S.subject.v_pelvis_x_trgt   = 1.33;
-% % S.subject.muscle_strength   =  {
-% %     {'glut_max1_r', 'glut_max1_l', 'glut_med1_r', 'glut_med1_l',  ...
-% %     'glut_med2_r', 'glut_med2_l', 'glut_med3_r', 'glut_med3_l',  ...
-% %     'glut_min1_r', 'glut_min1_l', 'glut_min2_r', 'glut_min2_l',  ...
-% %     'glut_min3_r', 'glut_min3_l','peri_r', 'peri_l',  ...
-% %     'sar_r', 'sar_l', 'tfl_r', 'tfl_l',}, ...
-% %     xlh_weakness};
+% % S.subject.IG_pelvis_y       = ; 
+S.subject.adapt_IG_pelvis_y = 1;
+S.subject.v_pelvis_x_trgt   = 1.33;
+S.subject.muscle_strength   =  {
+     {'glut_max1_r', 'glut_max1_l', 'glut_med1_r', 'glut_med1_l',  ...
+     'glut_med2_r', 'glut_med2_l', 'glut_med3_r', 'glut_med3_l',  ...
+     'glut_min1_r', 'glut_min1_l', 'glut_min2_r', 'glut_min2_l',  ...
+     'glut_min3_r', 'glut_min3_l','peri_r', 'peri_l',  ...
+     'sar_r', 'sar_l', 'tfl_r', 'tfl_l',}, ...
+     xlh_weakness};
 % % S.subject.muscle_pass_stiff_shift = {{'soleus','_gas','per_','tib_','_dig_','_hal_','FDB'},0.9}; %,'FDB'
 % % S.subject.muscle_pass_stiff_scale = ;
 % % S.subject.tendon_stiff_scale      = {{'soleus','_gas'},0.5};
@@ -128,16 +140,16 @@ S.post_process.make_plot = 1;
 % 
 % % %S.OpenSimADOptions: required inputs to convert .osim to .dll
 % % S.OpenSimADOptions.compiler = 'Visual Studio 17 2022';
-% S.OpenSimADOptions.verbose_mode = 0; % 0 for no outputs from cmake
+S.OpenSimADOptions.verbose_mode = 1;    % 0 for no outputs from cmake
 
-        
+ 
 %% Run predictive simulations
 
 % warning wrt pelvis heigt for IG
 if S.subject.adapt_IG_pelvis_y == 0 && S.subject.IG_selection ~= "quasi-random"
     uiwait(msgbox(["Pelvis height of the IG will not be changed.";"Set S.subject.adapt_IG_pelvis_y to 1 if you want to use the model's pelvis height."],"Warning","warn"));
 end
-
+   
 % Start simulation
 if S.solver.run_as_batch_job
     add_pred_sim_to_batch(S,osim_path)

@@ -47,6 +47,7 @@ D = zeros(d+1, 1);
 B = zeros(d+1, 1);
 
 % Construct polynomial basis
+% This loop iterates over each collocation point, where d is the degree of the polynomial used for interpolation.
 for j=1:d+1
     % Construct Lagrange polynomials to get the polynomial basis at the 
     % collocation point

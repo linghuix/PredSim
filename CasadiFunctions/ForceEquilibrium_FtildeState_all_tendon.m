@@ -31,14 +31,15 @@ Atendon = ones(size(a,1),1)*Atendonsc;
 volM = FMo.*lMo;
 massM = volM.*(1059.7)./(tension*1e6);
 
-% Inverse tendon force-length characteristic
-lTtilde = log(5*(fse + 0.25 - shift))./Atendon + 0.995;
+% Inverse tendon force-length characteristic  Equ.S7
+lTtilde = log(5*(fse + 0.25 - shift))./Atendon + 0.995;	% fse = FTtilde
 
-% Hill-type muscle model: geometric relationships
+% Hill-type muscle model: geometric relationships    
+% whether muscle has constant pennation angle
 if(MuscMoAsmp == 0) % b = cst
-    lM = sqrt((lMo.*sin(alphao)).^2+(lMT-lTs.*lTtilde).^2);
+    lM = sqrt((lMo.*sin(alphao)).^2+(lMT-lTs.*lTtilde).^2);		% Equ.S17 lTtilde is normalized, lTs is length at starting point
 else    % alpha = cst = alphao
-   lM = (lMT-lTs.*lTtilde)./cos(alphao);
+   lM = (lMT-lTs.*lTtilde)./cos(alphao);						% Equ.S16
 end
 lMtilde = lM./lMo;
 
@@ -64,24 +65,25 @@ FMtilde1 = b11*exp(-0.5*num1.^2./den1.^2);
 num2 = lMtilde-b22;
 den2 = b32+b42*lMtilde;
 FMtilde2 = b12*exp(-0.5*num2.^2./den2.^2);
-FMltilde = FMtilde1+FMtilde2+FMtilde3;
+FMltilde = FMtilde1+FMtilde2+FMtilde3;				% Equ.S2
 Fiso = FMltilde;
 % Active muscle force-velocity characteristic
-vT = lTs.*dfse./(0.2*Atendonsc*exp(Atendonsc*(lTtilde-0.995)));
+vT = lTs.*dfse./(0.2*Atendonsc*exp(Atendonsc*(lTtilde-0.995)));	% Equ.S28
 if(MuscMoAsmp == 0) % b = cst
     cos_alpha = (lMT-lTs.*lTtilde)./lM;
 else    % alpha = cst = alphao
     cos_alpha = cos(alphao);
 end
-vM = (vMT-vT).*cos_alpha;
+vM = (vMT-vT).*cos_alpha;				% Equ.S27
 vMtilde = vM./vMmax;
 e1 = Fvparam(1);
 e2 = Fvparam(2);
 e3 = Fvparam(3);
 e4 = Fvparam(4);
-FMvtilde = e1*log((e2*vMtilde+e3)+sqrt((e2*vMtilde+e3).^2+1))+e4;
+FMvtilde = e1*log((e2*vMtilde+e3)+sqrt((e2*vMtilde+e3).^2+1))+e4;		%Equ.S4
 % Active muscle force
-Fcetilde = strength.*a.*FMltilde.*FMvtilde +d*vMtilde;
+Fcetilde = strength.*a.*FMltilde.*FMvtilde +d*vMtilde;		% F_contraction elements  Equ.4  add new damping and strength
+
 Fce = FMo.*Fcetilde;
 
 % Passive muscle force-length characteristic
@@ -89,7 +91,7 @@ e0 = 0.6;
 kpe = 4;
 t5 = exp(kpe * (lMtilde - stiffness_shift) / (e0/stiffness_scale));
 % Passive muscle force
-Fpetilde = ((t5 - 0.10e1) - Fpparam(1)) / Fpparam(2);
+Fpetilde = ((t5 - 0.10e1) - Fpparam(1)) / Fpparam(2);			% Equ.S3
 Fpass = FMo.*Fpetilde;
 
 % Muscle force (non-normalized)

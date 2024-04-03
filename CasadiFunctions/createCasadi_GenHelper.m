@@ -129,4 +129,24 @@ for i = 1:length(N_musc_cross)
     end
     f_casadi.(['musc_cross_' num2str(N_musc_cross(i))]) = Function(['musc_cross_' num2str(N_musc_cross(i))],{ma_temp_musc_cross,ft_temp_musc_cross},{J_sp_temp_musc_cross});
 end
+
+
+
+%% hip exo assistance pattern
+
+if S.Exo.Hip.available > 0
+    GC_temp_exo_hip_dof = SX.sym('exo_r_dof',1);   
+    
+    Tor_temp_exo_hip_dof = (24.02*sin(3.212*GC_temp_exo_hip_dof-2.607) + 1.526*sin(20.51*GC_temp_exo_hip_dof-4.221) + 11.91*sin(9.032*GC_temp_exo_hip_dof-4.194)) / 35.0 * S.Exo.Hip.maxTor;     % adduction torque +
+
+	% create a CasADi function named 'f_J_arms_dof' with inputs 'e_temp_arms_dof' and outputs 'J_temp_arms_dof'. 
+    f_casadi.Tor_exo_right_hipdof = Function('Tor_exo_right_hipdof',{GC_temp_exo_hip_dof},{Tor_temp_exo_hip_dof});
+    
+    
+    GC_temp_exo_hip_dof_l = SX.sym('exo_l_dof',1);   
+    Tor_temp_exo_hip_dof_l = (359.4*sin(1.972*GC_temp_exo_hip_dof_l+5.116) + 311.3*sin(2.592*GC_temp_exo_hip_dof_l+1.665) + 1.493*sin(19.53*GC_temp_exo_hip_dof_l+-1.593) + 5.068*sin(12.01*GC_temp_exo_hip_dof_l+1.678)) / 35.0 * S.Exo.Hip.maxTor;     % adduction torque +
+	% create a CasADi function named 'f_J_arms_dof' with inputs 'e_temp_arms_dof' and outputs 'J_temp_arms_dof'. 
+    f_casadi.Tor_exo_left_hipdof = Function('Tor_exo_left_hipdof',{GC_temp_exo_hip_dof_l},{Tor_temp_exo_hip_dof_l});
+end
+
 end

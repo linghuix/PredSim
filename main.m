@@ -13,7 +13,7 @@ clc
 [pathRepoFolder,~,~] = fileparts(pathRepo);
 
 %% Initialize user-defined settings structure S
-pathDefaultSettings = fullfile(pathRepo,'DefaultSettings');
+pathDefaultSettings = fullfile(pathRepo,'DefaultSettings'); 
 addpath(pathDefaultSettings)
 
 [S] = initializeSettings('Falisse_et_al_2022');
@@ -24,7 +24,7 @@ addpath(fullfile(S.misc.main_path,'VariousFunctions'))
 %% Required inputs
 % name of the subject
 S.subject.name = 'Falisse_et_al_2022';
-xlh_weakness = 0.4;
+xlh_weakness = 0.2;
 
 % path to folder where you want to store the results of the OCP
 S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name num2str(xlh_weakness) 'weak']); 
@@ -69,10 +69,10 @@ S.solver.run_as_batch_job = 0;
 % S.misc.msk_geom_bounds      = {{'knee_angle_r'},0,90,{'mtp_angle_'},-50,20};
 % S.misc.default_msk_geom_bound = ;
 % S.misc.msk_geom_bounds      = {{'knee_angle_r','knee_angle_l'},-120,10,'lumbar_extension',nan,30};
-% S.misc.gaitmotion_type = 'FullGaitCycle';
+S.misc.gaitmotion_type = 'FullGaitCycle';
 
 % % S.post_process
-S.post_process.make_plot = 1;
+S.post_process.make_plot = 0;
 % S.post_process.savename  = 'datetime';
 % S.post_process.load_prev_opti_vars = 1;
 % S.post_process.rerun   = 1;
@@ -80,11 +80,11 @@ S.post_process.make_plot = 1;
 
 % % S.solver
 % S.solver.linear_solver  = '';
-% S.solver.tol_ipopt      = ;
+% S.solver.tol_ipopt      = 3;
 % S.solver.max_iter       = 5;
 % S.solver.parallel_mode  = '';
 % S.solver.N_threads      = 6;
-% S.solver.N_meshes       = 100;
+S.solver.N_meshes       = 100;
 % S.solver.par_cluster_name = ;
 S.solver.CasADi_path    = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
 
@@ -130,6 +130,13 @@ S.subject.muscle_strength   =  {
 % S.OpenSimADOptions.compiler = 'Visual Studio 17 2022';
 S.OpenSimADOptions.verbose_mode = 1; % 0 for no outputs from cmake
 
+
+% Exoskeleton simulation
+S.Exo.Hip.available = true;
+S.Exo.Hip.maxTor = 35.0;
+S.Exo.Hip.TorLeft = @torqueProfileL;
+S.Exo.Hip.TorRight = @torqueProfileR; 
+
         
 %% Run predictive simulations
 
@@ -145,6 +152,8 @@ else
     [savename] = run_pred_sim(S,osim_path);
 end
 
+
+
 %% Plot results
 if S.post_process.make_plot && ~S.solver.run_as_batch_job
     % set path to saved result
@@ -155,3 +164,13 @@ if S.post_process.make_plot && ~S.solver.run_as_batch_job
     run_this_file_to_plot_figures
 end
 
+
+% Define exo assistive torque
+function tor = torqueProfileR(t)
+        tor = 10*t^2;
+end
+
+% Define exo assistive torque
+function tor = torqueProfileL(t)
+        tor = 10*t^2;
+end

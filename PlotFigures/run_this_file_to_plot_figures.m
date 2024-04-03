@@ -18,13 +18,16 @@ clc
 
 % Construct a cell array with full paths to files with saved results for
 % which you want to appear on the plotted figures.
-results_folder = fullfile(pathRepoFolder,'PredSimResults');
-result_paths{1} = fullfile(pathRepo,'Tests','Falisse_et_al_2022_Results','Falisse_et_al_2022_v1.mat');
+results_folder = fullfile(pathRepo,'PredSimResults');
+result_paths{1} = fullfile(results_folder, 'DHondt_2023_3seg_0.2weak','DHondt_2023_3seg_v1.mat');
+result_paths{2} = fullfile(results_folder, 'DHondt_2023_3seg_0.2weak', '_35hipAssistance', 'DHondt_2023_3seg_v1.mat');
+result_paths{3} = fullfile(results_folder, 'DHondt_2023_3seg_Normal','DHondt_2023_3seg_v1.mat');
+% result_paths{1} = fullfile(pathRepo,'PredSimResults','1-Falisse_et_al_2022 20% hipweakness','Falisse_et_al_2022_v1.mat'); % hipweakness
+% result_paths{1} = fullfile(pathRepo,'Tests','ReferenceResults','Falisse_et_al_2022','Falisse_et_al_2022_paper.mat');
 % result_paths{2} = fullfile(results_folder,'Falisse_et_al_2022_Results','Falisse_et_al_2022_v1.mat');
 
-
 % Cell array with legend name for each result
-legend_names = {'Reference result', 'Your first simulation'};
+legend_names = {'20% hip abductor strength result','35 assisted simulation','normal'};
 
 % Path to the folder where figures are saved
 figure_folder = results_folder;
@@ -102,12 +105,12 @@ fig_count = fig_count+1;
 % figure_settings(fig_count).filetype = {'jpeg'};
 % fig_count = fig_count+1;
 
-% figure_settings(fig_count).name = 'torques';
-% figure_settings(fig_count).dofs = {'all_coords'};
-% figure_settings(fig_count).variables = {'T_ID'};
-% figure_settings(fig_count).savepath = fullfile(figure_folder,[figure_savename '_' figure_settings(fig_count).name]);
-% figure_settings(fig_count).filetype = {'png'};
-% fig_count = fig_count+1;
+figure_settings(fig_count).name = 'torques';
+figure_settings(fig_count).dofs = {'all_coords'};
+figure_settings(fig_count).variables = {'T_ID'};
+figure_settings(fig_count).savepath = fullfile(figure_folder,[figure_savename '_' figure_settings(fig_count).name]);
+figure_settings(fig_count).filetype = {'png'};
+fig_count = fig_count+1;
 
 % figure_settings(fig_count).name = 'ankle_muscles';
 % figure_settings(fig_count).dofs = {'soleus_r','med_gas_r','lat_gas_r','tib_ant_r'};
@@ -116,12 +119,12 @@ fig_count = fig_count+1;
 % figure_settings(fig_count).filetype = {};
 % fig_count = fig_count+1;
 
-% figure_settings(fig_count).name = 'grfs';
-% figure_settings(fig_count).dofs = {'custom'};
-% figure_settings(fig_count).variables = {'GRF'};
-% figure_settings(fig_count).savepath = fullfile(figure_folder,[figure_savename '_' figure_settings(fig_count).name]);
-% figure_settings(fig_count).filetype = {};
-% fig_count = fig_count+1;
+figure_settings(fig_count).name = 'grfs';
+figure_settings(fig_count).dofs = {'custom'};
+figure_settings(fig_count).variables = {'GRF'};
+figure_settings(fig_count).savepath = fullfile(figure_folder,[figure_savename '_' figure_settings(fig_count).name]);
+figure_settings(fig_count).filetype = {};
+fig_count = fig_count+1;
 
 % figure_settings(fig_count).name = 'template';
 % figure_settings(fig_count).dofs = {'custom'};

@@ -439,3 +439,28 @@ This MATLAB function, `updateExport3DPositionsVelocities`, serves to update a se
    - If the direction involves 2D or 3D distances, it squares the bounds to avoid calculating square roots.
 
 The function then returns the updated setting structure `S`.
+
+
+
+
+
+### Solver output
+
+
+
+![](README.assets/image-20240326185135618.png)
+
+
+
+The output is from an optimization solver, possibly in the context of nonlinear programming (NLP) or similar optimization problems. The information typically displayed in such an output includes:
+
+- **iter**: Iteration number or iteration count.
+- **objective**: Current value of the objective function being minimized or maximized. This value may decrease (for minimization) or increase (for maximization) as the optimization progresses.
+- **inf_pr**: Measure of primal infeasibility. It indicates how much the primal variables violate the constraints. A lower value indicates better feasibility.
+- **inf_du**: Measure of dual infeasibility. It indicates how much the dual variables violate their constraints. A lower value indicates better feasibility.
+- **lg(mu)**: Logarithmic value of the penalty parameter (mu) used in the optimization algorithm. This parameter is typically adjusted dynamically during the optimization process.
+- **||d||**: Norm of the step direction. It represents the size of the step taken in the optimization algorithm at the current iteration.
+- **lg(rg)**: Logarithmic value of the regularization term. This term is used in some optimization algorithms to improve numerical stability.
+- **alpha_du**: Step length for the dual variables. It represents the step size taken in the direction of the dual variables.
+- **alpha_pr**: Step length for the primal variables. It represents the step size taken in the direction of the primal variables.
+- **ls**: Line search information. It indicates the status of the line search performed during the current iteration.

@@ -73,11 +73,12 @@ figure(fig_hand)
 %% Plotting
 % example plot
 percentage_gait_cycle = linspace(1,100,size(R.ground_reaction.GRF_r,1));
+time_gait = linspace(1,R.time.mesh_GC(end), size(R.ground_reaction.GRF_r,1));
 
 subplot(1,2,1)
 hold on
 dist_forward = R.kinematics.Qs(:,strcmp(R.colheaders.coordinates,'pelvis_tx'));
-plot(percentage_gait_cycle,dist_forward,'color',colr,'DisplayName',legName)
+plot(time_gait,dist_forward,'color',colr,'DisplayName',legName)
 title('Forward distance of floating base','Interpreter','none')
 ylabel('Distance (m)')
 xlabel('Gait cycle (%)')

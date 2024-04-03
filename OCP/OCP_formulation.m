@@ -63,8 +63,7 @@ muscleNames = model_info.muscle_info.muscle_names;
 
 % Total number of muscles
 NMuscle = model_info.muscle_info.NMuscle;
-[~,mai] = MomentArmIndices_asym(muscleNames,...
-    model_info.muscle_info.muscle_spanning_joint_info);
+[~,mai] = MomentArmIndices_asym(muscleNames, model_info.muscle_info.muscle_spanning_joint_info);
 % calculate total number of joints that each muscle crosses (used later)
 sumCross = sum(model_info.muscle_info.muscle_spanning_joint_info);
 
@@ -96,6 +95,8 @@ end
 if (S.misc.visualize_bounds)
     visualizebounds
 end
+
+
 
 %% OCP create variables and bounds
 % using opti
@@ -196,7 +197,15 @@ opti.subject_to(bounds.Qdotdots.lower'*ones(1,d*N) < A_col < ...
     bounds.Qdotdots.upper'*ones(1,d*N));
 opti.set_initial(A_col, guess.Qdotdots_col');
 
+
+if S.Exo.Hip.available
+    % Exoskeleton moment
+    TorExo = opti.variable(2, N);
+end
+
+
 %% OCP: collocation equations
+% k is the mesh knot; j is the collocation point
 % Define CasADi variables for static parameters
 tfk         = MX.sym('tfk'); % MX variable for final time
 % Define CasADi variables for states
@@ -222,6 +231,12 @@ vAk     = MX.sym('vAk',NMuscle);
 if nq.torqAct > 0
     e_ak    = MX.sym('e_ak',nq.torqAct);
 end
+
+if S.Exo.Hip.available
+    % Exoskeleton moment
+    TorExo_k = MX.sym('TorExo_k', 2);
+end
+
 
 % Define CasADi variables for "slack" controls
 dFTtildej   = MX.sym('dFTtildej',NMuscle,d);
@@ -379,9 +394,19 @@ for j=1:d
         if ~ismember(i,model_info.ExtFunIO.jointi.floating_base)
             Ti = Ti + Tau_passj(i);
         end
+
+        Ti_exo = 0;
+        % exoskeleton moment
+        if S.Exo.Hip.available
+            if strcmp(model_info.ExtFunIO.coord_names.all{i},'hip_adduction_l')
+                Ti_exo = TorExo_k(1);
+            elseif strcmp(model_info.ExtFunIO.coord_names.all{i},'hip_adduction_r')
+                Ti_exo = TorExo_k(2);
+            end
+        end
         
         % total coordinate torque equals inverse dynamics torque
-        eq_constr{end+1} = (Tj(i,1) - Ti)./scaling.Moments(i);
+        eq_constr{end+1} = (Tj(i,1) - Ti)./scaling.Moments(i) - Ti_exo;
 
     end
 
@@ -449,6 +474,9 @@ end
 
 % Casadi function to get constraints and objective
 coll_input_vars_def = {tfk,ak,aj,FTtildek,FTtildej,Qsk,Qsj,Qdotsk,Qdotsj,vAk,dFTtildej,Aj};
+if S.Exo.Hip.available
+    coll_input_vars_def = [coll_input_vars_def,{TorExo_k}];
+end
 if nq.torqAct > 0
     coll_input_vars_def = [coll_input_vars_def,{a_ak,a_aj,e_ak}];
 end
@@ -461,6 +489,9 @@ f_coll_map = f_coll.map(N,S.solver.parallel_mode,S.solver.N_threads);
 % evaluate function with opti variables
 coll_input_vars_eval = {tf,a(:,1:end-1), a_col, FTtilde(:,1:end-1), FTtilde_col,...
     Qs(:,1:end-1), Qs_col, Qdots(:,1:end-1), Qdots_col, vA, dFTtilde_col, A_col};
+if S.Exo.Hip.available
+    coll_input_vars_eval = [coll_input_vars_eval, {TorExo}];
+end
 if nq.torqAct > 0
     coll_input_vars_eval = [coll_input_vars_eval, {a_a(:,1:end-1), a_a_col, e_a}];
 end
@@ -514,6 +545,11 @@ for k=1:N
         opti.subject_to(a_a(:,k+1) == a_akj*D);
     end
 
+    if S.Exo.Hip.available
+        opti.subject_to( TorExo(1,k) == f_casadi.Tor_exo_left_hipdof(1/N*k) );
+        opti.subject_to( TorExo(2,k) == f_casadi.Tor_exo_right_hipdof(1/N*k) );
+    end 
+
 end % End loop over mesh points
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Additional path constraints
@@ -554,7 +590,7 @@ end
 % Average speed
 % Provide expression for the distance traveled
 Qs_nsc = Qs.*(scaling.Qs'*ones(1,N+1));
-dist_trav_tot = Qs_nsc(model_info.ExtFunIO.jointi.base_forward,end) - ...
+dist_trav_tot = Qs_nsc(model_info.ExtFunIO.jointi.base_forward,end) - ...       % base_forward IS pelvis_tx
     Qs_nsc(model_info.ExtFunIO.jointi.base_forward,1);
 vel_aver_tot = dist_trav_tot/tf;
 opti.subject_to(vel_aver_tot - S.subject.v_pelvis_x_trgt == 0)
@@ -696,6 +732,13 @@ dFTtilde_col_opt=reshape(w_opt(starti:starti+NMuscle*(d*N)-1),NMuscle,d*N)';
 starti = starti + NMuscle*(d*N);
 qdotdot_col_opt =reshape(w_opt(starti:starti+nq.all*(d*N)-1),nq.all,(d*N))';
 starti = starti + nq.all*(d*N);
+
+% extract exo results
+if S.Exo.Hip.available
+    Texo = reshape(w_opt(starti:starti+N*2-1),2,N)';
+    starti = starti + (N*2);
+end
+
 if starti - 1 ~= length(w_opt)
     disp('error when extracting results')
 end
@@ -1036,6 +1079,11 @@ if strcmp(S.misc.gaitmotion_type,'HalfGaitCycle')
 
     end
 
+    % exoskeleton support
+    if S.Exo.Hip.available
+        Texo = [Texo; Texo];
+    end
+
 end
 
 % express slack controls on mesh points 1:N to be consistent
@@ -1078,6 +1126,10 @@ if nq.torqAct > 0
     e_a_GC = e_a_opt_unsc(idx_GC,:);
 end
 
+if S.Exo.Hip.available
+    Texo_GC = Texo(idx_GC,:);
+end
+
 % adjust forward position to be continuous and start at 0
 Qs_GC(idx_GC_base_forward_offset,model_info.ExtFunIO.jointi.base_forward) = Qs_GC(idx_GC_base_forward_offset,model_info.ExtFunIO.jointi.base_forward) + dist_trav_opt;
 Qs_GC(:,model_info.ExtFunIO.jointi.base_forward) = Qs_GC(:,model_info.ExtFunIO.jointi.base_forward) - Qs_GC(1,model_info.ExtFunIO.jointi.base_forward);
@@ -1107,6 +1159,12 @@ R.muscles.a = Acts_GC;
 R.muscles.da = dActs_GC;
 R.muscles.FTtilde = FTtilde_GC;
 R.muscles.dFTtilde = dFTtilde_GC;
+
+if S.Exo.Hip.available
+    R.exo.Texo = Texo;
+    R.exo.tExo_gc = Texo_GC;
+end
+
 if nq.torqAct > 0
     R.torque_actuators.a = a_a_GC;
     R.torque_actuators.e = e_a_GC;

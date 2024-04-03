@@ -173,6 +173,7 @@ for i=1:nsp
         idx = idx(1);
         y_i = ydata{cnt_y}(:,idx);
         x_i = linspace(1,100,length(y_i));
+%         x_i = linspace(0,R.time.mesh_GC(end), length(y_i));
 
         subplot(nv,nh,i)
         hold on
