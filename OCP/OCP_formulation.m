@@ -546,8 +546,10 @@ for k=1:N
     end
 
     if S.Exo.Hip.available
-        opti.subject_to( TorExo(1,k) == f_casadi.Tor_exo_left_hipdof(1/N*k) );
-        opti.subject_to( TorExo(2,k) == f_casadi.Tor_exo_right_hipdof(1/N*k) );
+%         opti.subject_to( TorExo(1,k) == f_casadi.Tor_exo_left_hipdof(1/N*k) );
+%         opti.subject_to( TorExo(2,k) == f_casadi.Tor_exo_right_hipdof(1/N*k) );
+        opti.subject_to( TorExo(1,k) == S.Exo.Hip.TorLeft(k) );
+        opti.subject_to( TorExo(2,k) == S.Exo.Hip.TorRight(k) );
     end 
 
 end % End loop over mesh points

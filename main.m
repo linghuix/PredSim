@@ -165,12 +165,3 @@ if S.post_process.make_plot && ~S.solver.run_as_batch_job
 end
 
 
-% Define exo assistive torque
-function tor = torqueProfileR(t)
-        tor = 10*t^2;
-end
-
-% Define exo assistive torque
-function tor = torqueProfileL(t)
-        tor = 10*t^2;
-end
