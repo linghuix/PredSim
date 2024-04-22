@@ -153,12 +153,32 @@ for ww = [0.2]
         S.OpenSimADOptions.verbose_mode = 1; % 0 for no outputs from cmake
         
 
-%% Plot results
-if S.post_process.make_plot && ~S.solver.run_as_batch_job
-    % set path to saved result
-    result_paths{2} = fullfile(S.subject.save_folder,[savename '.mat']);
-    % add path to subfolder with plotting functions
-    addpath(fullfile(S.misc.main_path,'PlotFigures'))
-    % call plotting script
-    run_this_file_to_plot_figures
+                
+        %% Run predictive simulations
+        
+        % warning wrt pelvis heigt for IG
+        if S.subject.adapt_IG_pelvis_y == 0 && S.subject.IG_selection ~= "quasi-random"
+            uiwait(msgbox(["Pelvis height of the IG will not be changed.";"Set S.subject.adapt_IG_pelvis_y to 1 if you want to use the model's pelvis height."],"Warning","warn"));
+        end
+        
+        % Start simulation
+        if S.solver.run_as_batch_job
+            add_pred_sim_to_batch(S,osim_path)
+        else
+            [savename] = run_pred_sim(S,osim_path);
+        end
+        
+        
+        
+        %% Plot results
+        if S.post_process.make_plot && ~S.solver.run_as_batch_job
+            % set path to saved result
+            result_paths{2} = fullfile(S.subject.save_folder,[savename '.mat']);
+            % add path to subfolder with plotting functions
+            addpath(fullfile(S.misc.main_path,'PlotFigures'))
+            % call plotting script
+            run_this_file_to_plot_figures
+        end
+
+    end
 end

@@ -1,7 +1,7 @@
 %% Predictive Simulations of Human Gait
 
 for ww = [0.1]
-    for peakTor = 10:10:70
+    for peakTor = 80:10:90
     % This script starts the predictive simulation of human movement. The
     % required inputs are necessary to start the simulations. Optional inputs,
     % if left empty, will be taken from getDefaultSettings.m.
@@ -36,11 +36,11 @@ for ww = [0.1]
     S.Exo.Hip.type = [];
     if S.Exo.Hip.available
         S.Exo.Hip.maxTor = peakTor;
-        S.Exo.Hip.type = ['MS']
+        S.Exo.Hip.type = ['MF']
         % MF
-    %     [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, peakTor);
+        [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, peakTor);
         % MS
-        [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, peakTor);
+        %[S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, peakTor);
     end
 
     % % path to folder where you want to store the results of the OCP
