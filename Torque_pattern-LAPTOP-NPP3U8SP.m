@@ -17,7 +17,7 @@
 %% muscle power inspired moment
 
 
-function [TorLeft, TorRight] = Torque_pattern(gaitPhase_1, gaitPhase_peak, gaitPhase_2, peakTor, fullgaitcycle)
+function [TorLeft, TorRight] = Torque_pattern(gaitPhase_1, gaitPhase_peak, gaitPhase_2, peakTor)
 %% grid search
 % gaitPhase_1 = 2;
 % gaitPhase_2 = 32;
@@ -45,13 +45,6 @@ Tor = [zeros(1,(gaitPhase_1-1)) Tor zeros(1, 100-(gaitPhase_2)-1)];
 % ylabel('Tor');
 % legend('三次样条插值', '数据点');
 
-TorLeft = -[Tor(51:end) Tor(1:50)];      % right leg is first in exp
+TorLeft = -[Tor(50:end) Tor(1:49)];      % right leg is first in exp
 TorRight = -Tor;
-
-
-if fullgaitcycle
-
-else
-    TorLeft = TorLeft(1:50);
-    TorRight = TorRight(1:50);
 end

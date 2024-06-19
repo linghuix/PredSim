@@ -1,9 +1,7 @@
 %% Predictive Simulations of Human Gait
-cd 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation'
 
-
-for ww = [0.1]
-    for peakTor = 10
+for ww = [0.2]
+    for peakTor = [0 10 20 30 40 50 60 70 ]
     % This script starts the predictive simulation of human movement. The
     % required inputs are necessary to start the simulations. Optional inputs,
     % if left empty, will be taken from getDefaultSettings.m.
@@ -34,31 +32,20 @@ for ww = [0.1]
 
         % Exoskeleton simulation
         S.Exo.Hip.available = true;
-        S.Exo.Hip.type = [];
-        if S.Exo.Hip.available
-            S.Exo.Hip.maxTor = peakTor;
-            S.Exo.Hip.type = ['PF'];
-            % MF
-%             [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, peakTor, 0);
-            % MS
-%             [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, peakTor, 0);
-            % PF
-            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, peakTor, 0);
-            % PS
-%             [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, peakTor, 0);
-        end
-
+        S.Exo.Hip.maxTor = peakTor;
+        [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, peakTor); 
+        
         % path to folder where you want to store the results of the OCP
-        S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_' num2str(xlh_weakness) 'strength' S.Exo.Hip.type]); 
+        S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_' num2str(xlh_weakness) 'strength']); 
         if S.Exo.Hip.available
             S.subject.save_folder = fullfile(S.subject.save_folder, ['_' num2str(S.Exo.Hip.maxTor) 'hipAssistance'] );
         end
         
         % either choose "quasi-random" or give the path to a .mot file you want to use as initial guess
         % S.subject.IG_selection = 'quasi-random';
-%         S.subject.IG_selection = fullfile(S.misc.main_path,'OCP','IK_Guess_Full_GC.mot');
-%         S.subject.IG_selection_gaitCyclePercent = 100;
-        S.subject.IG_selection = 'quasi-random';
+        S.subject.IG_selection = fullfile(S.misc.main_path,'OCP','IK_Guess_Full_GC.mot');
+        S.subject.IG_selection_gaitCyclePercent = 100;
+        % S.subject.IG_selection = 'quasi-random';
         
         % give the path to the osim model of your subject
         osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
@@ -94,8 +81,7 @@ for ww = [0.1]
         % S.misc.msk_geom_bounds      = {{'knee_angle_r'},0,90,{'mtp_angle_'},-50,20};
         % S.misc.default_msk_geom_bound = ;
         % S.misc.msk_geom_bounds      = {{'knee_angle_r','knee_angle_l'},-120,10,'lumbar_extension',nan,30};
-%         S.misc.gaitmotion_type = 'FullGaitCycle';
-        S.misc.gaitmotion_type = 'HalfGaitCycle';
+        S.misc.gaitmotion_type = 'FullGaitCycle';
         
         % % S.post_process
         S.post_process.make_plot = 0;
@@ -110,7 +96,7 @@ for ww = [0.1]
         % S.solver.max_iter       = 5;
         S.solver.parallel_mode  = 'thread';
         S.solver.N_threads      = 4;
-        S.solver.N_meshes       = 50;
+        S.solver.N_meshes       = 100;
         % S.solver.par_cluster_name = ;
         S.solver.CasADi_path    = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
         
@@ -127,8 +113,7 @@ for ww = [0.1]
              'glut_med2_r', 'glut_med2_l', 'glut_med3_r', 'glut_med3_l',  ...
              'glut_min1_r', 'glut_min1_l', 'glut_min2_r', 'glut_min2_l',  ...
              'glut_min3_r', 'glut_min3_l',...
-             'tfl_r', 'tfl_l'...
-%               'peri_r', 'peri_l',  'sar_r', 'sar_l', 
+    %          'peri_r', 'peri_l',  'sar_r', 'sar_l', 'tfl_r', 'tfl_l'
              }, ...
              xlh_weakness};
 %         S.subject.muscle_strength   =  {

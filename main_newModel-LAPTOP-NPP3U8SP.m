@@ -1,7 +1,7 @@
 %% Predictive Simulations of Human Gait
 
 for ww = [0.1]
-    for peakTor = 10:10:100
+    for peakTor = [10 20 30]
     % This script starts the predictive simulation of human movement. The
     % required inputs are necessary to start the simulations. Optional inputs,
     % if left empty, will be taken from getDefaultSettings.m.
@@ -33,22 +33,12 @@ for ww = [0.1]
     
     % Exoskeleton simulation
     S.Exo.Hip.available = true;
-    S.Exo.Hip.type = [];
-    if S.Exo.Hip.available
-        S.Exo.Hip.maxTor = peakTor;
-        S.Exo.Hip.type = ['PS']
-        % MF
-%          [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, peakTor, 0);
-        % MS
-%         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, peakTor, 0);
-        % PF
-%         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, peakTor, 0);
-        % PS
-        [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, peakTor, 0);
-    end
-
+    S.Exo.Hip.maxTor = peakTor;
+    [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, peakTor); 
+    
+    
     % % path to folder where you want to store the results of the OCP
-    S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_' num2str(my_abductor_strength) 'strength' S.Exo.Hip.type]); 
+    S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_' num2str(my_abductor_strength) 'strength']); 
     if S.Exo.Hip.available
         S.subject.save_folder = fullfile(S.subject.save_folder, ['_' num2str(S.Exo.Hip.maxTor) 'hipAssistance'] );
     end
@@ -94,8 +84,7 @@ for ww = [0.1]
     % % S.misc.msk_geom_bounds      = {{'knee_angle_r'},0,90,{'mtp_angle_'},-50,20};
     % % S.misc.default_msk_geom_bound = ;
     % % S.misc.msk_geom_bounds      = {{'knee_angle_r','knee_angle_l'},-120,10,'lumbar_extension',nan,30};
-%     S.misc.gaitmotion_type = 'FullGaitCycle';
-    S.misc.gaitmotion_type = 'HalfGaitCycle';
+    S.misc.gaitmotion_type = 'FullGaitCycle';
     % 
     % % % S.post_process
     S.post_process.make_plot = 0;
@@ -110,7 +99,7 @@ for ww = [0.1]
     % % S.solver.max_iter       = 5;
     S.solver.parallel_mode  = 'thread';
     S.solver.N_threads      = 4;
-    S.solver.N_meshes       = 50;
+    S.solver.N_meshes       = 100;
     % % S.solver.par_cluster_name = ;
     S.solver.CasADi_path    = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
     % 

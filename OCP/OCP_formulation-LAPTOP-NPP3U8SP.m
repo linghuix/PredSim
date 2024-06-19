@@ -1084,7 +1084,6 @@ if strcmp(S.misc.gaitmotion_type,'HalfGaitCycle')
     % exoskeleton support
     if S.Exo.Hip.available
         Texo = [Texo; Texo];
-        Texo(idx_2nd_half_GC,:) = Texo(idx_2nd_half_GC,:)*[0 1; 1 0];   % switch 1 and 2 col
     end
 
 end
