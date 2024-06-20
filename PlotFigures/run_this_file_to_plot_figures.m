@@ -18,9 +18,9 @@ clc
 
 % Construct a cell array with full paths to files with saved results for
 % which you want to appear on the plotted figures.
+
 % Define the folder where result files are stored
 results_folder = fullfile(pathRepo, 'PredSimResults');
-
 
 
 % Define file paths for different result scenarios
