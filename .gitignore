@@ -38,4 +38,21 @@ Subjects/DHondt_2023_2seg/*
 !Subjects/DHondt_2023_2seg/*.md
 !Subjects/DHondt_2023_2seg/settings*.m
 
-PredSimResults
+PredSimResults/*.sto
+*.pptx
+PredSimResults/*/*.mat
+PredSimResults/*/*/*.mat
+PredSimResults/*/*/*/*.mat
+
+PredSimResults/*/*.txt
+PredSimResults/*/*/*.txt
+PredSimResults/*/*/*/*.txt
+
+PredSimResults/*/*.mot
+PredSimResults/*/*/*.mot
+PredSimResults/*/*/*/*.mot
+*.zip
+*.fig
+*.ai
+*.mp4
+*.mmap

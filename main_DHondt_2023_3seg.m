@@ -1,7 +1,7 @@
 %% Predictive Simulations of Human Gait
 
-for ww = [0.1]
-    for peakTor = 10:10:100
+for ww = [0.05 0.3 0.5 0.7 0.9]
+    for peakTor = 0
     % This script starts the predictive simulation of human movement. The
     % required inputs are necessary to start the simulations. Optional inputs,
     % if left empty, will be taken from getDefaultSettings.m.
@@ -32,7 +32,7 @@ for ww = [0.1]
     my_abductor_strength = ww;
     
     % Exoskeleton simulation
-    S.Exo.Hip.available = true;
+    S.Exo.Hip.available = false;    %% true if assistance is offered
     S.Exo.Hip.type = [];
     if S.Exo.Hip.available
         S.Exo.Hip.maxTor = peakTor;
@@ -51,12 +51,14 @@ for ww = [0.1]
     S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_' num2str(my_abductor_strength) 'strength' S.Exo.Hip.type]); 
     if S.Exo.Hip.available
         S.subject.save_folder = fullfile(S.subject.save_folder, ['_' num2str(S.Exo.Hip.maxTor) 'hipAssistance'] );
+%     else
+%         S.subject.save_folder = fullfile(S.subject.save_folder, ['_0hipAssistance'] );
     end
     
     % 
     % % either choose "quasi-random" or give the path to a .mot file you want to use as initial guess
     % % S.subject.IG_selection = 'quasi-random';
-    S.subject.IG_selection = fullfile(S.misc.main_path,'OCP','IK_Guess_Full_GC.mot');
+    S.subject.IG_selection = fullfile(S.misc.main_path,'OCP','IK_Guess_Full_GC.mot');               %% intial guess 
     S.subject.IG_selection_gaitCyclePercent = 100;
     % % S.subject.IG_selection = 'quasi-random';
     % 
@@ -95,7 +97,7 @@ for ww = [0.1]
     % % S.misc.default_msk_geom_bound = ;
     % % S.misc.msk_geom_bounds      = {{'knee_angle_r','knee_angle_l'},-120,10,'lumbar_extension',nan,30};
 %     S.misc.gaitmotion_type = 'FullGaitCycle';
-    S.misc.gaitmotion_type = 'HalfGaitCycle';
+    S.misc.gaitmotion_type = 'HalfGaitCycle';                                               %% reduce compute time and results are symmetric
     % 
     % % % S.post_process
     S.post_process.make_plot = 0;
@@ -110,7 +112,7 @@ for ww = [0.1]
     % % S.solver.max_iter       = 5;
     S.solver.parallel_mode  = 'thread';
     S.solver.N_threads      = 4;
-    S.solver.N_meshes       = 50;
+    S.solver.N_meshes       = 50;                                                       %% so that the full gait cycle has 100 points
     % % S.solver.par_cluster_name = ;
     S.solver.CasADi_path    = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
     % 
@@ -119,7 +121,7 @@ for ww = [0.1]
     % % S.subject.mass              = ;
     % % S.subject.IG_pelvis_y       = ; 
     S.subject.adapt_IG_pelvis_y = 1;
-    S.subject.v_pelvis_x_trgt   = 1.33;
+    S.subject.v_pelvis_x_trgt   = 1.33;                                                 %% walking speed  1.33 
     S.subject.muscle_strength   =  {
          {
 %          'glut_max1_r', 'glut_max1_l', ...

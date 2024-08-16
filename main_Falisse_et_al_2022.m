@@ -49,7 +49,7 @@ for ww = [0.1]
         end
 
         % path to folder where you want to store the results of the OCP
-        S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_' num2str(xlh_weakness) 'strength' S.Exo.Hip.type]); 
+        S.subject.save_folder  = fullfile(pathRepo,'PredSimResults',[S.subject.name '_testtest' num2str(xlh_weakness) 'strength' S.Exo.Hip.type]); 
         if S.Exo.Hip.available
             S.subject.save_folder = fullfile(S.subject.save_folder, ['_' num2str(S.Exo.Hip.maxTor) 'hipAssistance'] );
         end
