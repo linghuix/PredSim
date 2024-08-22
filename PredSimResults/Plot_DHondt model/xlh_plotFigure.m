@@ -9,9 +9,11 @@ close all
 % subject = 'Falisse_et_al_2022';
 subject = 'DHondt_2023_3seg';
 % plot_results(subject, 'PF')
-plot_results(subject, 'MF')
+% plot_results(subject, 'MF')
 % plot_results(subject, 'MS')
 % plot_results(subject, 'PS')
+plot_results(subject, 'MF_MS')
+% plot_results(subject, 'PF_PS')
 
 function [] = plot_results(model_subject, assistance_pattern_str)
 % Construct a cell array with full paths to files with saved results for
@@ -41,7 +43,7 @@ scenario_names = {scenario_names{1}, scenario_names{2} ...
 result_paths = cell(1, numel(scenario_names));
 for i = 1:numel(scenario_names)
     result_paths{i} = fullfile(results_folder, scenario_names{i}, [model_subject '_v1.mat']);
-    BodyKinematics_paths{i} = fullfile(results_folder, scenario_names{i}, ['3-segment_foot_model_fixed_knee_axis_BodyKinematics_pos_global.sto']);
+    BodyKinematics_paths{i} = fullfile(results_folder, scenario_names{i}, ['_3-segment_foot_model_fixed_knee_axis_BodyKinematics_pos_global.sto']);
 end
 
 
@@ -112,15 +114,20 @@ for i=1:length(result_paths)
     
     % loop over figures
     figure(1)
-        trunk_angle_i = R.kinematics.Qs(:,model_info.ExtFunIO.coordi.lumbar_bending)+R.kinematics.Qs(:,model_info.ExtFunIO.coordi.pelvis_list);
+        lumbar_bending = R.kinematics.Qs(:,model_info.ExtFunIO.coordi.lumbar_bending);
+        pelvis_list = R.kinematics.Qs(:,model_info.ExtFunIO.coordi.pelvis_list);
+        trunk_angle_i = lumbar_bending + pelvis_list;
         
         % 200 length -> 100 length
         if length(trunk_angle_i) > 100
             trunk_angle_i = trunk_angle_i(1:2:end);
+            lumbar_bending = lumbar_bending(1:2:end);
+            pelvis_list = pelvis_list(1:2:end);
         end
 
         % store
         trunk_angle(i,:) = trunk_angle_i;
+        trunk_pelvis(i,:) = [abs(lumbar_bending)+abs(pelvis_list); -abs(lumbar_bending)-abs(pelvis_list)];
         
         % plot
         hold on
@@ -138,8 +145,6 @@ for i=1:length(result_paths)
         xlabel('gait cycle (%)');
         ylabel('angle (degree)');
         
-%     figure(2)
-%         hip_abdtorque_i = R.kinematics.Qs(:,model_info.ExtFunIO.coordi.pelvis_list) + R.kinematics.Qs(:,model_info.ExtFunIO.coordi.lumbar_bending);
 
     figure(2)
         if (i>2)
@@ -253,7 +258,25 @@ end
 
 %% out of loop
 
-% figure for ROM of trunck swing during walking
+% figure for ROM of lumbar_bending + pelvis obliiquity during walking
+figure()
+
+	data = trunk_pelvis';
+
+	% Create a box plot with customized appearance
+	boxplot(data, 'Labels', legend_names, 'BoxStyle', 'outline', 'Colors', 'k', 'Symbol', 'k+', 'Widths', 0.5);
+
+	% Add title and labels
+	title('trunk + pelvis kinematics ROM');
+	xlabel('cases');
+	ylabel('angle (degree)');
+
+	% Set grid and adjust axes properties
+	grid on;
+	set(gca, 'FontName', 'Arial', 'FontSize', 12);
+
+
+% figure for ROM of trunk during walking
 figure()
 
 	data = trunk_angle';
@@ -269,7 +292,6 @@ figure()
 	% Set grid and adjust axes properties
 	grid on;
 	set(gca, 'FontName', 'Arial', 'FontSize', 12);
-
 
 % figure for ROM of trunck swing during walking
 figure()
@@ -288,7 +310,30 @@ figure()
 	grid on;
 	set(gca, 'FontName', 'Arial', 'FontSize', 12);
 
+% figure for ROM of trunck swing during walking
+figure()
 
+    max_trunk = max(trunk_angle');
+    max_trunk = max_trunk - max_trunk(1);
+    max_trunk(max_trunk <=0) = 0;
+
+    max_pelvis =  max(pelvis');
+    max_pelvis = max_pelvis - max_pelvis(1);
+    max_pelvis(max_pelvis <=0) = 0;
+
+	% Create a box plot with customized appearance
+	bar ( ( max_pelvis + max_trunk ) /2 )
+	% Add title and labels
+	title('pelvis + trunk metric');
+	xlabel('cases');
+	ylabel('angle (degree)');
+
+	% Set grid and adjust axes properties
+	grid on;
+	set(gca, 'FontName', 'Arial', 'FontSize', 12);
+
+    % Set the x-axis tick labels
+    set(gca, 'XTickLabel', legend_names)
 
 
 figure()

@@ -1,7 +1,7 @@
 %% Predictive Simulations of Human Gait
 
-for ww = [0.05 0.3 0.5 0.7 0.9]
-    for peakTor = 0
+for ww = [0.1]
+    for peakTor = [10 20 30 40 50 60 70 80 90]
     % This script starts the predictive simulation of human movement. The
     % required inputs are necessary to start the simulations. Optional inputs,
     % if left empty, will be taken from getDefaultSettings.m.
@@ -32,19 +32,35 @@ for ww = [0.05 0.3 0.5 0.7 0.9]
     my_abductor_strength = ww;
     
     % Exoskeleton simulation
-    S.Exo.Hip.available = false;    %% true if assistance is offered
+    S.Exo.Hip.available = true;    %% true if assistance is offered
     S.Exo.Hip.type = [];
     if S.Exo.Hip.available
         S.Exo.Hip.maxTor = peakTor;
-        S.Exo.Hip.type = ['PS']
+        S.Exo.Hip.type = ['PF_PS']
+        
         % MF
 %          [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, peakTor, 0);
+
         % MS
 %         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, peakTor, 0);
+
         % PF
 %         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, peakTor, 0);
+
         % PS
-        [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, peakTor, 0);
+%         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, peakTor, 0);
+
+        % MF+MS
+%         [TorLeft_1,TorRight_1] = Torque_pattern(2, 17, 32, peakTor, 0);
+%         [TorLeft_2,TorRight_2] = Torque_pattern(30, 45, 60, peakTor, 0);
+%         S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
+%         S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+
+        % PF+PS
+        [TorLeft_1,TorRight_1] = Torque_pattern(10, 25, 40, peakTor, 0);
+        [TorLeft_2,TorRight_2] = Torque_pattern(37, 52, 67, peakTor, 0);
+        S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
+        S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
     end
 
     % % path to folder where you want to store the results of the OCP

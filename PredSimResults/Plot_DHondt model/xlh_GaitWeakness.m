@@ -242,47 +242,6 @@ figure()
 % 	grid on;
 	set(gca, 'FontName', 'Arial', 'FontSize', 12);
 
-% % figure for objective 
-% figure()
-%     % from OCP_formulation.m line 975
-%     % contributionCost.absoluteValues = 1/(dist_trav_opt)*[E_costf,A_costf,...
-%     % Arm_costf,Qdotdot_costf,Pass_costf,vA_costf,dFTtilde_costf,...
-%     % QdotdotArm_costf];
-%     E_cost = R.objective.absoluteValues(1);
-%     MuscleActivity_cost = R.objective.absoluteValues(2);
-%     ArmExciation_cost = R.objective.absoluteValues(3);
-%     LowerJointAcc_cost = R.objective.absoluteValues(4);
-%     PassiveTor_cost = R.objective.absoluteValues(5);
-% 
-%     data = [E_cost, MuscleActivity_cost, ArmExciation_cost, LowerJointAcc_cost, PassiveTor_cost];
-%     b = bar(data);
-%     categories = {'E', 'MuscleActivity cost', 'ArmExciation cost', 'LowerJointAcc cost', 'PassiveTor cost'};
-%     % Add title and axis labels
-%     title('Objective value distribution in this case')
-%     xlabel('Objective term')
-%     ylabel('Absolute value')
-%     
-%     % Set the x-axis tick labels
-%     set(gca, 'XTickLabel', categories)
-%     
-%     % Add labels on top of each bar
-%     for i = 1:length(data)
-%         text(i, data(i) + 10, num2str(data(i)), 'HorizontalAlignment', 'center')
-%     end
-% 
-%     % Define colors for each bar
-%     colors = [0.2, 0.6, 0.8;  % Color for bar 1
-%               0.8, 0.2, 0.6;  % Color for bar 2
-%               0.4, 0.8, 0.2;  % Color for bar 3
-%               0.9, 0.4, 0.1;  % Color for bar 4
-%               0.3, 0.7, 0.9]; % Color for bar 5
-% 
-%     % Set the color for each bar
-%     for i = 1:length(data)
-%         b.FaceColor = 'flat';      % Enable flat coloring
-%         b.CData(i, :) = colors(i,:); % Assign colors to bars
-%     end
-
         
 figure()
 
