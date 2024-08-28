@@ -1,24 +1,40 @@
-# Add any directories, files, or patterns you don't want to be tracked by version control
-
+# Ignore all autosave, log, and certain image files
 *.asv
-*.sto
 *.log
+*.sto
 *.png
-!/FiguresForDocumentation/*.png
 *.jpg
 *.eps
+*.zip
+*.fig
+*.ai
+*.mp4
+*.mmap
 
+# Do not ignore specific PNG files for documentation
+!/FiguresForDocumentation/*.png
+
+# Ignore Debug folder
 Debug/*
+
+# Ignore OpenSim AD folder
 opensimAD/*
-App
+
+# Ignore App folder
+App/
+
+# Ignore everything in the Subjects folder, except specific files and folders
 Subjects/*
 !Subjects/README.md
+
+# Hamner modified files: Allow .osim, .txt, .md files, ignore others
 !Subjects/Hamner_modified/
 Subjects/Hamner_modified/*
 !Subjects/Hamner_modified/*.osim
 !Subjects/Hamner_modified/*.txt
 !Subjects/Hamner_modified/*.md
 
+# Falisse et al. 2022: Allow .osim, .txt, .md, and settings files, ignore others
 !Subjects/Falisse_et_al_2022/
 Subjects/Falisse_et_al_2022/*
 !Subjects/Falisse_et_al_2022/*.osim
@@ -26,45 +42,36 @@ Subjects/Falisse_et_al_2022/*
 !Subjects/Falisse_et_al_2022/*.md
 !Subjects/Falisse_et_al_2022/settings*.m
 
+# DHondt et al. 2024 (3-segment): Allow .osim, .md, and settings files, ignore others
 !Subjects/DHondt_et_al_2024_3seg/
 Subjects/DHondt_et_al_2024_3seg/*
 !Subjects/DHondt_et_al_2024_3seg/*.osim
 !Subjects/DHondt_et_al_2024_3seg/*.md
 !Subjects/DHondt_et_al_2024_3seg/settings*.m
 
+# DHondt et al. 2024 (4-segment): Allow .osim, .md, and settings files, ignore others
 !Subjects/DHondt_et_al_2024_4seg/
 Subjects/DHondt_et_al_2024_4seg/*
 !Subjects/DHondt_et_al_2024_4seg/*.osim
 !Subjects/DHondt_et_al_2024_4seg/*.md
 !Subjects/DHondt_et_al_2024_4seg/settings*.m
 
-
-
-
-PredSimResults/*.sto
-*.pptx
-PredSimResults/*/*.mat
-PredSimResults/*/*/*.mat
-PredSimResults/*/*/*/*.mat
-
-PredSimResults/*/*.txt
-PredSimResults/*/*/*.txt
-PredSimResults/*/*/*/*.txt
-
-PredSimResults/*/*.mot
-PredSimResults/*/*/*.mot
-PredSimResults/*/*/*/*.mot
-*.zip
-*.fig
-*.ai
-*.mp4
-*.mmap
-
-
-
+# Gait1018: Allow .osim, .md, and settings files, ignore others
 !Subjects/gait1018/
 Subjects/gait1018/*
 !Subjects/gait1018/*.osim
 !Subjects/gait1018/*.md
 !Subjects/gait1018/settings*.m
+
+# PredSimResults: Allow .m, .xml, ignore others
+!PredSimResults/
+PredSimResults/*
+!PredSimResults/*.xml
+!PredSimResults/*.m
+
+
+# Ignore PowerPoint files
+*.pptx
+
+Examples/ExampleResults
 
