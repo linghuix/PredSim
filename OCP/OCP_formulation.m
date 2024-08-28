@@ -199,8 +199,8 @@ opti.set_initial(A_col, guess.Qdotdots_col');
 
 
 if S.Exo.Hip.available
-    % Exoskeleton moment
-    TorExo = opti.variable(2, N);
+    % Exoskeleton moment   hip ABd left/ hip ABd right/ back bending
+    TorExo = opti.variable(3, N);
 end
 
 
@@ -234,7 +234,7 @@ end
 
 if S.Exo.Hip.available
     % Exoskeleton moment
-    TorExo_k = MX.sym('TorExo_k', 2);
+    TorExo_k = MX.sym('TorExo_k', 3);
 end
 
 
@@ -397,12 +397,19 @@ for j=1:d
 
         Ti_exo = 0;
         % exoskeleton moment
-        if S.Exo.Hip.available
+        if S.Exo.Hip.available 
+            % adduction is positive (the same sign as angle)
             if strcmp(model_info.ExtFunIO.coord_names.all{i},'hip_adduction_l')
                 Ti_exo = TorExo_k(1);
             elseif strcmp(model_info.ExtFunIO.coord_names.all{i},'hip_adduction_r')
                 Ti_exo = TorExo_k(2);
             end
+            
+            % bend to right leg is positive. bend to right when left adducts 
+            if strcmp(model_info.ExtFunIO.coord_names.all{i},'lumbar_bending')
+                Ti_exo = TorExo_k(3); % TorExo_k(1) - TorExo_k(2);
+            end
+
         end
         
         % total coordinate torque equals inverse dynamics torque
@@ -550,6 +557,7 @@ for k=1:N
 %         opti.subject_to( TorExo(2,k) == f_casadi.Tor_exo_right_hipdof(1/N*k) );
         opti.subject_to( TorExo(1,k) == S.Exo.Hip.TorLeft(k) );
         opti.subject_to( TorExo(2,k) == S.Exo.Hip.TorRight(k) );
+        opti.subject_to( TorExo(3,k) == S.Exo.Hip.TorBack(k) );
     end 
 
 end % End loop over mesh points
@@ -737,8 +745,8 @@ starti = starti + nq.all*(d*N);
 
 % extract exo results
 if S.Exo.Hip.available
-    Texo = reshape(w_opt(starti:starti+N*2-1),2,N)';
-    starti = starti + (N*2);
+    Texo = reshape(w_opt(starti:starti+N*3-1),3,N)';
+    starti = starti + (N*3);
 end
 
 if starti - 1 ~= length(w_opt)
@@ -1084,7 +1092,7 @@ if strcmp(S.misc.gaitmotion_type,'HalfGaitCycle')
     % exoskeleton support
     if S.Exo.Hip.available
         Texo = [Texo; Texo];
-        Texo(idx_2nd_half_GC,:) = Texo(idx_2nd_half_GC,:)*[0 1; 1 0];   % switch 1 and 2 col
+        Texo(idx_2nd_half_GC,:) = Texo(idx_2nd_half_GC,:)*[0 1 0; 1 0 0; 0 0 -1];   % switch 1 and 2 col
     end
 
 end

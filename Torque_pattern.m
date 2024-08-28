@@ -23,6 +23,7 @@ function [TorLeft, TorRight] = Torque_pattern(gaitPhase_1, gaitPhase_peak, gaitP
 % gaitPhase_2 = 32;
 % gaitPhase_peak = 17;
 % peakTor = 10;
+% peakTor -  addcution is positive, back bend to right is positive
 
 
 % 输入数据点
@@ -30,13 +31,13 @@ gaitPhase = [gaitPhase_1, gaitPhase_peak, gaitPhase_2];
 tor = [0, peakTor, 0];
 
 % 生成更密集的 gaitPhase 值
-GaitPhase = linspace(min(gaitPhase), max(gaitPhase), gaitPhase_2-gaitPhase_1+2);
+GaitPhase = linspace(min(gaitPhase), max(gaitPhase), gaitPhase_2-gaitPhase_1+1);
 
 % 使用三次样条插值
 Tor = interp1(gaitPhase, tor, GaitPhase, 'spline');
 
 GaitPhase = 1:100;
-Tor = [zeros(1,(gaitPhase_1-1)) Tor zeros(1, 100-(gaitPhase_2)-1)];
+Tor = [zeros(1,(gaitPhase_1-1)) Tor zeros(1, 100-(gaitPhase_2))];
 
 
 % 绘制插值曲线
@@ -45,8 +46,8 @@ Tor = [zeros(1,(gaitPhase_1-1)) Tor zeros(1, 100-(gaitPhase_2)-1)];
 % ylabel('Tor');
 % legend('三次样条插值', '数据点');
 
-TorLeft = -[Tor(51:end) Tor(1:50)];      % right leg is first in exp
-TorRight = -Tor;
+TorLeft = [Tor(51:end) Tor(1:50)];      % right leg is first in exp
+TorRight = Tor;
 
 
 if fullgaitcycle
