@@ -1,23 +1,19 @@
 function [S] = initializeSettings(varargin)
 % --------------------------------------------------------------------------
-%initializeSettings
-%   This function creates the empty settings struct S up to the field 
-%   above the field containing data. 
+% initializeSettings
+%   Initialize the settings struct
 % 
 % INPUT:
 %   - reference_name - (optional input)
-%   * pass the name of a reference model to initialise the settings
+%   * pass the name of a reference model to initialize the settings
 %   according to the relevant publication. 
 % 
 % OUTPUT:
 %   - S -
-%   * empty settings struct S
+%   * settings struct
 %
 % Original author: Bram Van Den Bosch
 % Original date: 01/12/2021
-%
-% Last edit by: Bram Van Den Bosch
-% Last edit date: 26/May/2023
 % --------------------------------------------------------------------------
 
 S = struct;
@@ -28,6 +24,7 @@ S.post_process = [];
 S.solver       = [];
 S.subject      = [];
 S.weights      = [];
+S.orthosis     = [];
 S.OpenSimADOptions  = [];
 
 % bounds have an .upper and .lower field
@@ -40,6 +37,9 @@ S.bounds.t_final    = [];
 % polynomial order has .lower and .upper field
 S.misc.poly_order = [];
 
+% empty array of orthoses
+S.orthosis.settings = {};
+
 % save the git hash
 [S.misc.git.local_hash,S.misc.git.branch_name, S.misc.git.remote_hash] = get_git_hash;
 
@@ -49,12 +49,16 @@ S.subject.adapt_IG_pelvis_y = 0;
 % save computername
 S.misc.computername = getenv('COMPUTERNAME');
 
+% save path to repo
+[pathHere,~,~] = fileparts(mfilename('fullpath'));
+[pathRepo,~,~] = fileparts(pathHere);
+S.misc.main_path = pathRepo;
+
+% do not run as batch job (parallel computing toolbox)
+S.solver.run_as_batch_job = false;
 
 %%
 if ~isempty(varargin)
-
-    [pathDefaultSettings,~,~] = fileparts(mfilename('fullpath'));
-    [pathRepo,~,~] = fileparts(pathDefaultSettings);
 
     reference_path = fullfile(pathRepo,'Subjects',varargin{1},['settings_',varargin{1},'.m']);
 

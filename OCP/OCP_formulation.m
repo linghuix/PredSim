@@ -86,7 +86,7 @@ bounds_nsc = getBounds(S,model_info);
 scaling = getScaleFactor(S,model_info,bounds_nsc);
 bounds = scaleBounds(S,model_info,bounds_nsc,scaling);
 
-if strcmp(S.subject.IG_selection,'quasi-random')
+if strcmp(S.solver.IG_selection,'quasi-random')
     guess = getGuess_QR_opti(S,model_info,scaling,d);
 else
     guess = getGuess_DI_opti(S,model_info,scaling,d);
@@ -196,6 +196,31 @@ opti.subject_to(bounds.Qdotdots.lower'*ones(1,d*N) < A_col < ...
     bounds.Qdotdots.upper'*ones(1,d*N));
 opti.set_initial(A_col, guess.Qdotdots_col');
 
+%% Helper function for orthoses
+% variables
+a_MX = MX.sym('a',NMuscle,N);
+Qs_MX = MX.sym('Qs',nq.all,N);
+Qdots_MX = MX.sym('Qdots',nq.all,N);
+Qddots_MX = MX.sym('Qddots',nq.all,N);
+
+% unscale variables
+Qs_MX_nsc = Qs_MX.*(scaling.Qs'*ones(1,size(Qs_MX,2)));
+Qdots_MX_nsc = Qdots_MX.*(scaling.Qdots'*ones(1,size(Qdots_MX,2)));
+Qddots_MX_nsc = Qddots_MX.*(scaling.Qdotdots'*ones(1,size(Qddots_MX,2)));
+
+% evaluate orthosis function
+[M_ort_coord_MX, M_ort_body_MX] = f_casadi.f_orthosis_mesh_all(Qs_MX_nsc, Qdots_MX_nsc,...
+    Qddots_MX_nsc, a_MX);
+
+% create function
+f_orthosis_mesh_all = Function('f_orthosis_mesh_all',{Qs_MX, Qdots_MX,...
+    Qddots_MX, a_MX},{M_ort_coord_MX, M_ort_body_MX});
+
+% evaluate helper function
+[M_ort_coord_opti, M_ort_body_opti] = f_orthosis_mesh_all(Qs(:,1:N), Qdots(:,1:N),...
+    A_col(:,1:3:3*N), a(:,1:N)); 
+    % note: A is at 1st collocation point of mesh interval instead of at 1st mesh point
+
 %% OCP: collocation equations
 % Define CasADi variables for static parameters
 tfk         = MX.sym('tfk'); % MX variable for final time
@@ -226,6 +251,11 @@ end
 % Define CasADi variables for "slack" controls
 dFTtildej   = MX.sym('dFTtildej',NMuscle,d);
 Aj          = MX.sym('Aj',nq.all,d);
+
+% Define CasADi variables for orthosis moments (or forces)
+M_ort_coordk = MX.sym('M_ort_coord',nq.all,1); % moments on coordinates
+M_ort_bodyk = MX.sym('M_ort_body',model_info.ExtFunIO.input.nInputs,1); % moments on bodies
+
 J           = 0; % Initialize cost function
 eq_constr   = {}; % Initialize equality constraint vector
 ineq_constr_deact = {}; % Initialize inequality constraint vector
@@ -285,6 +315,7 @@ for j=1:d
     % Get passive joint torques for cost function
     Tau_passj_cost = f_casadi.AllPassiveTorques_cost(Qskj_nsc(:,j+1),Qdotskj_nsc(:,j+1));
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Expression for the state derivatives at the collocation points
     Qsp_nsc      = Qskj_nsc*C(:,j+1);
     Qdotsp_nsc   = Qdotskj_nsc*C(:,j+1);
@@ -310,17 +341,28 @@ for j=1:d
         eq_constr{end+1} = (h*da_adtj - a_ap)./scaling.a_a;
     end
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Orthosis moments on collocation point
+    [M_ort_coordj, M_ort_bodyj] = f_casadi.f_orthosis_mesh_k(Qskj_nsc(:,j+1),...
+        Qdotskj_nsc(:,j+1), Aj_nsc(:,j), akj(:,j+1));
+
+    % add orthosis moments from input variables
+    M_ort_coord_totj = M_ort_coordk + M_ort_coordj;
+    M_ort_body_totj = M_ort_bodyk + M_ort_bodyj;
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     % Add contribution to the cost function
     J = J + ...
-        W.E          * B(j+1) *(f_casadi.J_muscles_exp(e_totj,W.E_exp))/model_info.mass*h + ...
-        W.a          * B(j+1) *(f_casadi.J_muscles(akj(:,j+1)'))*h + ...
+        W.E          * B(j+1) *(f_casadi.J_muscles_exp(e_totj, W.E_exp))/model_info.mass*h + ...
+        W.a          * B(j+1) *(f_casadi.J_muscles_exp(akj(:,j+1)', W.a_exp))*h + ...
         W.q_dotdot   * B(j+1) *(f_casadi.J_not_arms_dof(Aj(model_info.ExtFunIO.jointi.noarmsi,j)))*h + ...
         W.pass_torq  * B(j+1) *(f_casadi.J_lim_torq(Tau_passj_cost))*h + ...
         W.slack_ctrl * B(j+1) *(f_casadi.J_muscles(vAk))*h + ...
         W.slack_ctrl * B(j+1) *(f_casadi.J_muscles(dFTtildej(:,j)))*h;
 
     if nq.torqAct > 0
-        J = J + W.e_arm      * B(j+1) *(f_casadi.J_torq_act(e_ak))*h;
+        J = J + W.e_torqAct      * B(j+1) *(f_casadi.J_torq_act(e_ak))*h;
     end
     if nq.arms > 0
         J = J + W.slack_ctrl * B(j+1) *(f_casadi.J_arms_dof(Aj(model_info.ExtFunIO.jointi.armsi,j)))*h;
@@ -337,13 +379,14 @@ for j=1:d
     % Assign Qdotdots (A)
     F_ext_input(model_info.ExtFunIO.input.Qdotdots.all,1) = Aj_nsc(:,j);
     % Assign forces and moments 
-    % (not used yet)
+    F_ext_input = F_ext_input + M_ort_body_totj; % body forces and body moments from orthoses
 
     % Evaluate external function
     [Tj] = F(F_ext_input);
 
     % Evaluate ligament moment
     M_lig_j = f_casadi.ligamentMoment(Qskj_nsc(:,j+1));
+
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Add path constraints
@@ -380,6 +423,9 @@ for j=1:d
             Ti = Ti + Tau_passj(i);
         end
         
+        % orthosis
+        Ti = Ti + M_ort_coord_totj(i);
+
         % total coordinate torque equals inverse dynamics torque
         eq_constr{end+1} = (Tj(i,1) - Ti)./scaling.Moments(i);
 
@@ -448,7 +494,7 @@ end
 
 
 % Casadi function to get constraints and objective
-coll_input_vars_def = {tfk,ak,aj,FTtildek,FTtildej,Qsk,Qsj,Qdotsk,Qdotsj,vAk,dFTtildej,Aj};
+coll_input_vars_def = {tfk,ak,aj,FTtildek,FTtildej,Qsk,Qsj,Qdotsk,Qdotsj,vAk,dFTtildej,Aj,M_ort_coordk,M_ort_bodyk};
 if nq.torqAct > 0
     coll_input_vars_def = [coll_input_vars_def,{a_ak,a_aj,e_ak}];
 end
@@ -460,7 +506,8 @@ f_coll_map = f_coll.map(N,S.solver.parallel_mode,S.solver.N_threads);
 
 % evaluate function with opti variables
 coll_input_vars_eval = {tf,a(:,1:end-1), a_col, FTtilde(:,1:end-1), FTtilde_col,...
-    Qs(:,1:end-1), Qs_col, Qdots(:,1:end-1), Qdots_col, vA, dFTtilde_col, A_col};
+    Qs(:,1:end-1), Qs_col, Qdots(:,1:end-1), Qdots_col, vA, dFTtilde_col, A_col,...
+    M_ort_coord_opti, M_ort_body_opti};
 if nq.torqAct > 0
     coll_input_vars_eval = [coll_input_vars_eval, {a_a(:,1:end-1), a_a_col, e_a}];
 end
@@ -557,7 +604,7 @@ Qs_nsc = Qs.*(scaling.Qs'*ones(1,N+1));
 dist_trav_tot = Qs_nsc(model_info.ExtFunIO.jointi.base_forward,end) - ...
     Qs_nsc(model_info.ExtFunIO.jointi.base_forward,1);
 vel_aver_tot = dist_trav_tot/tf;
-opti.subject_to(vel_aver_tot - S.subject.v_pelvis_x_trgt == 0)
+opti.subject_to(vel_aver_tot - S.misc.forward_velocity == 0)
 
 % optional constraints
 if strcmp(S.misc.gaitmotion_type,'HalfGaitCycle')
@@ -595,6 +642,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Scale cost function
 Jall_sc = sum(Jall)/dist_trav_tot;
+opti.minimize(Jall_sc);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 disp(' ')
@@ -605,13 +653,14 @@ disp(' ')
 
 if ~S.post_process.load_prev_opti_vars
     % Create NLP solver
-    opti.minimize(Jall_sc);
+    options = S.solver.nlpsol_options;
+    options.ipopt = S.solver.ipopt_options;
     options.ipopt.hessian_approximation = 'limited-memory';
     options.ipopt.mu_strategy           = 'adaptive';
     options.ipopt.max_iter              = S.solver.max_iter;
     options.ipopt.linear_solver         = S.solver.linear_solver;
     options.ipopt.tol                   = 1*10^(-S.solver.tol_ipopt);
-    options.ipopt.constr_viol_tol       = 1*10^(-S.solver.tol_ipopt);
+    options.ipopt.constr_viol_tol       = 1*10^(-S.solver.constr_viol_tol_ipopt);
     opti.solver('ipopt', options);
     % timer
     
@@ -636,13 +685,13 @@ if ~S.post_process.load_prev_opti_vars
     setup.scaling = scaling;
     setup.guess = guess;
     
-    Outname = fullfile(S.subject.save_folder,[S.post_process.result_filename '.mat']);
+    Outname = fullfile(S.misc.save_folder,[S.misc.result_filename '.mat']);
     save(Outname,'w_opt','stats','setup','model_info','S');
 
 else % S.post_process.load_prev_opti_vars = true
     
     % Advanced feature, for debugging only: load w_opt and reconstruct R before rerunning the post-processing.
-    Outname = fullfile(S.subject.save_folder,[S.post_process.result_filename '.mat']);
+    Outname = fullfile(S.misc.save_folder,[S.misc.result_filename '.mat']);
     disp(['Loading vector with optimization variables from previous solution: ' Outname])
     clear 'S'
     load(Outname,'w_opt','stats','setup','model_info','R','S');
@@ -830,7 +879,7 @@ dist_trav_opt = q_opt_unsc_all.rad(end,model_info.ExtFunIO.jointi.base_forward) 
 time_elaps_opt = tf_opt; % time elapsed
 vel_aver_opt = dist_trav_opt/time_elaps_opt;
 % assert_v_tg should be 0
-assert_v_tg = abs(vel_aver_opt-S.subject.v_pelvis_x_trgt);
+assert_v_tg = abs(vel_aver_opt-S.misc.forward_velocity);
 if assert_v_tg > 1*10^(-S.solver.tol_ipopt)
     disp('Issue when reconstructing average speed')
 end
@@ -884,16 +933,16 @@ for k=1:N
         % objective function
         J_opt = J_opt + 1/(dist_trav_opt)*(...
             W.E*B(j+1)          *(f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt + ...
-            W.a*B(j+1)          *(f_casadi.J_muscles(a_col_opt(count,:)))*h_opt + ...
+            W.a*B(j+1)          *(f_casadi.J_muscles_exp(a_col_opt(count,:), W.a_exp))*h_opt + ...
             W.q_dotdot*B(j+1)   *(f_casadi.J_not_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.noarmsi)))*h_opt + ...
             W.pass_torq*B(j+1)  *(f_casadi.J_lim_torq(Tau_passkj))*h_opt + ... 
             W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(vA_opt(k,:)))*h_opt + ...
             W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt);
             
         if nq.torqAct > 0
-            J_opt = J_opt + 1/(dist_trav_opt)*(W.e_arm*B(j+1)      *(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt);
+            J_opt = J_opt + 1/(dist_trav_opt)*(W.e_torqAct*B(j+1)      *(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt);
 
-            Actu_cost = Actu_cost + W.e_arm*B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
+            Actu_cost = Actu_cost + W.e_torqAct*B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
         end
         if nq.arms > 0
             J_opt = J_opt + 1/(dist_trav_opt)*(W.slack_ctrl*B(j+1) *(f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt);
@@ -1118,10 +1167,10 @@ else
 end
 R.ground_reaction.threshold = HS_threshold;
 R.ground_reaction.initial_contact_side = HS1;
-
+R.ground_reaction.idx_GC = idx_GC;
 
 % save results
-Outname = fullfile(S.subject.save_folder,[S.post_process.result_filename '.mat']);
+Outname = fullfile(S.misc.save_folder,[S.misc.result_filename '.mat']);
 disp(['Saving results as: ' Outname])
 save(Outname,'w_opt','stats','setup','R','model_info');
 
