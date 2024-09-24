@@ -47,6 +47,8 @@ S.misc.save_folder  = fullfile(pathExDir,'ExampleResults','AnkleExo');
 S.solver.IG_selection = fullfile(S.misc.main_path,'OCP','IK_Guess_Full_GC.mot');
 S.solver.IG_selection_gaitCyclePercent = 100;
 
+S.solver.CasADi_path = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
+
 % give the path to the osim model of your subject
 osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
 
