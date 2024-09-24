@@ -12,7 +12,7 @@ function analyze_RoM()
                '_80hipAssistance', '_90hipAssistance'};
 
     % Define the root directory containing the results
-    root_folder = 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_0.1strengthMF_MS';
+    root_folder = 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_0.1strengthNet_back';
     
     % Define the model folder path
     Model_folder = 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects';
@@ -27,6 +27,13 @@ function analyze_RoM()
         
         % Construct the full path to the motion file (.mot)
         mot = fullfile(Results_folder, 'DHondt_2023_3seg_v1.mot');
+
+        if exist(mot, 'file') == 2  % Check if the file exists
+            
+        else
+            fprintf('Skip, File does not exist: %s\n', mot);
+            continue;  % Skip to the next iteration if the file doesn't exist
+        end
 
         % Display a prompt indicating the current analysis folder
         disp(['Running analysis for: ', folders{index}]);

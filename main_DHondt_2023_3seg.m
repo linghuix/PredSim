@@ -1,7 +1,11 @@
+
+clc
+clear
+
 %% Predictive Simulations of Human Gait
 
-for ww = [1]
-    for peakTor = [10 15 20]
+for ww = [0.1]
+    for peakTor = 0
     % This script starts the predictive simulation of human movement. The
     % required inputs are necessary to start the simulations. Optional inputs,
     % if left empty, will be taken from getDefaultSettings.m.
@@ -36,34 +40,53 @@ for ww = [1]
     S.Exo.Hip.type = [];
     if S.Exo.Hip.available
         S.Exo.Hip.maxTor = peakTor;
-        S.Exo.Hip.type = ['MS_test_back_one']
+        S.Exo.Hip.type = ['Net_back'];
 
-        S.Exo.Hip.TorLeft = zeros(1,50);S.Exo.Hip.TorRight=zeros(1,50);
-        [~,S.Exo.Hip.TorBack] = Torque_pattern(2, 17, 32, peakTor, 0);% right is positive
+%         S.Exo.Hip.TorLeft = zeros(1,50);S.Exo.Hip.TorRight=zeros(1,50);
+%         [~,S.Exo.Hip.TorBack] = Torque_pattern(2, 17, 32, peakTor, 0);% right is positive
         
+        if strcmp(S.Exo.Hip.type, 'MF_back')
         % MF  negative is abduction
-%          [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, -peakTor, 0);
+            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, -peakTor, 0);
+            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
+        elseif strcmp(S.Exo.Hip.type, 'MS_back')
         % MS
-%         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, -peakTor, 0);
+            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, -peakTor, 0);
+            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
+        elseif strcmp(S.Exo.Hip.type, 'PF_back')
         % PF
-%         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, -peakTor, 0);
+            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, -peakTor, 0);
+            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
+        elseif strcmp(S.Exo.Hip.type, 'PS_back')
         % PS
-%         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, -peakTor, 0);
+            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, -peakTor, 0);
+            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
+        elseif strcmp(S.Exo.Hip.type, 'MF_MS_back')
         % MF+MS
-%         [TorLeft_1,TorRight_1] = Torque_pattern(2, 17, 32, -peakTor, 0);
-%         [TorLeft_2,TorRight_2] = Torque_pattern(30, 45, 60, -peakTor, 0);
-%         S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
-%         S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+            [TorLeft_1,TorRight_1] = Torque_pattern(2, 17, 32, -peakTor, 0);
+            [TorLeft_2,TorRight_2] = Torque_pattern(30, 45, 60, -peakTor, 0);
+            S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
+            S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
+        elseif strcmp(S.Exo.Hip.type, 'PF_PS_back')
         % PF+PS
-%         [TorLeft_1,TorRight_1] = Torque_pattern(10, 25, 40, -peakTor, 0);
-%         [TorLeft_2,TorRight_2] = Torque_pattern(37, 52, 67, -peakTor, 0);
-%         S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
-%         S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+            [TorLeft_1,TorRight_1] = Torque_pattern(10, 25, 40, -peakTor, 0);
+            [TorLeft_2,TorRight_2] = Torque_pattern(37, 52, 67, -peakTor, 0);
+            S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
+            S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+
+        elseif strcmp(S.Exo.Hip.type, 'Net_back')
+            Tor = load('NetDiffTor.mat');
+            S.Exo.Hip.TorLeft  = Tor.netDiff_nor_10percent_L;
+            S.Exo.Hip.TorRight = Tor.netDiff_nor_10percent_R;
+            S.Exo.Hip.TorBack  = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+        end
     end
 
     % % path to folder where you want to store the results of the OCP
@@ -130,10 +153,10 @@ for ww = [1]
     S.solver.tol_ipopt      = 4;
     % % S.solver.max_iter       = 5;
     S.solver.parallel_mode  = 'thread';
-    S.solver.N_threads      = 4;
+    S.solver.N_threads      = 16;
     S.solver.N_meshes       = 50;                                                       %% so that the full gait cycle has 100 points
     % % S.solver.par_cluster_name = ;
-    S.solver.CasADi_path    = 'C:\Users\lingh\Documents\Matlab\casadi-windows-matlabR2016a-v3.5.5';
+    S.solver.CasADi_path    = 'C:\Users\Linghui\Downloads\casadi-3.6.6-windows64-matlab2018b';
     % 
     % 
     % % % S.subject
