@@ -6,20 +6,22 @@
 % Paths and Filenames: The function dynamically constructs paths based on the root directory and folders. The use of fullfile ensures compatibility across different operating systems.
 
 function analyze_PointKinematics()
+
     %% Get paths for later use
     [pathHere,~,~] = fileparts(mfilename('fullpath'));
 
-
+    
+    % % EDIT
     % Define the folders corresponding to different levels of hip assistance
-    folders = {'_0hipAssistance', '_10hipAssistance', '_20hipAssistance', '_30hipAssistance', '_40hipAssistance', ...
-               '_50hipAssistance', '_60hipAssistance', '_70hipAssistance', ...
-               '_80hipAssistance', '_90hipAssistance'};
-
-%     folders = {'_10hipAssistance'}
+%     folders_forSearch = {'_0hipAssistance', '_10hipAssistance', '_20hipAssistance', '_30hipAssistance', '_40hipAssistance', ...
+%                '_50hipAssistance', '_60hipAssistance', '_70hipAssistance', ...
+%                '_80hipAssistance', '_90hipAssistance'};
+    folders_forSearch = {''};
 
     %% Define the root directory containing the results
-    root_folder =  fullfile(pathHere, 'PredSimResults\DHondt_2023_3seg_0.1strengthMS_test_back');
-    
+    root_folder =  fullfile(pathHere, 'PredSimResults\DHondt_2023_3seg_0.1strengthfixStepWidth');
+
+
     % Define the model folder path
     Model_folder = fullfile(pathHere, 'Subjects');
     
@@ -28,37 +30,168 @@ function analyze_PointKinematics()
 
     xmlFile = 'PredSimResults\config_pointKinematics.xml';
     xmlFilePath = fullfile(pathHere, xmlFile);
+     % % EDIT
+
 
     % Analyze motion data for each folder
-    for index = 1:length(folders)
+    for index = 1:length(folders_forSearch)
         % Construct the full path to the results folder
-        Results_folder = fullfile(root_folder, folders{index});
+        Results_folder = fullfile(root_folder, folders_forSearch{index});
         
         % Construct the full path to the motion file (.mot)
-        motFile = fullfile(Results_folder, 'DHondt_2023_3seg_v1.mot');
+        motFile = fullfile(Results_folder, 'DHondt_2023_3seg_v2.mot');
 
         % Display a prompt indicating the current analysis folder
-        disp(['Running PointKinematics analysis for: ', folders{index}]);
+        disp(['Running PointKinematics analysis for: ', folders_forSearch{index}]);
         disp(['motion file: ', motFile]);
 
-        %% Run the analysis for the current folder
+        % % EDIT
+        %% Run the analysis to get step width
+        markerName = 'Foot_l2'
+        modifyPointNameInXML(xmlFilePath, markerName)
+        modifyBodyNameInXML(xmlFilePath, 'calcn_l')
+        modifyPointInXML(xmlFilePath, [-0.0253494 0.00727422 -0.0102058])
+        modifyCoordinatesFileInXML(xmlFilePath, motFile)
+        modifyResultsDirectoryInXML(xmlFilePath, Results_folder)
+        % % EDIT
+    
+        runInCmd(['opensim-cmd run-tool ' xmlFile])
+
+        % validate whether file has been generated
+        stoFile = fullfile(Results_folder, ['3-segment_foot_model_fixed_knee_axis_PointKinematics_' markerName '_pos.sto']);
+
+        data = readtable(stoFile, 'FileType', 'text');
+        S.Foot_l2.time = data.time;
+        S.Foot_l2.xyz = [data.state_0, data.state_1,data.state_2];
+        save(fullfile(Results_folder, 'metric.mat'), 'S');
+
+        % Display a prompt indicating completion of the current folder's analysis
+        disp(['Completed analysis for: ', folders_forSearch{index}]);
+
+
+
+        % % EDIT
+        % % Run the analysis to get step width
+        markerName = 'Foot_r2'
+        modifyPointNameInXML(xmlFilePath, markerName)
+        modifyBodyNameInXML(xmlFilePath, 'calcn_r')
+        modifyPointInXML(xmlFilePath, [-0.0190128 0.0130215 0.00761759])
+        modifyCoordinatesFileInXML(xmlFilePath, motFile)
+        modifyResultsDirectoryInXML(xmlFilePath, Results_folder)
+        % % EDIT
+    
+        runInCmd(['opensim-cmd run-tool ' xmlFile])
+
+        % validate whether file has been generated
+        stoFile = fullfile(Results_folder, ['3-segment_foot_model_fixed_knee_axis_PointKinematics_' markerName '_pos.sto']);
+
+        data = readtable(stoFile, 'FileType', 'text');
+        S.Foot_r2.time = data.time;
+        S.Foot_r2.xyz = [data.state_0, data.state_1,data.state_2];
+        save(fullfile(Results_folder, 'metric.mat'), 'S');
+
+        % Display a prompt indicating completion of the current folder's analysis
+        disp(['Completed analysis for: ', folders_forSearch{index}]);
+
+
+
+        % % EDIT
+        %% Run the analysis to get foot clearance
+        markerName = 'footclearance'
+        modifyPointNameInXML(xmlFilePath, markerName)
         modifyBodyNameInXML(xmlFilePath, 'toes_l')
         modifyPointInXML(xmlFilePath, [0.014239,0.0220445,-0.00295239])
         modifyCoordinatesFileInXML(xmlFilePath, motFile)
         modifyResultsDirectoryInXML(xmlFilePath, Results_folder)
+        % % EDIT
     
         runInCmd(['opensim-cmd run-tool ' xmlFile])
 
-        stoFile = fullfile(Results_folder, '3-segment_foot_model_fixed_knee_axis_PointKinematics_footclearance_pos.sto');
+        % validate whether file has been generated
+        stoFile = fullfile(Results_folder, ['3-segment_foot_model_fixed_knee_axis_PointKinematics_' markerName '_pos.sto']);
+
         data = readtable(stoFile, 'FileType', 'text');
         S.toes_l.time = data.time;
         S.toes_l.xyz = [data.state_0, data.state_1,data.state_2];
         save(fullfile(Results_folder, 'metric.mat'), 'S');
 
+        % Display a prompt indicating completion of the current folder's analysis
+        disp(['Completed analysis for: ', folders_forSearch{index}]);
+
+
+
+
+        % % EDIT
+        %% Run the analysis to get knee joint center
+        markerName = 'RKNEE';
+        modifyPointNameInXML(xmlFilePath, markerName)
+        modifyBodyNameInXML(xmlFilePath, 'femur_r')
+        modifyPointInXML(xmlFilePath, [0.020065 -0.417316 0.0551306])
+        modifyCoordinatesFileInXML(xmlFilePath, motFile)
+        modifyResultsDirectoryInXML(xmlFilePath, Results_folder)
+        % % EDIT
+    
+        runInCmd(['opensim-cmd run-tool ' xmlFile])
+
+        % validate whether file has been generated
+        stoFile = fullfile(Results_folder, ['3-segment_foot_model_fixed_knee_axis_PointKinematics_' markerName '_pos.sto']);
+
+        data = readtable(stoFile, 'FileType', 'text');
+        S.rknee.time = data.time;
+        S.rknee.xyz = [data.state_0, data.state_1,data.state_2];
+        save(fullfile(Results_folder, 'metric.mat'), 'S');
 
         % Display a prompt indicating completion of the current folder's analysis
-        disp(['Completed analysis for: ', folders{index}]);
+        disp(['Completed analysis for: ', folders_forSearch{index}]);
+
+
+
+
+        % % EDIT
+        % % Run the analysis for the current folder
+        markerName = 'RKNEE_med';
+        modifyPointNameInXML(xmlFilePath, markerName)
+        modifyBodyNameInXML(xmlFilePath, 'femur_r')
+        modifyPointInXML(xmlFilePath, [-0.0271656 -0.440216 -0.0506508])
+        modifyCoordinatesFileInXML(xmlFilePath, motFile)
+        modifyResultsDirectoryInXML(xmlFilePath, Results_folder)
+        % % EDIT
+    
+        runInCmd(['opensim-cmd run-tool ' xmlFile])
+
+        % validate whether file has been generated
+        stoFile = fullfile(Results_folder, ['3-segment_foot_model_fixed_knee_axis_PointKinematics_' markerName '_pos.sto']);
+
+        data = readtable(stoFile, 'FileType', 'text');
+        S.rkneemed.time = data.time;
+        S.rkneemed.xyz = [data.state_0, data.state_1,data.state_2];
+        save(fullfile(Results_folder, 'metric.mat'), 'S');
+
+        % Display a prompt indicating completion of the current folder's analysis
+        disp(['Completed analysis for: ', folders_forSearch{index}]);
     end
+end
+
+
+function test_stepwidth()
+    %% Get paths for later use
+    [pathHere,~,~] = fileparts(mfilename('fullpath'));
+    [pathRepo,~,~] = fileparts(pathHere);
+    [pathRepoFolder,~,~] = fileparts(pathRepo);
+
+    xmlFile = 'PredSimResults\config_pointKinematics.xml';
+
+    xmlFilePath = fullfile(pathHere, xmlFile);
+
+    modifyBodyNameInXML(xmlFilePath, 'toes_l')
+
+    modifyPointInXML(xmlFilePath, [0.014239,0.0220445,-0.00295239])
+
+    modifyCoordinatesFileInXML(xmlFilePath, 'DHondt_2023_3seg_0.1strengthMS_test_back/_20hipAssistance/DHondt_2023_3seg_v1.mot')
+    
+    modifyResultsDirectoryInXML(xmlFilePath, 'DHondt_2023_3seg_0.1strengthMS_test_back/_20hipAssistance')
+
+    runInCmd(['opensim-cmd run-tool ' xmlFile])
 end
 
 
@@ -106,6 +239,31 @@ function modifyBodyNameInXML(xmlFilePath, newBodyName)
     fclose(fid);
     
     fprintf('Modified the <body_name> content to "%s" in %s\n', newBodyName, xmlFilePath);
+end
+
+% modifyPointNameInXML(xmlFilePath, 'dgfsgds')
+function modifyPointNameInXML(xmlFilePath, newName)
+    % Read the XML file into a string
+    xmlText = fileread(xmlFilePath);
+    
+    % Define the pattern to match the <body_name> tag content
+    pattern = '<point_name>.*?</point_name>';
+    
+    % Define the replacement string with the new body name
+    replacement = ['<point_name>', newName, '</point_name>'];
+    
+    % Replace the old body name content with the new one
+    updatedXmlText = regexprep(xmlText, pattern, replacement);
+    
+    % Write the updated text back to the XML file
+    fid = fopen(xmlFilePath, 'w');
+    if fid == -1
+        error('Cannot open file for writing: %s', xmlFilePath);
+    end
+    fwrite(fid, updatedXmlText, 'char');
+    fclose(fid);
+    
+    fprintf('Modified the <point_name> content to "%s" in %s\n', newName, xmlFilePath);
 end
 
 % modifyPointInXML(xmlFilePath, [2,3,5])
