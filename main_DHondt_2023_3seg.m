@@ -36,7 +36,7 @@ for ww = [0.1]
     
     % Exoskeleton simulation
     S.Exo.Hip.available = false;    %% true if assistance is offered
-    S.Exo.Hip.type = ['fixStepWidth'];
+    S.Exo.Hip.type = ['lengthenLMo-slow_2'];
 
     if S.Exo.Hip.available
         S.Exo.Hip.maxTor = peakTor;
@@ -78,10 +78,9 @@ for ww = [0.1]
     
     
     % % either choose "quasi-random" or give the path to a .mot file you want to use as initial guess
-    % % S.subject.IG_selection = 'quasi-random';
-    S.subject.IG_selection = fullfile(S.misc.main_path,'OCP','IK_Guess_Full_GC.mot');               %% intial guess 
-    S.subject.IG_selection_gaitCyclePercent = 100;
-    % % S.subject.IG_selection = 'quasi-random';
+%     S.subject.IG_selection = 'quasi-random';
+    S.subject.IG_selection = fullfile(S.misc.main_path,'PredSimResults\DHondt_2023_3seg_1strength','DHondt_2023_3seg_v1.mot');               %% intial guess 
+    S.subject.IG_selection_gaitCyclePercent = 200;
     
     % % give the path to the osim model of your subject
     osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
@@ -145,12 +144,10 @@ for ww = [0.1]
     S.subject.v_pelvis_x_trgt   = 1.33;                                                 %% walking speed  1.33 
     S.subject.muscle_strength   =  {
          {
-%          'glut_max1_r', 'glut_max1_l', ...
          'glut_med1_r', 'glut_med1_l',  ...
          'glut_med2_r', 'glut_med2_l', 'glut_med3_r', 'glut_med3_l',  ...
          'glut_min1_r', 'glut_min1_l', 'glut_min2_r', 'glut_min2_l',  ...
          'glut_min3_r', 'glut_min3_l',...
-%          'peri_r', 'peri_l',  'sar_r', 'sar_l', 'tfl_r', 'tfl_l'
          }, ...
          my_abductor_strength};
 
@@ -158,6 +155,12 @@ for ww = [0.1]
     % S.subject.muscle_pass_stiff_scale = ;
     % S.subject.tendon_stiff_scale      = {{'soleus','_gas'},0.5};
     % S.subject.scale_MT_params = {{'soleus_l'},'FMo',0.9,{'soleus_l'},'alphao',1.1};
+    % increase passive force
+    S.subject.scale_MT_params = {   {'glut_med1_r'},'lMo',2.0,{'glut_med2_r'},'lMo',2.0,{'glut_med3_r'},'lMo',2.0,...
+                                    {'glut_min1_r'},'lMo',2.0,{'glut_min2_r'},'lMo',2.0,{'glut_min3_r'},'lMo',2.0,...
+                                    {'glut_med1_l'},'lMo',2.0,{'glut_med2_l'},'lMo',2.0,{'glut_med3_l'},'lMo',2.0,...
+                                    {'glut_min1_l'},'lMo',2.0,{'glut_min2_l'},'lMo',2.0,{'glut_min3_l'},'lMo',2.0,...
+                                    };
     % S.subject.spasticity        = ;
     % S.subject.muscle_coordination = ;
     % S.subject.set_stiffness_coefficient_selected_dofs = {{'mtp_angle_l','mtp_angle_r'},25};
@@ -185,11 +188,11 @@ for ww = [0.1]
     
 
     % set constraints on step width  
-    S.bounds.distanceConstraints(1).point1 = 'calcn_r';
-    S.bounds.distanceConstraints(1).point2 = 'calcn_l';
-    S.bounds.distanceConstraints(1).direction = 'z';
-    S.bounds.distanceConstraints(1).lower_bound = 0.095;
-    S.bounds.distanceConstraints(1).upper_bound = 0.110;
+%     S.bounds.distanceConstraints(1).point1 = 'calcn_r';
+%     S.bounds.distanceConstraints(1).point2 = 'calcn_l';
+%     S.bounds.distanceConstraints(1).direction = 'z';
+%     S.bounds.distanceConstraints(1).lower_bound = 0.095;
+%     S.bounds.distanceConstraints(1).upper_bound = 0.110;
      
     %% Run predictive simulations
     
