@@ -1,7 +1,12 @@
 
 %% Predictive Simulations of Human Gait
 
-for ww = [0.1]
+% variables muscle weakness/assistive torque/optimal fiber length/
+% /walking speed/
+
+
+
+for ww = [1]
 
     for peakTor = [0]
 
@@ -36,7 +41,7 @@ for ww = [0.1]
     
     % Exoskeleton simulation
     S.Exo.Hip.available = false;    %% true if assistance is offered
-    S.Exo.Hip.type = ['lengthenLMo-slow_2'];
+    S.Exo.Hip.type = ['metabolic_test'];
 
     if S.Exo.Hip.available
         S.Exo.Hip.maxTor = peakTor;
@@ -78,9 +83,9 @@ for ww = [0.1]
     
     
     % % either choose "quasi-random" or give the path to a .mot file you want to use as initial guess
-%     S.subject.IG_selection = 'quasi-random';
-    S.subject.IG_selection = fullfile(S.misc.main_path,'PredSimResults\DHondt_2023_3seg_1strength','DHondt_2023_3seg_v1.mot');               %% intial guess 
-    S.subject.IG_selection_gaitCyclePercent = 200;
+    S.subject.IG_selection = 'quasi-random';
+%     S.subject.IG_selection = fullfile(S.misc.main_path,'PredSimResults\DHondt_2023_3seg_1strength','DHondt_2023_3seg_v1.mot');               %% intial guess 
+%     S.subject.IG_selection_gaitCyclePercent = 200;
     
     % % give the path to the osim model of your subject
     osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
@@ -104,7 +109,9 @@ for ww = [0.1]
     
     % S.metabolicE - metabolic energy
     % S.metabolicE.tanh_b = 100;
-    % S.metabolicE.model  = '';
+%     S.metabolicE.model = 'Bhargava2004';
+%    S.metabolicE.model = 'Umberger2010';
+     S.metabolicE.model = 'Uchida2016';
     
     % % S.misc - miscellanious
     % S.misc.v_max_s             = ;
@@ -156,11 +163,11 @@ for ww = [0.1]
     % S.subject.tendon_stiff_scale      = {{'soleus','_gas'},0.5};
     % S.subject.scale_MT_params = {{'soleus_l'},'FMo',0.9,{'soleus_l'},'alphao',1.1};
     % increase passive force
-    S.subject.scale_MT_params = {   {'glut_med1_r'},'lMo',2.0,{'glut_med2_r'},'lMo',2.0,{'glut_med3_r'},'lMo',2.0,...
-                                    {'glut_min1_r'},'lMo',2.0,{'glut_min2_r'},'lMo',2.0,{'glut_min3_r'},'lMo',2.0,...
-                                    {'glut_med1_l'},'lMo',2.0,{'glut_med2_l'},'lMo',2.0,{'glut_med3_l'},'lMo',2.0,...
-                                    {'glut_min1_l'},'lMo',2.0,{'glut_min2_l'},'lMo',2.0,{'glut_min3_l'},'lMo',2.0,...
-                                    };
+%     S.subject.scale_MT_params = {   {'glut_med1_r'},'lMo',2.0,{'glut_med2_r'},'lMo',2.0,{'glut_med3_r'},'lMo',2.0,...
+%                                     {'glut_min1_r'},'lMo',2.0,{'glut_min2_r'},'lMo',2.0,{'glut_min3_r'},'lMo',2.0,...
+%                                     {'glut_med1_l'},'lMo',2.0,{'glut_med2_l'},'lMo',2.0,{'glut_med3_l'},'lMo',2.0,...
+%                                     {'glut_min1_l'},'lMo',2.0,{'glut_min2_l'},'lMo',2.0,{'glut_min3_l'},'lMo',2.0,...
+%                                     };
     % S.subject.spasticity        = ;
     % S.subject.muscle_coordination = ;
     % S.subject.set_stiffness_coefficient_selected_dofs = {{'mtp_angle_l','mtp_angle_r'},25};

@@ -63,13 +63,21 @@ muscleNames = model_info.muscle_info.muscle_names;
 
 % Total number of muscles
 NMuscle = model_info.muscle_info.NMuscle;
-[~,mai] = MomentArmIndices_asym(muscleNames, model_info.muscle_info.muscle_spanning_joint_info);
+[~,mai] = MomentArmIndices_asym(muscleNames,...
+    model_info.muscle_info.muscle_spanning_joint_info);
 % calculate total number of joints that each muscle crosses (used later)
 sumCross = sum(model_info.muscle_info.muscle_spanning_joint_info);
 
 % Parameters for activation dynamics
-tact = model_info.muscle_info.tact; % Activation time constant
-tdeact = model_info.muscle_info.tdeact; % Deactivation time constant
+% if strcmp(S.subject.name, 'uMoCod')||strcmp(S.subject.name, 'Falisse_et_al_2022_modified')
+%     tact = struct_array_to_double_array(model_info.muscle_info.parameters,'tact');
+%     tdeact = struct_array_to_double_array(model_info.muscle_info.parameters,'tdeact');
+% else
+%     tact = model_info.muscle_info.tact; % Activation time constant
+%     tdeact = model_info.muscle_info.tdeact; % Deactivation time constant
+% end
+    tact = model_info.muscle_info.tact; % Activation time constant
+    tdeact = model_info.muscle_info.tdeact; % Deactivation time constant
 
 %% Metabolic energy model parameters
 % We extract the specific tensions and slow twitch rations.
@@ -95,8 +103,6 @@ end
 if (S.misc.visualize_bounds)
     visualizebounds
 end
-
-
 
 %% OCP create variables and bounds
 % using opti
@@ -173,8 +179,7 @@ end
 % Define controls
 % Time derivative of muscle activations (states) at mesh points
 vA = opti.variable(NMuscle, N);
-opti.subject_to(bounds.vA.lower'*ones(1,N) < vA < ...
-    bounds.vA.upper'*ones(1,N));
+opti.subject_to(bounds.vA.lower'*ones(1,N) < vA < bounds.vA.upper'*ones(1,N));
 opti.set_initial(vA, guess.vA');
 % Torque actuator excitations
 if nq.torqAct > 0
@@ -197,15 +202,7 @@ opti.subject_to(bounds.Qdotdots.lower'*ones(1,d*N) < A_col < ...
     bounds.Qdotdots.upper'*ones(1,d*N));
 opti.set_initial(A_col, guess.Qdotdots_col');
 
-
-if S.Exo.Hip.available
-    % Exoskeleton moment   hip ABd left/ hip ABd right/ back bending
-    TorExo = opti.variable(3, N);
-end
-
-
 %% OCP: collocation equations
-% k is the mesh knot; j is the collocation point
 % Define CasADi variables for static parameters
 tfk         = MX.sym('tfk'); % MX variable for final time
 % Define CasADi variables for states
@@ -231,12 +228,6 @@ vAk     = MX.sym('vAk',NMuscle);
 if nq.torqAct > 0
     e_ak    = MX.sym('e_ak',nq.torqAct);
 end
-
-if S.Exo.Hip.available
-    % Exoskeleton moment
-    TorExo_k = MX.sym('TorExo_k', 3);
-end
-
 
 % Define CasADi variables for "slack" controls
 dFTtildej   = MX.sym('dFTtildej',NMuscle,d);
@@ -385,7 +376,7 @@ for j=1:d
             FTj_coord_i = FTj(mai(i).mus',1);
             % total muscle moment
             M_mus_i = f_casadi.(['musc_cross_' num2str(sumCross(i))])...
-                (MA_j.(model_info.ExtFunIO.coord_names.all{i}),FTj_coord_i);
+            (MA_j.(model_info.ExtFunIO.coord_names.all{i}),FTj_coord_i);
             % add to total moment
             Ti = Ti + M_mus_i;
         end
@@ -404,33 +395,23 @@ for j=1:d
         if ~ismember(i,model_info.ExtFunIO.jointi.floating_base)
             Ti = Ti + Tau_passj(i);
         end
-
-        Ti_exo = 0;
-        % exoskeleton moment
-        if S.Exo.Hip.available 
-            % adduction is positive (the same sign as angle)
-            if strcmp(model_info.ExtFunIO.coord_names.all{i},'hip_adduction_l')
-                Ti_exo = TorExo_k(1);
-            elseif strcmp(model_info.ExtFunIO.coord_names.all{i},'hip_adduction_r')
-                Ti_exo = TorExo_k(2);
-            end
-            
-            % bend to right leg is positive. bend to right when left adducts 
-            if strcmp(model_info.ExtFunIO.coord_names.all{i},'lumbar_bending')
-                Ti_exo = TorExo_k(3); % TorExo_k(1) - TorExo_k(2);
-            end
-
-        end
         
         % total coordinate torque equals inverse dynamics torque
-        eq_constr{end+1} = (Tj(i,1) - Ti)./scaling.Moments(i) - Ti_exo;
+        eq_constr{end+1} = (Tj(i,1) - Ti)./scaling.Moments(i);
 
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Activation dynamics (implicit formulation)
-    act1 = vAk_nsc + akj(:,j+1)./(ones(size(akj(:,j+1),1),1)*tdeact);
-    act2 = vAk_nsc + akj(:,j+1)./(ones(size(akj(:,j+1),1),1)*tact);
+%     if strcmp(S.subject.name,'uMoCod')||strcmp(S.subject.name,'Falisse_et_al_2022_modified')
+%         act1 = vAk_nsc + akj(:,j+1)./tdeact;
+%         act2 = vAk_nsc + akj(:,j+1)./tact;
+%     else
+%         act1 = vAk_nsc + akj(:,j+1)./(ones(size(akj(:,j+1),1),1)*tdeact);
+%         act2 = vAk_nsc + akj(:,j+1)./(ones(size(akj(:,j+1),1),1)*tact);
+%     end
+        act1 = vAk_nsc + akj(:,j+1)./(ones(size(akj(:,j+1),1),1)*tdeact);
+        act2 = vAk_nsc + akj(:,j+1)./(ones(size(akj(:,j+1),1),1)*tact);
     ineq_constr_deact{end+1} = act1;
     ineq_constr_act{end+1} = act2;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -491,9 +472,6 @@ end
 
 % Casadi function to get constraints and objective
 coll_input_vars_def = {tfk,ak,aj,FTtildek,FTtildej,Qsk,Qsj,Qdotsk,Qdotsj,vAk,dFTtildej,Aj};
-if S.Exo.Hip.available
-    coll_input_vars_def = [coll_input_vars_def,{TorExo_k}];
-end
 if nq.torqAct > 0
     coll_input_vars_def = [coll_input_vars_def,{a_ak,a_aj,e_ak}];
 end
@@ -506,9 +484,6 @@ f_coll_map = f_coll.map(N,S.solver.parallel_mode,S.solver.N_threads);
 % evaluate function with opti variables
 coll_input_vars_eval = {tf,a(:,1:end-1), a_col, FTtilde(:,1:end-1), FTtilde_col,...
     Qs(:,1:end-1), Qs_col, Qdots(:,1:end-1), Qdots_col, vA, dFTtilde_col, A_col};
-if S.Exo.Hip.available
-    coll_input_vars_eval = [coll_input_vars_eval, {TorExo}];
-end
 if nq.torqAct > 0
     coll_input_vars_eval = [coll_input_vars_eval, {a_a(:,1:end-1), a_a_col, e_a}];
 end
@@ -520,8 +495,16 @@ opti.subject_to(coll_eq_constr == 0);
 
 % inequality constraints (logical indexing not possible in MX arrays)
 opti.subject_to(coll_ineq_constr_deact(:) >= 0);
+% if strcmp(S.subject.name,'uMoCod')||strcmp(S.subject.name,'Falisse_et_al_2022_modified')
+%     for idx=1:3
+%         for jdx = 1:NMuscle
+%             opti.subject_to(coll_ineq_constr_act(idx*jdx,:) <= 1/tact(jdx));
+%         end
+%     end
+% else
+%     opti.subject_to(coll_ineq_constr_act(:) <= 1/tact);
+% end
 opti.subject_to(coll_ineq_constr_act(:) <= 1/tact);
-
 for i_dc=1:length(ineq_constr_distance)
     coll_ineq_constr_distance_i_dc = coll_ineq_constr_distance{i_dc};
 
@@ -561,14 +544,6 @@ for k=1:N
     if nq.torqAct > 0
         opti.subject_to(a_a(:,k+1) == a_akj*D);
     end
-
-    if S.Exo.Hip.available
-%         opti.subject_to( TorExo(1,k) == f_casadi.Tor_exo_left_hipdof(1/N*k) );
-%         opti.subject_to( TorExo(2,k) == f_casadi.Tor_exo_right_hipdof(1/N*k) );
-        opti.subject_to( TorExo(1,k) == S.Exo.Hip.TorLeft(k) );
-        opti.subject_to( TorExo(2,k) == S.Exo.Hip.TorRight(k) );
-        opti.subject_to( TorExo(3,k) == S.Exo.Hip.TorBack(k) );
-    end 
 
 end % End loop over mesh points
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -610,7 +585,7 @@ end
 % Average speed
 % Provide expression for the distance traveled
 Qs_nsc = Qs.*(scaling.Qs'*ones(1,N+1));
-dist_trav_tot = Qs_nsc(model_info.ExtFunIO.jointi.base_forward,end) - ...       % base_forward IS pelvis_tx
+dist_trav_tot = Qs_nsc(model_info.ExtFunIO.jointi.base_forward,end) - ...
     Qs_nsc(model_info.ExtFunIO.jointi.base_forward,1);
 vel_aver_tot = dist_trav_tot/tf;
 opti.subject_to(vel_aver_tot - S.subject.v_pelvis_x_trgt == 0)
@@ -752,13 +727,6 @@ dFTtilde_col_opt=reshape(w_opt(starti:starti+NMuscle*(d*N)-1),NMuscle,d*N)';
 starti = starti + NMuscle*(d*N);
 qdotdot_col_opt =reshape(w_opt(starti:starti+nq.all*(d*N)-1),nq.all,(d*N))';
 starti = starti + nq.all*(d*N);
-
-% extract exo results
-if S.Exo.Hip.available
-    Texo = reshape(w_opt(starti:starti+N*3-1),3,N)';
-    starti = starti + (N*3);
-end
-
 if starti - 1 ~= length(w_opt)
     disp('error when extracting results')
 end
@@ -919,6 +887,8 @@ Pass_cost2       = 0;
 vA_cost2         = 0;
 dFTtilde_cost2   = 0;
 QdotdotArm_cost2 = 0;
+
+
 for k=1:N
     for j=1:d
         % Get muscle-tendon lengths, velocities, moment arms
@@ -938,7 +908,7 @@ for k=1:N
             dFTtilde_col_opt_unsc(count,:)',full(lMTkj_opt_all),...
             full(vMTkj_opt_all));
         
-       % Bhargava et al. (2004)
+        % Bhargava et al. (2004)
         if strcmp(S.metabolicE.model,'Bhargava2004')
             [e_tot_all,~,~,~,~,~] = f_casadi.getMetabolicEnergySmooth2004all(...
             a_col_opt_unsc(count,:)',a_col_opt_unsc(count,:)',...
@@ -980,15 +950,12 @@ for k=1:N
             J_opt = J_opt + 1/(dist_trav_opt)*(W.e_arm*B(j+1)      *(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt);
 
             Actu_cost = Actu_cost + W.e_arm*B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
-            Actu_cost2 = Actu_cost2 + B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
+			Actu_cost2 = Actu_cost2 + B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
         end
         if nq.arms > 0
             J_opt = J_opt + 1/(dist_trav_opt)*(W.slack_ctrl*B(j+1) *(f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt);
 
             QdotdotArm_cost = QdotdotArm_cost + W.slack_ctrl*B(j+1)*...
-                (f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
-
-            QdotdotArm_cost2 = QdotdotArm_cost2 + B(j+1)*...
                 (f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
         end
 
@@ -1031,6 +998,7 @@ vA_costf = full(vA_cost);
 dFTtilde_costf = full(dFTtilde_cost);
 QdotdotArm_costf = full(QdotdotArm_cost);
 
+
 E_costf2 = full(E_cost2);
 A_costf2 = full(A_cost2);
 Arm_costf2 = full(Actu_cost2);
@@ -1039,7 +1007,6 @@ Pass_costf2 = full(Pass_cost2);
 vA_costf2 = full(vA_cost2);
 dFTtilde_costf2 = full(dFTtilde_cost2);
 QdotdotArm_costf2 = full(QdotdotArm_cost2);
-
 
 contributionCost.absoluteValues = 1/(dist_trav_opt)*[E_costf,A_costf,...
     Arm_costf,Qdotdot_costf,Pass_costf,vA_costf,dFTtilde_costf,...
@@ -1155,12 +1122,6 @@ if strcmp(S.misc.gaitmotion_type,'HalfGaitCycle')
 
     end
 
-    % exoskeleton support
-    if S.Exo.Hip.available
-        Texo = [Texo; Texo];
-        Texo(idx_2nd_half_GC,:) = Texo(idx_2nd_half_GC,:)*[0 1 0; 1 0 0; 0 0 -1];   % switch 1 and 2 col
-    end
-
 end
 
 % express slack controls on mesh points 1:N to be consistent
@@ -1203,10 +1164,6 @@ if nq.torqAct > 0
     e_a_GC = e_a_opt_unsc(idx_GC,:);
 end
 
-if S.Exo.Hip.available
-    Texo_GC = Texo(idx_GC,:);
-end
-
 % adjust forward position to be continuous and start at 0
 Qs_GC(idx_GC_base_forward_offset,model_info.ExtFunIO.jointi.base_forward) = Qs_GC(idx_GC_base_forward_offset,model_info.ExtFunIO.jointi.base_forward) + dist_trav_opt;
 Qs_GC(:,model_info.ExtFunIO.jointi.base_forward) = Qs_GC(:,model_info.ExtFunIO.jointi.base_forward) - Qs_GC(1,model_info.ExtFunIO.jointi.base_forward);
@@ -1236,12 +1193,6 @@ R.muscles.a = Acts_GC;
 R.muscles.da = dActs_GC;
 R.muscles.FTtilde = FTtilde_GC;
 R.muscles.dFTtilde = dFTtilde_GC;
-
-if S.Exo.Hip.available
-    R.exo.Texo = Texo;
-    R.exo.tExo_gc = Texo_GC;
-end
-
 if nq.torqAct > 0
     R.torque_actuators.a = a_a_GC;
     R.torque_actuators.e = e_a_GC;
