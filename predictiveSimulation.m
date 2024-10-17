@@ -53,31 +53,9 @@ function [] = predictiveSimulation(assistance_input)
                 S.Exo.Hip.type = ['bilevel']
         
                 S.Exo.Hip.TorLeft = zeros(1,50);S.Exo.Hip.TorRight=zeros(1,50);
-                [~,S.Exo.Hip.TorBack] = Torque_pattern_T(assistance_input);
-                
-                % MF  negative is abduction
-        %          [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, -peakTor, 0);
-        
-                % MS
-        %         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, -peakTor, 0);
-        
-                % PF
-        %         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, -peakTor, 0);
-        
-                % PS
-        %         [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, -peakTor, 0);
-        
-                % MF+MS
-        %         [TorLeft_1,TorRight_1] = Torque_pattern(2, 17, 32, -peakTor, 0);
-        %         [TorLeft_2,TorRight_2] = Torque_pattern(30, 45, 60, -peakTor, 0);
-        %         S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
-        %         S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
-        
-                % PF+PS
-        %         [TorLeft_1,TorRight_1] = Torque_pattern(10, 25, 40, -peakTor, 0);
-        %         [TorLeft_2,TorRight_2] = Torque_pattern(37, 52, 67, -peakTor, 0);
-        %         S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
-        %         S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+                [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern_T(assistance_input,0);
+                S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+
             end
         
             % % path to folder where you want to store the results of the OCP
@@ -234,11 +212,79 @@ function [] = predictiveSimulation(assistance_input)
 
 end
 
-function [] = Torque_pattern_T(assistance_input)
 
+% Function: Torque_pattern_T
+% 
+% Purpose:
+% This function generates left and right hip torque patterns based on 
+% user-defined gait phases and peak torque. The function interpolates 
+% the torque values for a given gait cycle and creates torque profiles 
+% for the left and right legs, typically for use in an exoskeleton 
+% assistance system.
+%
+% Inputs:
+%   assistance_input - A vector containing four elements:
+%                      assistance_input(1) - int. Gait phase 1 (T1), the start of the assistance (0-100% gait cycle)
+%                      assistance_input(2) - float. Peak torque (Fmax), the maximum torque to apply
+%                      assistance_input(3) - int. Gait phase 2 (T2), the phase where the peak torque is maintained
+%                      assistance_input(4) - int. Gait phase 3 (T3), the phase where the torque  decline to zero
+%   fullgaitcycle    - A binary flag (1 or 0):
+%                      If 1, the function will return torque patterns over a full gait cycle (0-100%)
+%                      If 0, the function will return torque patterns for only half of the gait cycle (0-50%)
+%
+% Outputs:
+%   TorLeft  - A vector containing the interpolated torque profile for the left leg
+%   TorRight - A vector containing the interpolated torque profile for the right leg
+%
+% Methodology:
+% - The function starts by extracting the gait phase times (T1, T2, T3) and peak torque (Fmax) from the 
+%   input vector.
+% - It then defines the torque profile points with zero torque at the start and end, and the peak torque 
+%   maintained between T1 and T2.
+% - Linear interpolation (`interp1`) is used to generate torque values over the entire gait phase.
+% - The function ensures the torque is aligned to a 100-point gait cycle by adding zeros for the phases 
+%   outside the defined times.
+% - The torque profile is then adjusted for left and right legs, where the left leg torque is shifted by 
+%   half a gait cycle.
+% - Depending on the `fullgaitcycle` flag, the function either returns a torque profile for the full gait 
+%   cycle (0-100%) or for half a gait cycle (0-50%).
+%
+% Usage Example:
+%   [TorLeft, TorRight] = Torque_pattern_T([20, 50, 60, 80], 1);
+%   This will generate the left and right torque patterns for a full gait cycle based on the input parameters.
+%
+% Notes:
+% - The function assumes a 100-point gait cycle, where each point corresponds to 1% of the cycle.
+% - The torque profile is symmetric between the left and right legs, but the left leg's profile is shifted 
+%   by 50% of the gait cycle to account for typical human walking patterns (where the right leg leads).
+
+function [TorLeft, TorRight] = Torque_pattern_T(assistance_input, fullgaitcycle)
+    % T is int type, Fmax is float type
     % S.Exo.Hip.assist.label = {'T1', 'Fmax', 'T2', 'T3'};
+    gaitPhase_1 = assistance_input(1);
+    peakTor = assistance_input(2);
+    gaitPhase_2 = assistance_input(3);
+    gaitPhase_3 = assistance_input(4);
     
-    S.Exo.Hip.TorLeft = zeros(1,50);S.Exo.Hip.TorRight=zeros(1,50);
-    [~,S.Exo.Hip.TorBack] = Torque_pattern_T(assistance_input)
+    % 输入数据点
+    gaitPhase = [0, gaitPhase_1, gaitPhase_2, gaitPhase_3];
+    tor = [0, peakTor, peakTor, 0];
 
+
+    GaitPhase = linspace(min(gaitPhase), max(gaitPhase), max(gaitPhase)-min(gaitPhase)+1);
+    Tor = interp1(gaitPhase, tor, GaitPhase, 'linear');
+    
+    GaitPhase = 1:100;
+    Tor = [zeros(1,(min(gaitPhase)-1)) Tor zeros(1, 100-(max(gaitPhase)))];
+
+    TorLeft = [Tor(51:end) Tor(1:50)];      % right leg is first in exp
+    TorRight = Tor;
+    
+    
+    if fullgaitcycle == 1
+        pass
+    else
+        TorLeft = TorLeft(1:50);
+        TorRight = TorRight(1:50);
+    end
 end
