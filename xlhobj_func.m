@@ -3,7 +3,7 @@
 %%
 
 % matfile - mat file location
-function [] = xlhobj_func(matfile)
+function [metric] = xlhobj_func(matfile)
 
     fprintf('reading from %s \r\n', matfile)
     
@@ -13,7 +13,7 @@ function [] = xlhobj_func(matfile)
     pelvis_list = R.kinematics.Qs(:,model_info.ExtFunIO.coordi.pelvis_list);    % based on global coordinate
     trunk_angle = lumbar_bending + pelvis_list;                               % based on global coordinate
     
-    metric2(pelvis_list, trunk_angle)
+    metric = metric2(pelvis_list, trunk_angle)
 
 end
 

@@ -4,10 +4,15 @@
 % variables muscle weakness/assistive torque/optimal fiber length/
 % /walking speed/
 
+% assistance_input  :  ['T1', 'Fmax', 'T2', 'T3']
+
+
 function [] = predictiveSimulation(assistance_input)
+    % Display the array using disp
+    disp('Assistance [T1, Fmax, T2, T3] are:');
+    disp(assistance_input);
 
     for ww = 0.1
-    
         
             % This script starts the predictive simulation of human movement. The
             % required inputs are necessary to start the simulations. Optional inputs,
@@ -67,8 +72,8 @@ function [] = predictiveSimulation(assistance_input)
             
             % % either choose "quasi-random" or give the path to a .mot file you want to use as initial guess
         %     S.subject.IG_selection = 'quasi-random';
-            S.subject.IG_selection = fullfile(S.misc.main_path,'PredSimResults\DHondt_2023_3seg_1strength','DHondt_2023_3seg_v1.mot');               %% intial guess 
-            S.subject.IG_selection_gaitCyclePercent = 200;
+            S.subject.IG_selection = fullfile(S.misc.main_path,'PredSimResults\DHondt_2023_3seg_1strength','DHondt_2023_3seg_v2.mot');               %% intial guess 
+            S.subject.IG_selection_gaitCyclePercent = 100;
             
             % % give the path to the osim model of your subject
             osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
@@ -207,6 +212,9 @@ function [] = predictiveSimulation(assistance_input)
                 % call plotting script
                 run_this_file_to_plot_figures
             end
+
+            disp('Assistance [T1, Fmax, T2, T3] are:');
+            disp(assistance_input);
         
     end
 
@@ -258,6 +266,9 @@ end
 % - The torque profile is symmetric between the left and right legs, but the left leg's profile is shifted 
 %   by 50% of the gait cycle to account for typical human walking patterns (where the right leg leads).
 
+
+% T1/T2/T3 0-99 percent   any two variables cannot be the same value
+% Fmax  0-99 Nm
 function [TorLeft, TorRight] = Torque_pattern_T(assistance_input, fullgaitcycle)
     % T is int type, Fmax is float type
     % S.Exo.Hip.assist.label = {'T1', 'Fmax', 'T2', 'T3'};
@@ -267,22 +278,27 @@ function [TorLeft, TorRight] = Torque_pattern_T(assistance_input, fullgaitcycle)
     gaitPhase_3 = assistance_input(4);
     
     % 输入数据点
-    gaitPhase = [0, gaitPhase_1, gaitPhase_2, gaitPhase_3];
-    tor = [0, peakTor, peakTor, 0];
+    if gaitPhase_1 == 0
+        gaitPhase = [gaitPhase_1, gaitPhase_2, gaitPhase_3];
+        tor = [peakTor, peakTor, 0];
+    else
+        gaitPhase = [0, gaitPhase_1, gaitPhase_2, gaitPhase_3];
+        tor = [0, peakTor, peakTor, 0];
+    end
 
 
     GaitPhase = linspace(min(gaitPhase), max(gaitPhase), max(gaitPhase)-min(gaitPhase)+1);
     Tor = interp1(gaitPhase, tor, GaitPhase, 'linear');
     
     GaitPhase = 1:100;
-    Tor = [zeros(1,(min(gaitPhase)-1)) Tor zeros(1, 100-(max(gaitPhase)))];
+    Tor = [zeros(1,(min(gaitPhase)-1)) Tor zeros(1, 99-(max(gaitPhase)))];
 
     TorLeft = [Tor(51:end) Tor(1:50)];      % right leg is first in exp
     TorRight = Tor;
     
     
     if fullgaitcycle == 1
-        pass
+        
     else
         TorLeft = TorLeft(1:50);
         TorRight = TorRight(1:50);
