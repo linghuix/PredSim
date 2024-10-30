@@ -40,12 +40,12 @@ for ww = [1]
     my_abductor_strength = ww;
     
     % Exoskeleton simulation
-    S.Exo.Hip.available = false;    %% true if assistance is offered
-    S.Exo.Hip.type = ['metabolic_test'];
+    S.Exo.Hip.available = true;    %% true if assistance is offered
+    S.Exo.Hip.type = [''];
 
     if S.Exo.Hip.available
         S.Exo.Hip.maxTor = peakTor;
-        S.Exo.Hip.type = ['Net_back'];
+        S.Exo.Hip.type = ['MF_MS_back'];
 
 %         S.Exo.Hip.TorLeft = zeros(1,50);S.Exo.Hip.TorRight=zeros(1,50);
 %         [~,S.Exo.Hip.TorBack] = Torque_pattern(2, 17, 32, peakTor, 0);% right is positive
@@ -102,12 +102,17 @@ for ww = [1]
     
     
     % % either choose "quasi-random" or give the path to a .mot file you want to use as initial guess
-    S.subject.IG_selection = 'quasi-random';
-%     S.subject.IG_selection = fullfile(S.misc.main_path,'PredSimResults\DHondt_2023_3seg_1strength','DHondt_2023_3seg_v1.mot');               %% intial guess 
-%     S.subject.IG_selection_gaitCyclePercent = 200;
-    
+%     S.subject.IG_selection = 'quasi-random';
+
+    S.subject.IG_selection = fullfile(S.misc.main_path,'Tests\ReferenceResults\DHondt_et_al_2024_4seg','DHondt_et_al_2024_4seg_paper.mot'); 
+    S.subject.IG_selection_gaitCyclePercent = 100;
+
+%     S.subject.IG_selection = fullfile(S.misc.main_path,'PredSimResults\DHondt_2023_3seg_1strength','DHondt_2023_3seg_v1.mot'); 
+%     S.subject.IG_selection_gaitCyclePercent = 100;
+
     % % give the path to the osim model of your subject
     osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
+    S.subject.IG_selection_gaitCyclePercent = 100;
     
     % % Do you want to run the simulation as a batch job (parallel computing toolbox)
     S.solver.run_as_batch_job = 0;
@@ -128,9 +133,9 @@ for ww = [1]
     
     % S.metabolicE - metabolic energy
     % S.metabolicE.tanh_b = 100;
-%     S.metabolicE.model = 'Bhargava2004';
+    S.metabolicE.model = 'Bhargava2004';
 %    S.metabolicE.model = 'Umberger2010';
-     S.metabolicE.model = 'Uchida2016';
+%      S.metabolicE.model = 'Uchida2016';
     
     % % S.misc - miscellanious
     % S.misc.v_max_s             = ;
@@ -154,7 +159,7 @@ for ww = [1]
     
     % % S.solver
     % S.solver.linear_solver  = '';
-    S.solver.tol_ipopt      = 4;
+    S.solver.tol_ipopt      = 5;
     % S.solver.max_iter       = 5;
     S.solver.parallel_mode  = 'thread';
     S.solver.N_threads      = 16;

@@ -13,7 +13,7 @@ function [] = predictiveSimulation(assistance_input)
             % required inputs are necessary to start the simulations. Optional inputs,
             % if left empty, will be taken from getDefaultSettings.m.
         
-            cd ('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation')
+            cd ('C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation')
         
             % path to the repository folder
             [pathRepo,~,~] = fileparts(mfilename('fullpath'));
