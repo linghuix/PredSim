@@ -1,6 +1,7 @@
 # Ignore all autosave, log, and certain image files
 *.asv
 *.log
+*.txt
 *.sto
 *.png
 *.jpg
@@ -10,6 +11,7 @@
 *.ai
 *.mp4
 *.mmap
+*.mat
 
 # Do not ignore specific PNG files for documentation
 !/FiguresForDocumentation/*.png

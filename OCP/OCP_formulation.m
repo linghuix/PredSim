@@ -334,8 +334,9 @@ for j=1:d
         da_adtj = f_casadi.ActuatorActivationDynamics(e_ak,a_akj(:,j+1));
         eq_constr{end+1} = (h*da_adtj - a_ap)./scaling.a_a;
     end
-
+    
     % Add contribution to the cost function
+    
     J = J + ...
         W.E          * B(j+1) *(f_casadi.J_muscles_exp(e_totj,W.E_exp))/model_info.mass*h + ...
         W.a          * B(j+1) *(f_casadi.J_muscles(akj(:,j+1)'))*h + ...
