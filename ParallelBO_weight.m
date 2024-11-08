@@ -14,10 +14,10 @@ end
 global savedfilename 
 
 pathRepo = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation';
-results_folder = fullfile(pathRepo, 'PredSimResults\DHondt_2023_3seg_0.1strengthbilevel');
+results_folder = fullfile(pathRepo, 'PredSimResults\DHondt_2023_3seg_normalbilevel');
 % Open a log file to save output
-logFile = fullfile(results_folder, 'bayesian_optimization_rmse.txt');
-savedfilename = fullfile(results_folder, 'bayesian_optimization_rmse.mat');
+logFile = fullfile(results_folder, 'bo_rmse.txt');
+savedfilename = fullfile(results_folder, 'bo_rmse.mat');
 
 diary(logFile);  % Start logging to the file
 
@@ -27,10 +27,10 @@ fprintf('Random Seed: %d\n', Random_Seed);
 fprintf('Number of Workers in Parallel Pool: %d\n', numWorkers);
 fprintf('Results Folder: %s\n', results_folder);
 fprintf('Optimization Variables:\n');
-fprintf(' - T1: Integer, range [0, 99]\n');
-fprintf(' - Fmax: Real, range [0, 99]\n');
-fprintf(' - T2: Integer, range [0, 99]\n');
-fprintf(' - T3: Integer, range [0, 99]\n');
+fprintf(' - w1: Real, range [0, 1]\n');
+fprintf(' - w2: Real, range [0, 1]\n');
+fprintf(' - w3: Real, range [0, 1]\n');
+fprintf(' - w4: Real, range [0, 1]\n');
 fprintf('Seed Points: %d\n', define_NumSeedPoints);
 fprintf('Max Objective Evaluations: %d\n', define_MaxObjectiveEvaluations);
 fprintf('\n');
@@ -38,13 +38,13 @@ fprintf('\n');
 
 % Define optimization variables
 vars = [
-    optimizableVariable('T1', [0, 99], 'Type', 'integer');
-    optimizableVariable('Fmax', [0, 99], 'Type', 'real');
-    optimizableVariable('T2', [0, 99], 'Type', 'integer');
-    optimizableVariable('T3', [0, 99], 'Type', 'integer')
+    optimizableVariable('w1', [0, 1], 'Type', 'real');
+    optimizableVariable('w2', [0, 1], 'Type', 'real');
+    optimizableVariable('w3', [0, 1], 'Type', 'real');
+    optimizableVariable('w4', [0, 1], 'Type', 'real')
 ];
 
-define_NumSeedPoints = 20;
+define_NumSeedPoints = 50;
 define_MaxObjectiveEvaluations = 100;
 
 % Check if a saved progress file exists
@@ -53,7 +53,7 @@ if isfile(savedfilename)
     load(savedfilename, 'results');
     fprintf('Resuming optimization from saved state...\n');
 
-    figure(1)
+    figure()
     plot(results.ObjectiveTrace, '-*','DisplayName','previous iteration')
     hold on
 
@@ -69,7 +69,7 @@ if isfile(savedfilename)
         'AcquisitionFunctionName', 'expected-improvement-plus', ...
         'ExplorationRatio', 0.5, ...
         'MaxObjectiveEvaluations', define_MaxObjectiveEvaluations, ...
-        'IsObjectiveDeterministic', false, ...
+        'IsObjectiveDeterministic', true, ...
         'Verbose',1, ...
         'OutputFcn', @saveProgress);
 else
@@ -83,23 +83,23 @@ else
         'AcquisitionFunctionName', 'expected-improvement-plus', ...
         'ExplorationRatio', 0.5, ...
         'MaxObjectiveEvaluations', define_MaxObjectiveEvaluations, ...
-        'IsObjectiveDeterministic', false, ...
+        'IsObjectiveDeterministic', true, ...
         'Verbose',1, ...
         'OutputFcn', @saveProgress);
 end
 
 
 % Display the best solution found
-figure(1)
+figure()
 plot(results.ObjectiveTrace, '-*', 'DisplayName','current iteration')
 legend show
 
 bestX = results.XAtMinObjective;
 bestObjective = results.MinObjective;
-disp(['Best x1: ', num2str(bestX.T1)]);
-disp(['Best x2: ', num2str(bestX.Fmax)]);
-disp(['Best x1: ', num2str(bestX.T2)]);
-disp(['Best x2: ', num2str(bestX.T3)]);
+disp(['Best w1: ', num2str(bestX.w1)]);
+disp(['Best w2: ', num2str(bestX.w2)]);
+disp(['Best w3: ', num2str(bestX.w3)]);
+disp(['Best w4: ', num2str(bestX.w4)]);
 disp(['Best Objective Value: ', num2str(bestObjective)]);
 
 
@@ -120,11 +120,12 @@ function objective = Simulation(w)
 %     return 
 
     % Generate result folder path
-    assistance_input = [w.T1, w.Fmax, w.T2, w.T3];
-    formatted_numbers = cell(1, length(assistance_input));
+    w5 = 1- sum([w.w1, w.w2, w.w3, w.w4]);
+    weights = [w.w1, w.w2, w.w3, w.w4 w5];
+    formatted_numbers = cell(1, length(weights));
     % Loop through each number, convert to string, replace '.' with '_'
-    for i = 1:length(assistance_input)
-        formatted_numbers{i} = strrep(sprintf('%.1f', assistance_input(i)), '.', '_');
+    for i = 1:length(weights)
+        formatted_numbers{i} = strrep(sprintf('%.1f', weights(i)), '.', '_');
     end
     File.string = strjoin(formatted_numbers, '__');
 
@@ -140,11 +141,11 @@ function objective = Simulation(w)
         disp('File exists.');
     else
         disp('File does not exist. run MATLAB code to generate it');
-        predictiveSimulation(assistance_input);
+        predictiveSimulation(weights);
     end
 
     % Get ROM of kinematics
-    ROM = xlhobj_func(File.path);
+    ROM = xlhobj_func(File.path, "rmse");
     objective = ROM;
 end
 
@@ -152,9 +153,7 @@ end
 % contrants on feasbile region
 function tf = xconstraint(w)
     % Check for input conditions
-    tf1 =  w.T2 > w.T1;
-    tf2 = w.T3 > w.T2;
-    tf = tf1 & tf2;
+    tf =  w.w1+w.w2+w.w3+w.w4 < 1;
 end
 
 % Define the callback function for saving progress

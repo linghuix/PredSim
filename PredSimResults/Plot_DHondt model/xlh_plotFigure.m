@@ -20,15 +20,15 @@ subject = 'DHondt_2023_3seg';
 % plot_results(subject, 'PS_back')
 % plot_results(subject, 'PF_back')
 % plot_results(subject, 'MS_MF_back')
-% plot_results(subject, 'PS_PF_back')
-plot_results(subject, 'Net_back')
+plot_results(subject, 'PS_PF_back')
+% plot_results(subject, 'Net_back')
 
 
 function [] = plot_results(model_subject, assistance_pattern_str)
     % Construct a cell array with full paths to files with saved results for
     % which you want to appear on the plotted figures.
     % Define the folder where result files are stored
-    pathRepo = 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation';
+    pathRepo = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation';
     results_folder = fullfile(pathRepo, 'PredSimResults');
     
     
@@ -59,14 +59,14 @@ function [] = plot_results(model_subject, assistance_pattern_str)
     
     % Cell array with legend name for each result
     legend_names = {
-    %                 'Normal', ...
-    %                 '10% strength',...
-    %                 ['10 assisted' assistance_pattern_str],...
-    %                 ['20 assisted' assistance_pattern_str],...
-    %                 ['30 assisted' assistance_pattern_str],...
-    %                 ['40 assisted' assistance_pattern_str],...
-    %                 ['50 assisted' assistance_pattern_str],...
-    %                 ['60 assisted' assistance_pattern_str],...
+                    'Normal', ...
+                    '10% strength',...
+                    ['10 assisted' assistance_pattern_str],...
+                    ['20 assisted' assistance_pattern_str],...
+                    ['30 assisted' assistance_pattern_str],...
+                    ['40 assisted' assistance_pattern_str],...
+                    ['50 assisted' assistance_pattern_str],...
+                    ['60 assisted' assistance_pattern_str],...
                     ['70 assisted' assistance_pattern_str],...
                     ['80 assisted' assistance_pattern_str],...
                     ['90 assisted' assistance_pattern_str]};
@@ -286,6 +286,44 @@ function [] = plot_results(model_subject, assistance_pattern_str)
             
             title('Y CoM displacement')
     
+    % knematics RMSE
+       figure(7)
+            
+            control_paths = fullfile(results_folder, 'DHondt_2023_3seg_1strength', 'DHondt_2023_3seg_v2.mat');
+            control = load(control_paths);
+            
+            weight = ones(1,33); 
+            weight(model_info.ExtFunIO.coordi.pelvis_list) = 10;
+            weight(model_info.ExtFunIO.coordi.lumbar_bending) = 10;
+
+            weight = weight./sum(weight);
+
+            r = [];
+            for j = 1:33
+                % 200 length -> 100 length
+                RkinematicsQs_i = R.kinematics.Qs(:,j);
+                if length(R.kinematics.Qs(:,j)) > 100
+                    RkinematicsQs_i = R.kinematics.Qs(1:2:end, j);
+                end
+
+                rmse_i = rmse(RkinematicsQs_i, control.R.kinematics.Qs(:,j));
+                r = [r rmse_i];
+            end
+            
+            metric = sum(r.* weight);
+
+            
+            % plot
+            hold on
+            plot(i, metric, '-x', 'color',colors(colorIndex,:), 'DisplayName',legendName,'LineWidth',2) 
+            hold off
+            legend()
+    
+            title('RMSE to normal gait')
+            xlabel('gait cycle (%)');
+            ylabel('angle (degree)');
+
+
         colorIndex = colorIndex+1;
     end
     

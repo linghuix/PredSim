@@ -5,30 +5,40 @@
 function [] = main_DHondt_2023_3seg_find_IdealPoint()
     % variables 
     
-    % weakness / energy model / initial guess / assistance parameters 
-    % / walking speed / folderName / adapt_IG_pelvis_y / weight (E, q_dotdot, e_arm, pass_torq, a, slack)
-    Setting = { {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\e_arm', 0, {0, 0, 1, 0, 0, 0.000001}},...                                                                     %1  min e_arm
-                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}},...                                          %2  min e_arm
-                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}},... %3 Optimal Solution at the closest level of strength
-                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\E', 0, {1, 0, 0, 0, 0, 0.000001}},...                                                                         %4  min E
-                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0, 0, 0, 0.000001}},...                                              %5  min E
-                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0, 0, 0, 0.000001}},...     %6 Optimal Solution at the closest level of strength
-                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\E', 0, {1, 0, 0.001, 0, 0, 0.000001}},...                                                                     %7  min E
-                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0.001, 0, 0, 0.000001}},...                                          %8  min E
-                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0.001, 0, 0, 0.000001}},... %9 Optimal Solution at the closest level of strength
-                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\q_dotdot', 0, {0, 1, 0.001, 0, 0, 0.000001}},...                                                              %10  min q_dotdot
-                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\q_dotdot', 1, {0, 1, 0.001, 0, 0, 0.000001}},...                                   %11  min q_dotdot
-                {1.0, 'Bhargava2004', {2, 'PredSimResults\weakness\DHondt_2023_3seg_0.9strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\q_dotdot', 1, {0, 1, 0.001, 0, 0, 0.000001}},... %12 OS min q_dotdot
-                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\pass_torq', 0, {0, 0, 0.001, 1, 0, 0.000001}},...                                                             %13  min pass_torq
-                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\pass_torq', 1, {0, 0, 0.001, 1, 0, 0.000001}},...                                  %14  min pass_torq
-                {1.0, 'Bhargava2004', {2, 'PredSimResults\weakness\DHondt_2023_3seg_0.9strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\pass_torq', 1, {0, 0, 0.001, 1, 0, 0.000001}},... %15 OS min pass_torq
-                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\a', 0, {0, 0, 0.001, 0, 1, 0.000001}},...                                                                     %16  min a
-                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\a', 1, {0, 0, 0.001, 0, 1, 0.000001}},...                                          %17  min a
-                {1.0, 'Bhargava2004', {2, 'PredSimResults\weakness\DHondt_2023_3seg_0.9strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\a', 1, {0, 0, 0.001, 0, 1, 0.000001}},... %20 OS min a
+    % 1.weakness / 2.energy model / 3.initial guess / 4.assistance parameters 
+    % / 5.walking speed / 6.folderName / 7.adapt_IG_pelvis_y / 8.weight (E, q_dotdot, e_arm, pass_torq, a, slack) 
+    % / 9.S.solver.tol_ipopt
+    Setting = { {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\e_arm', 0, {0, 0, 1, 0, 0, 0.000001}, 4},...                                                                     %1  min e_arm
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 4},...                                          %2  min e_arm
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 4},... %3 Optimal Solution at the closest level of strength
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\e_arm', 0, {0, 0, 1, 0, 0, 0.000001}, 5},...                                                                     %4  min e_arm
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 5},...                                          %5  min e_arm
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 5},... %6 Optimal Solution at the closest level of strength
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\e_arm', 0, {0, 0, 1, 0, 0, 0.000001}, 7},...                                                                     %7  min e_arm
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 7},...                                          %8  min e_arm
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 7},... %9 Optimal Solution at the closest level of strength
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\e_arm', 0, {0, 0, 1, 0, 0, 0.000001}, 8},...                                                                     %10  min e_arm
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 8},...                                          %11  min e_arm
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\e_arm', 1, {0, 0, 1, 0, 0, 0.000001}, 8},... %12 Optimal Solution at the closest level of strength
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\E', 0, {1, 0, 0, 0, 0, 0.000001}, 7},...                                                                         %13  min E
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0, 0, 0, 0.000001}, 7},...                                              %14  min E
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0, 0, 0, 0.000001}, 7},...     %15 Optimal Solution at the closest level of strength
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\E', 0, {1, 0, 0.001, 0, 0, 0.000001}, 7},...                                                                     %16  min E
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0.001, 0, 0, 0.000001}, 7},...                                          %17  min E
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\E', 1, {1, 0, 0.001, 0, 0, 0.000001}, 7},... %18 Optimal Solution at the closest level of strength
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\q_dotdot', 0, {0, 1, 0.00, 0, 0, 0.000001}, 7},...                                                              %19  min q_dotdot
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\q_dotdot', 1, {0, 1, 0.00, 0, 0, 0.000001}, 7},...                                   %20  min q_dotdot
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\q_dotdot', 1, {0, 1, 0.00, 0, 0, 0.000001}, 7},... %21 OS min q_dotdot
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\pass_torq', 0, {0, 0, 0.00, 1, 0, 0.000001}, 7},...                                                             %22  min pass_torq
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\pass_torq', 1, {0, 0, 0.00, 1, 0, 0.000001}, 7},...                                  %23  min pass_torq
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\pass_torq', 1, {0, 0, 0.00, 1, 0, 0.000001}, 7},... %24 OS min pass_torq
+                {1.0, 'Bhargava2004', {1},  {false}, 1.33, 'IdealPoint\a', 0, {0, 0, 0.00, 0, 1, 0.000001}, 7},...                                                                     %25  min a
+                {1.0, 'Bhargava2004', {2, 'OCP\IK_Guess_Full_GC.mot'}, {false}, 1.33, 'IdealPoint\a', 1, {0, 0, 0.00, 0, 1, 0.000001}, 7},...                                          %26  min a
+                {1.0, 'Bhargava2004', {2, 'PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v2.mot'}, {false}, 1.33, 'IdealPoint\a', 1, {0, 0, 0.00, 0, 1, 0.000001}, 7},... %27 OS min a
 
     };
     
-    for index = 1:3
+    for index = 19:27
         % This script starts the predictive simulation of human movement. The
         % required inputs are necessary to start the simulations. Optional inputs,
         % if left empty, will be taken from getDefaultSettings.m.
@@ -145,7 +155,7 @@ function [] = main_DHondt_2023_3seg_find_IdealPoint()
         osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
         
         % % Do you want to run the simulation as a batch job (parallel computing toolbox)
-        S.solver.run_as_batch_job = 0;
+        S.solver.run_as_batch_job = 1;
         
         %% Optional inputs
         % see README.md in the main folder for information about these optional
@@ -190,7 +200,7 @@ function [] = main_DHondt_2023_3seg_find_IdealPoint()
         
         % % S.solver
         % S.solver.linear_solver  = '';
-        S.solver.tol_ipopt      = 7;
+        S.solver.tol_ipopt      = Setting{index}{9};
         % S.solver.max_iter       = 5;
         S.solver.parallel_mode  = 'thread';
         S.solver.N_threads      = 16;

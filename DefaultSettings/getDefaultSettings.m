@@ -536,6 +536,60 @@ if ~isfield(S.weights,'slack_ctrl')
 end
 
 
+
+% --------------add by linghui ----------%
+% normalize the objective term
+if ~isfield(S.weights,'normalization')
+    S.weights.normalization = false; 
+end
+
+% NadirPoint and E_IdealPoint on metabolic energy rate
+if ~isfield(S.subject,'NadirPoint_E')
+    S.subject.NadirPoint_E = 1; 
+end
+
+if ~isfield(S.subject,'IdealPoint_E')
+    S.subject.IdealPoint_E = 0; 
+end
+
+% NadirPoint and E_IdealPoint on joint accelerations
+if ~isfield(S.subject,'NadirPoint_q_dotdot')
+    S.subject.NadirPoint_q_dotdot = 1; 
+end
+
+if ~isfield(S.subject,'IdealPoint_q_dotdot')
+    S.subject.IdealPoint_q_dotdot = 0; 
+end
+
+% NadirPoint and E_IdealPoint on arm excitations
+if ~isfield(S.subject,'NadirPoint_e_arm')
+    S.subject.NadirPoint_e_arm = 1; 
+end
+
+if ~isfield(S.subject,'IdealPoint_e_arm')
+    S.subject.IdealPoint_e_arm = 0; 
+end
+
+% NadirPoint and E_IdealPoint on passive torques
+if ~isfield(S.subject,'NadirPoint_pass_torq')
+    S.subject.NadirPoint_pass_torq = 1; 
+end
+
+if ~isfield(S.subject,'IdealPoint_pass_torq')
+    S.subject.IdealPoint_pass_torq = 0; 
+end
+
+% NadirPoint and E_IdealPoint on muscle activations
+if ~isfield(S.subject,'NadirPoint_a')
+    S.subject.NadirPoint_a = 1; 
+end
+
+if ~isfield(S.subject,'IdealPoint_a')
+    S.subject.IdealPoint_a = 0; 
+end
+
+
+
 %% OpenSimADOptions
 
 % settings for functions to convert .osim model to expression graph 

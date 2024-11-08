@@ -3,22 +3,33 @@
 %%
 
 % matfile - mat file location
-function [metric] = xlhobj_func(matfile)
+function [metric] = xlhobj_func(matfile, string)
 
-    fprintf('reading from %s \r\n', matfile)
+    if nargin < 2
+        string = "weighted_rmse"; % Default value
+    end
     
-    load(matfile,'R','model_info');
+    result = load(matfile);
 
-    lumbar_bending = R.kinematics.Qs(:,model_info.ExtFunIO.coordi.lumbar_bending);
-    pelvis_list = R.kinematics.Qs(:,model_info.ExtFunIO.coordi.pelvis_list);    % based on global coordinate
+    lumbar_bending = result.R.kinematics.Qs(:, result.model_info.ExtFunIO.coordi.lumbar_bending);
+    pelvis_list = result.R.kinematics.Qs(:, result.model_info.ExtFunIO.coordi.pelvis_list);    % based on global coordinate
     trunk_angle = lumbar_bending + pelvis_list;                               % based on global coordinate
     
-    metric = metric2(pelvis_list, trunk_angle)
+
+    if strcmp(string, "weighted_rmse")
+        metric = metric_rmse(result);
+
+    elseif strcmp(string, "rmse")
+        metric_rmse_even(result);
+
+    elseif strcmp(string, "pelvis_trunk_rom")
+        metric = metric_ROM(pelvis_list, trunk_angle);
+    end
 
 end
 
 
-function [ROM] = metric2(pelvis_list, trunk_angle)  
+function [ROM] = metric_ROM(pelvis_list, trunk_angle)  
 
     % figure for ROM of trunck swing during walking
 
@@ -31,7 +42,7 @@ function [ROM] = metric2(pelvis_list, trunk_angle)
 end
 
 
-function [ROM] = metric1(pelvis_list, trunk_angle)  
+function [ROM] = metric_ROM_clip(pelvis_list, trunk_angle)  
     % figure for ROM of trunck swing during walking
     max_trunk = max(trunk_angle);
     max_trunk = max_trunk - max_trunk(1);
@@ -49,3 +60,60 @@ function [ROM] = metric1(pelvis_list, trunk_angle)
 	ylabel('angle (degree)');
 end
 
+
+function [RMSE] = metric_rmse(results)
+
+    pathRepo = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation';
+    results_folder = fullfile(pathRepo, 'PredSimResults');
+    control_paths = fullfile(results_folder, 'DHondt_2023_3seg_1strength', 'DHondt_2023_3seg_v2.mat');
+    control = load(control_paths);
+    
+    weight = ones(1,33); 
+    weight(results.model_info.ExtFunIO.coordi.pelvis_list) = 10;
+    weight(results.model_info.ExtFunIO.coordi.lumbar_bending) = 10;
+
+    weight = weight./sum(weight);
+
+    r = 100*ones(1,33);
+    for j = 1:33
+        % 200 length -> 100 length
+        RkinematicsQs_i = results.R.kinematics.Qs(:,j);
+        if length(results.R.kinematics.Qs(:,j)) > 100
+            RkinematicsQs_i = results.R.kinematics.Qs(1:2:end, j);
+        end
+
+        rmse_i = rmse(RkinematicsQs_i, control.R.kinematics.Qs(:,j));
+        r(j) = rmse_i;
+    end
+    
+    RMSE = sum(r.* weight);
+end
+
+
+function [RMSE] = metric_rmse_even(results)
+
+    pathRepo = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation';
+    results_folder = fullfile(pathRepo, 'PredSimResults');
+    control_paths = fullfile(results_folder, 'DHondt_2023_3seg_1strength', 'DHondt_2023_3seg_v2.mat');
+    control = load(control_paths);
+    
+    weight = ones(1,33); 
+    weight(results.model_info.ExtFunIO.coordi.pelvis_list) = 1;
+    weight(results.model_info.ExtFunIO.coordi.lumbar_bending) = 1;
+
+    weight = weight./sum(weight);
+
+    r = 100*ones(1,33);
+    for j = 1:33
+        % 200 length -> 100 length
+        RkinematicsQs_i = results.R.kinematics.Qs(:,j);
+        if length(results.R.kinematics.Qs(:,j)) > 100
+            RkinematicsQs_i = results.R.kinematics.Qs(1:2:end, j);
+        end
+
+        rmse_i = rmse(RkinematicsQs_i, control.R.kinematics.Qs(:,j));
+        r(j) = rmse_i;
+    end
+    
+    RMSE = sum(r.* weight);
+end
