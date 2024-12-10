@@ -27,49 +27,54 @@ plot_results(subject, 'PS_PF_back')
 function [] = plot_results(model_subject, assistance_pattern_str)
     % Construct a cell array with full paths to files with saved results for
     % which you want to appear on the plotted figures.
+
     % Define the folder where result files are stored
-    pathRepo = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation';
-    results_folder = fullfile(pathRepo, 'PredSimResults');
+    results_folder = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation\PredSimResults\';
+%     results_folder = 'D:\MyFile\7-Doctor\Research\2-simulation\PredSimResults\';
     
     
     % model_subject = 'Falisse_et_al_2022';
     folder = [model_subject '_0.1strength' assistance_pattern_str];
-    scenario_names = {[model_subject '_1strength'],...
-                      [model_subject '_0.1strength/_0hipAssistance']};
+    % scenario_names = {[model_subject '_1strength'],...
+    %                   [model_subject '_0.1strength/_0hipAssistance']};
     % model_subject = 'DHondt_2023_3seg';
     % Define file paths for different result scenarios
-    scenario_names = {scenario_names{1}, scenario_names{2} ...
-                      [folder '/_10hipAssistance'], ...
-                      [folder '/_20hipAssistance'], ...
-                      [folder '/_30hipAssistance'], ...
-                      [folder '/_40hipAssistance'], ...
-                      [folder '/_50hipAssistance'], ...
-                      [folder '/_60hipAssistance'], ...
-                      [folder '/_70hipAssistance'], ...
-                      [folder '/_80hipAssistance'], ...
-                      [folder '/_90hipAssistance']};
+    scenario_names = {[model_subject '_1strength'], [model_subject '_v2.mat'], 'Normal';...
+                  [model_subject '_0.1strength/_0hipAssistance'], [model_subject '_v1.mat'], '10% strength';...
+                  ['assistance\old\' folder '\_10hipAssistance'], [model_subject '_v1.mat'], ['0.16Nm/kg ' assistance_pattern_str];...
+                  ['assistance\old\' folder '\_20hipAssistance'], [model_subject '_v1.mat'], '0.32Nm/kg  ';...
+                  ['assistance\old\' folder '\_30hipAssistance'], [model_subject '_v1.mat'], '0.48Nm/kg '; ...
+                  ['assistance\old\' folder '\_40hipAssistance'], [model_subject '_v1.mat'], '0.64Nm/kg ';...
+                  ['assistance\old\' folder '\_50hipAssistance'], [model_subject '_v1.mat'], '0.81Nm/kg '; ...
+                  ['assistance\old\' folder '\_60hipAssistance'], [model_subject '_v1.mat'], '0.97Nm/kg ';...
+                  ['assistance\old\' folder '\_70hipAssistance'], [model_subject '_v1.mat'], '1.12Nm/kg '; ...
+                  ['assistance\old\' folder '\_80hipAssistance'], [model_subject '_v1.mat'], '1.29Nm/kg ';...
+                  ['assistance\old\' folder '\_90hipAssistance'], [model_subject '_v1.mat'], '1.45Nm/kg '
+                  };
+
+    % scenario_names = {scenario_names{1}, scenario_names{2} ...
+    %                   [folder '/_10hipAssistance'], ...
+    %                   [folder '/_20hipAssistance'], ...
+    %                   [folder '/_30hipAssistance'], ...
+    %                   [folder '/_40hipAssistance'], ...
+    %                   [folder '/_50hipAssistance'], ...
+    %                   [folder '/_60hipAssistance'], ...
+    %                   [folder '/_70hipAssistance'], ...
+    %                   [folder '/_80hipAssistance'], ...
+    %                   [folder '/_90hipAssistance']};
     
     % Construct full file paths for each scenario
-    result_paths = cell(1, numel(scenario_names));
-    for i = 1:numel(scenario_names)
-        result_paths{i} = fullfile(results_folder, scenario_names{i}, [model_subject '_v1.mat']);
+    result_paths = cell(1, size(scenario_names,1));
+    legend_names = cell(1, size(scenario_names,1));
+    BodyKinematics_paths = cell(1, size(scenario_names,1));
+    BodyV_paths = cell(1, size(scenario_names,1));
+    for i = 1:size(scenario_names,1)
+        result_paths{i} = fullfile(results_folder, scenario_names{i, 1}, scenario_names{i, 2});
+        legend_names{i} = scenario_names{i, 3};
         BodyKinematics_paths{i} = fullfile(results_folder, scenario_names{i}, ['_3-segment_foot_model_fixed_knee_axis_BodyKinematics_pos_global.sto']);
+        BodyV_paths{i} = fullfile(results_folder, scenario_names{i}, ['_3-segment_foot_model_fixed_knee_axis_BodyKinematics_vel_global.sto']);
     end
     
-    
-    % Cell array with legend name for each result
-    legend_names = {
-                    'Normal', ...
-                    '10% strength',...
-                    ['10 assisted' assistance_pattern_str],...
-                    ['20 assisted' assistance_pattern_str],...
-                    ['30 assisted' assistance_pattern_str],...
-                    ['40 assisted' assistance_pattern_str],...
-                    ['50 assisted' assistance_pattern_str],...
-                    ['60 assisted' assistance_pattern_str],...
-                    ['70 assisted' assistance_pattern_str],...
-                    ['80 assisted' assistance_pattern_str],...
-                    ['90 assisted' assistance_pattern_str]};
     
     % Path to the folder where figures are saved
     figure_folder = results_folder;
@@ -80,7 +85,12 @@ function [] = plot_results(model_subject, assistance_pattern_str)
     
     % loop over results
     trunk_angle = [];
-    colors = hsv(length(result_paths));
+    colors = hsv(length(result_paths)); 
+
+    % NORMAL CASE SHOWS BLACK
+    colors(1,:) = [0 0 0];
+    colors(2,:) = [0.5 0.5 0.5];
+
     colorIndex = 1;
     
     dataStack = [];
@@ -122,9 +132,8 @@ function [] = plot_results(model_subject, assistance_pattern_str)
     
     
         % load bodyKinematics
-    
         Data_bodyKinematics = readtable(BodyKinematics_paths{i}, 'FileType', 'text');
-    
+        Data_bodyV = readtable(BodyV_paths{i}, 'FileType', 'text');
     
         legendName = replace(legend_names{i},'_',' ');
         
@@ -161,7 +170,7 @@ function [] = plot_results(model_subject, assistance_pattern_str)
             xlabel('gait cycle (%)');
             ylabel('angle (degree)');
             
-    
+        % ASSISTANCE
         figure(2)
     
             if (i>2)
@@ -252,7 +261,7 @@ function [] = plot_results(model_subject, assistance_pattern_str)
             xlabel('gait cycle (%)');
             ylabel('angle (degree)');
     
-        % CoM displacement
+       % CoM displacement
        figure(6)
     
             % plot
@@ -285,9 +294,26 @@ function [] = plot_results(model_subject, assistance_pattern_str)
     %         legend()
             
             title('Y CoM displacement')
+
+
+        % Extrapolated CoM displacement
+        figure(7)
+        
+            eigenfrequency = sqrt(9.8/(1.34*0.91));    % g/(1.34*L)
+            XCoM = Data_bodyKinematics.center_of_mass_Z + Data_bodyV.center_of_mass_Z/eigenfrequency;
+            plot(Data_bodyKinematics.time, XCoM, 'color',colors(colorIndex,:), 'DisplayName',legendName,'LineWidth',2) 
+            hold off
+            xlabel('time (second)');
+            ylabel('displacement (meter)');
+            legend()
+            hold on
+            
+            title('Extrapolated CoM displacement')
+
+
     
-    % knematics RMSE
-       figure(7)
+        % knematics RMSE
+        figure(8)
             
             control_paths = fullfile(results_folder, 'DHondt_2023_3seg_1strength', 'DHondt_2023_3seg_v2.mat');
             control = load(control_paths);
@@ -315,7 +341,7 @@ function [] = plot_results(model_subject, assistance_pattern_str)
             
             % plot
             hold on
-            plot(i, metric, '-x', 'color',colors(colorIndex,:), 'DisplayName',legendName,'LineWidth',2) 
+            plot(i, metric, '-x', 'MarkerSize', 10, 'LineWidth',3, 'color',colors(colorIndex,:), 'DisplayName',legendName) 
             hold off
             legend()
     
@@ -365,7 +391,7 @@ function [] = plot_results(model_subject, assistance_pattern_str)
 	    grid on;
 	    set(gca, 'FontName', 'Arial', 'FontSize', 12);
     
-    % figure for ROM of trunck swing during walking
+    % figure for ROM of pelvis swing during walking
     figure()
     
 	    data = pelvis';

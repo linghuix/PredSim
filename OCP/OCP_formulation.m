@@ -242,6 +242,13 @@ end
 dFTtildej   = MX.sym('dFTtildej',NMuscle,d);
 Aj          = MX.sym('Aj',nq.all,d);
 J           = 0; % Initialize cost function
+J_E 		= 0; % Initialize metabolics cost function
+J_a 		= 0; % Initialize muscle activation function
+J_q_dotdot 	= 0; % Initialize joint accelerations function
+J_pass_torq = 0; % Initialize passive torques function
+J_arm 		= 0; % Initialize arm actuator excitation function
+J_slack_ctrl= 0; % Initialize slack function
+
 eq_constr   = {}; % Initialize equality constraint vector
 ineq_constr_deact = {}; % Initialize inequality constraint vector
 ineq_constr_act = {}; % Initialize inequality constraint vector
@@ -336,7 +343,7 @@ for j=1:d
     end
     
     % Add contribution to the cost function
-    if S.weights.normalization == false
+    if ~S.weights.normalization
         J = J + ...
             W.E          * B(j+1) *(f_casadi.J_muscles_exp(e_totj,W.E_exp))/model_info.mass*h + ...
             W.a          * B(j+1) *(f_casadi.J_muscles(akj(:,j+1)'))*h + ...
@@ -352,20 +359,24 @@ for j=1:d
             J = J + W.slack_ctrl * B(j+1) *(f_casadi.J_arms_dof(Aj(model_info.ExtFunIO.jointi.armsi,j)))*h;
         end
 
-    elseif S.weights.normalization == true
-        J = J + ...
-            W.E          * (B(j+1) *(f_casadi.J_muscles_exp(e_totj,W.E_exp))/model_info.mass*h - S.subject.IdealPoint_E) / (S.subject.NadirPoint_E-S.subject.IdealPoint_E)+ ...
-            W.a          * (B(j+1) *(f_casadi.J_muscles(akj(:,j+1)'))*h - S.subject.IdealPoint_a) / (S.subject.NadirPoint_a-S.subject.IdealPoint_a) + ...
-            W.q_dotdot   * (B(j+1) *(f_casadi.J_not_arms_dof(Aj(model_info.ExtFunIO.jointi.noarmsi,j)))*h - S.subject.IdealPoint_q_dotdot) / (S.subject.NadirPoint_q_dotdot-S.subject.IdealPoint_q_dotdot) + ...
-            W.pass_torq  * (B(j+1) *(f_casadi.J_lim_torq(Tau_passj_cost))*h - S.subject.IdealPoint_pass_torq) / (S.subject.NadirPoint_pass_torq-S.subject.IdealPoint_pass_torq) + ...
-            W.slack_ctrl * B(j+1) *(f_casadi.J_muscles(vAk))*h + ...
-            W.slack_ctrl * B(j+1) *(f_casadi.J_muscles(dFTtildej(:,j)))*h;
-    
+    elseif S.weights.normalization
+	
+		J_E 			= J_E + B(j+1) *(f_casadi.J_muscles_exp(e_totj,W.E_exp))/model_info.mass*h;
+		
+		J_a 			= J_a + B(j+1) *(f_casadi.J_muscles(akj(:,j+1)'))*h;
+		
+		J_q_dotdot 		= J_q_dotdot + B(j+1) *(f_casadi.J_not_arms_dof(Aj(model_info.ExtFunIO.jointi.noarmsi,j)))*h;
+		
+		J_pass_torq 	= J_pass_torq + B(j+1) *(f_casadi.J_lim_torq(Tau_passj_cost))*h;
+		
+		J_slack_ctrl 	= 	J_slack_ctrl + W.slack_ctrl * B(j+1) *(f_casadi.J_muscles(vAk))*h + W.slack_ctrl * B(j+1) *(f_casadi.J_muscles(dFTtildej(:,j)))*h ;
+		
         if nq.torqAct > 0
-            J = J + W.e_arm      * ( B(j+1) *(f_casadi.J_torq_act(e_ak))*h - S.subject.IdealPoint_e_arm) / (S.subject.NadirPoint_e_arm-S.subject.IdealPoint_e_arm) ;
+			J_arm = J_arm + B(j+1) *(f_casadi.J_torq_act(e_ak))*h;
         end
+		
         if nq.arms > 0
-            J = J + W.slack_ctrl * B(j+1) *(f_casadi.J_arms_dof(Aj(model_info.ExtFunIO.jointi.armsi,j)))*h;
+			J_slack_ctrl = J_slack_ctrl + W.slack_ctrl * B(j+1) *(f_casadi.J_arms_dof(Aj(model_info.ExtFunIO.jointi.armsi,j)))*h;
         end
 
     end
@@ -516,8 +527,20 @@ end
 if nq.torqAct > 0
     coll_input_vars_def = [coll_input_vars_def,{a_ak,a_aj,e_ak}];
 end
-f_coll = Function('f_coll',coll_input_vars_def,...
+
+
+if ~S.weights.normalization
+
+	f_coll = Function('f_coll',coll_input_vars_def,...
     {eq_constr,ineq_constr_deact,ineq_constr_act,ineq_constr_distance{:},J});
+	
+elseif S.weights.normalization
+
+	f_coll = Function('f_coll',coll_input_vars_def,...
+    {eq_constr,ineq_constr_deact,ineq_constr_act,ineq_constr_distance{:},...
+	J_E, J_a, J_q_dotdot, J_pass_torq, J_arm, J_slack_ctrl});
+end
+
 
 % Repeat function for each mesh interval and assign evaluation to multiple threads
 f_coll_map = f_coll.map(N,S.solver.parallel_mode,S.solver.N_threads);
@@ -532,7 +555,17 @@ if nq.torqAct > 0
     coll_input_vars_eval = [coll_input_vars_eval, {a_a(:,1:end-1), a_a_col, e_a}];
 end
 coll_ineq_constr_distance = cell(1,length(ineq_constr_distance));
-[coll_eq_constr,coll_ineq_constr_deact,coll_ineq_constr_act,coll_ineq_constr_distance{:},Jall] = f_coll_map(coll_input_vars_eval{:});
+
+
+
+if ~S.weights.normalization
+
+	[coll_eq_constr,coll_ineq_constr_deact,coll_ineq_constr_act,coll_ineq_constr_distance{:},Jall] = f_coll_map(coll_input_vars_eval{:});
+
+elseif S.weights.normalization
+
+	[coll_eq_constr,coll_ineq_constr_deact,coll_ineq_constr_act,coll_ineq_constr_distance{:},J_E_all, J_a_all, J_q_dotdot_all, J_pass_torq_all, J_arm_all, J_slack_ctrl_all] = f_coll_map(coll_input_vars_eval{:});
+end
 
 % equality constraints
 opti.subject_to(coll_eq_constr == 0);
@@ -669,7 +702,50 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Scale cost function
-Jall_sc = sum(Jall)/dist_trav_tot;
+if ~S.weights.normalization
+
+	Jall_sc = sum(Jall)/dist_trav_tot;
+	
+elseif S.weights.normalization %&& S.weight.metric == "ubiquitous weighting"
+
+	norm_J_E = (sum(J_E_all)/dist_trav_tot - S.subject.IdealPoint_E)/(S.subject.NadirPoint_E-S.subject.IdealPoint_E);
+	
+	norm_J_a = (sum(J_a_all)/dist_trav_tot - S.subject.IdealPoint_a)/(S.subject.NadirPoint_a-S.subject.IdealPoint_a);
+	
+	norm_J_q_dotdot = (sum(J_q_dotdot_all)/dist_trav_tot - S.subject.IdealPoint_q_dotdot)/(S.subject.NadirPoint_q_dotdot - S.subject.IdealPoint_q_dotdot);
+	
+	norm_J_pass_torq = (sum(J_pass_torq_all)/dist_trav_tot - S.subject.IdealPoint_pass_torq)/(S.subject.NadirPoint_pass_torq - S.subject.IdealPoint_pass_torq);
+	
+	norm_J_slack_ctrl = sum(J_slack_ctrl_all)/dist_trav_tot;
+	
+	Jall_sc = W.E*norm_J_E +W.a*norm_J_a + W.q_dotdot*norm_J_q_dotdot + W.pass_torq*norm_J_pass_torq + W.slack_ctrl*norm_J_slack_ctrl;
+	
+	if nq.torqAct > 0
+		norm_J_e_arm = (sum(J_arm_all)/dist_trav_tot - S.subject.IdealPoint_e_arm)/(S.subject.NadirPoint_e_arm - S.subject.IdealPoint_e_arm);
+		
+		Jall_sc = Jall_sc + W.e_arm*norm_J_e_arm;
+	end
+	
+%elseif S.weights.normalization == true && S.weight.metric == "Chebyshev_weighting" 
+%	norm_J_E = (J_E_all/dist_trav_tot - S.subject.IdealPoint_E)/(S.subject.NadirPoint_E-S.subject.IdealPoint_E);
+	
+%	norm_J_a = (J_a_all/dist_trav_tot - S.subject.IdealPoint_a)/(S.subject.NadirPoint_a-S.subject.IdealPoint_a);
+	
+%	norm_J_q_dotdot = (J_q_dotdot_all/dist_trav_tot - S.subject.IdealPoint_q_dotdot)/(S.subject.NadirPoint_q_dotdot - S.subject.IdealPoint_q_dotdot);
+	
+%	norm_J_pass_torq = (J_pass_torq_all/dist_trav_tot - S.subject.IdealPoint_pass_torq)/(S.subject.NadirPoint_pass_torq - S.subject.IdealPoint_pass_torq);
+	
+%	Jall_sc = (W.E*norm_J_E)^100 + (W.a*norm_J_a)^100 + (W.q_dotdot*norm_J_q_dotdot)^100 + (W.pass_torq*norm_J_pass_torq)^100 + ;
+	
+%	if nq.torqAct > 0
+%		norm_J_e_arm = (J_arm_all/dist_trav_tot - S.subject.IdealPoint_e_arm)/(S.subject.NadirPoint_e_arm - S.subject.IdealPoint_e_arm);
+		
+%		Jall_sc = Jall_sc + (W.e_arm*norm_J_e_arm)^100;
+%	end
+%	Jall_sc = Jall_sc^(1/100) + (W.slack_ctrl*J_slack_ctrl_all)
+
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 disp(' ')
@@ -987,83 +1063,50 @@ for k=1:N
         Tau_passkj = full(f_casadi.AllPassiveTorques_cost(q_col_opt_unsc.rad(count,:),qdot_col_opt_unsc.rad(count,:)));
 
         % objective function
-        if S.weights.normalization == false
-            J_opt = J_opt + 1/(dist_trav_opt)*(...
-                W.E*B(j+1)          *(f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt + ...
-                W.a*B(j+1)          *(f_casadi.J_muscles(a_col_opt(count,:)))*h_opt + ...
-                W.q_dotdot*B(j+1)   *(f_casadi.J_not_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.noarmsi)))*h_opt + ...
-                W.pass_torq*B(j+1)  *(f_casadi.J_lim_torq(Tau_passkj))*h_opt + ... 
-                W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(vA_opt(k,:)))*h_opt + ...
-                W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt);
-                
-            if nq.torqAct > 0
-                J_opt = J_opt + 1/(dist_trav_opt)*(W.e_arm*B(j+1)      *(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt);
-    
-                Actu_cost = Actu_cost + W.e_arm*B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
-                Actu_cost2 = Actu_cost2 + B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
-            end
-            if nq.arms > 0
-                J_opt = J_opt + 1/(dist_trav_opt)*(W.slack_ctrl*B(j+1) *(f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt);
-    
-                QdotdotArm_cost = QdotdotArm_cost + W.slack_ctrl*B(j+1)*...
-                    (f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
-    
-                QdotdotArm_cost2 = QdotdotArm_cost2 + B(j+1)*...
-                    (f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
-            end
-    
-            E_cost = E_cost + W.E*B(j+1)*...
-                (f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt;
-            A_cost = A_cost + W.a*B(j+1)*...
-                (f_casadi.J_muscles(a_col_opt(count,:)))*h_opt;      
-            Qdotdot_cost = Qdotdot_cost + W.q_dotdot*B(j+1)*...
-                (f_casadi.J_not_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.noarmsi)))*h_opt;
-            Pass_cost = Pass_cost + W.pass_torq*B(j+1)*...
-                (f_casadi.J_lim_torq(Tau_passkj))*h_opt;
-            vA_cost = vA_cost + W.slack_ctrl*B(j+1)*...
-                (f_casadi.J_muscles(vA_opt(k,:)))*h_opt;
-            dFTtilde_cost = dFTtilde_cost + W.slack_ctrl*B(j+1)*...
-                (f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt;
-            % normalization
-        elseif S.weights.normalization == true
-            J_opt = J_opt + 1/(dist_trav_opt)*(...
-                W.E* ( B(j+1)          *(f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt - S.subject.IdealPoint_E)/(S.subject.NadirPoint_E-S.subject.IdealPoint_E) + ...
-                W.a* ( B(j+1)          *(f_casadi.J_muscles(a_col_opt(count,:)))*h_opt - S.subject.IdealPoint_a)/(S.subject.NadirPoint_a-S.subject.IdealPoint_a) + ...
-                W.q_dotdot* ( B(j+1)   *(f_casadi.J_not_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.noarmsi)))*h_opt - S.subject.IdealPoint_q_dotdot)/(S.subject.NadirPoint_q_dotdot-S.subject.IdealPoint_q_dotdot) + ...
-                W.pass_torq* ( B(j+1)  *(f_casadi.J_lim_torq(Tau_passkj))*h_opt - S.subject.IdealPoint_pass_torq)/(S.subject.NadirPoint_pass_torq-S.subject.IdealPoint_pass_torq) + ... 
-                W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(vA_opt(k,:)))*h_opt + ...
-                W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt);
-
-            if nq.torqAct > 0
-                J_opt = J_opt + 1/(dist_trav_opt)*(W.e_arm* ( B(j+1)      *(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt - S.subject.IdealPoint_e_arm)/(S.subject.NadirPoint_e_arm-S.subject.IdealPoint_e_arm) );
-    
-                Actu_cost = Actu_cost + W.e_arm*(B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt - S.subject.IdealPoint_e_arm)/(S.subject.NadirPoint_e_arm-S.subject.IdealPoint_e_arm);
-                Actu_cost2 = Actu_cost2 + B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
-            end
-            if nq.arms > 0
-                J_opt = J_opt + 1/(dist_trav_opt)*(W.slack_ctrl*B(j+1) *(f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt);
-    
-                QdotdotArm_cost = QdotdotArm_cost + W.slack_ctrl*B(j+1)*...
-                    (f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
-    
-                QdotdotArm_cost2 = QdotdotArm_cost2 + B(j+1)*...
-                    (f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
-            end
+		J_opt = J_opt + 1/(dist_trav_opt)*(...
+			W.E*B(j+1)          *(f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt + ...
+			W.a*B(j+1)          *(f_casadi.J_muscles(a_col_opt(count,:)))*h_opt + ...
+			W.q_dotdot*B(j+1)   *(f_casadi.J_not_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.noarmsi)))*h_opt + ...
+			W.pass_torq*B(j+1)  *(f_casadi.J_lim_torq(Tau_passkj))*h_opt + ... 
+			W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(vA_opt(k,:)))*h_opt + ...
+			W.slack_ctrl*B(j+1) *(f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt);
 			
-            E_cost = E_cost + W.E*...
-				(B(j+1)*(f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt - S.subject.IdealPoint_E)/(S.subject.NadirPoint_E-S.subject.IdealPoint_E);
-            A_cost = A_cost + W.a*...
-				(B(j+1)*(f_casadi.J_muscles(a_col_opt(count,:)))*h_opt - S.subject.IdealPoint_a)/(S.subject.NadirPoint_a-S.subject.IdealPoint_a);      
-            Qdotdot_cost = Qdotdot_cost + W.q_dotdot*...
-				(B(j+1)*(f_casadi.J_not_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.noarmsi)))*h_opt - S.subject.IdealPoint_q_dotdot)/(S.subject.NadirPoint_q_dotdot-S.subject.IdealPoint_q_dotdot);
-            Pass_cost = Pass_cost + W.pass_torq*...
-				(B(j+1)*(f_casadi.J_lim_torq(Tau_passkj))*h_opt - S.subject.IdealPoint_pass_torq)/(S.subject.NadirPoint_pass_torq-S.subject.IdealPoint_pass_torq);
-            vA_cost = vA_cost + W.slack_ctrl*B(j+1)*...
-				(f_casadi.J_muscles(vA_opt(k,:)))*h_opt;
-            dFTtilde_cost = dFTtilde_cost + W.slack_ctrl*B(j+1)*...
-				(f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt;
-        end
+		if nq.torqAct > 0
+			J_opt = J_opt + 1/(dist_trav_opt)*(W.e_arm*B(j+1)      *(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt);
 
+			Actu_cost = Actu_cost + W.e_arm*B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
+		end
+		
+		if nq.arms > 0
+			J_opt = J_opt + 1/(dist_trav_opt)*(W.slack_ctrl*B(j+1) *(f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt);
+
+			QdotdotArm_cost = QdotdotArm_cost + W.slack_ctrl*B(j+1)*...
+				(f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
+		end
+
+		E_cost = E_cost + W.E*B(j+1)*...
+			(f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt;
+		A_cost = A_cost + W.a*B(j+1)*...
+			(f_casadi.J_muscles(a_col_opt(count,:)))*h_opt;      
+		Qdotdot_cost = Qdotdot_cost + W.q_dotdot*B(j+1)*...
+			(f_casadi.J_not_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.noarmsi)))*h_opt;
+		Pass_cost = Pass_cost + W.pass_torq*B(j+1)*...
+			(f_casadi.J_lim_torq(Tau_passkj))*h_opt;
+		vA_cost = vA_cost + W.slack_ctrl*B(j+1)*...
+			(f_casadi.J_muscles(vA_opt(k,:)))*h_opt;
+		dFTtilde_cost = dFTtilde_cost + W.slack_ctrl*B(j+1)*...
+			(f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt;
+        
+
+		if nq.torqAct > 0
+			Actu_cost2 = Actu_cost2 + B(j+1)*(f_casadi.J_torq_act(e_a_opt(k,:)))*h_opt;
+		end
+		
+		if nq.arms > 0
+			QdotdotArm_cost2 = QdotdotArm_cost2 + B(j+1)*...
+				(f_casadi.J_arms_dof(qdotdot_col_opt(count,model_info.ExtFunIO.jointi.armsi)))*h_opt;
+		end
+			
         % Get the objective value without weight
         E_cost2 = E_cost2 + B(j+1)*...
             (f_casadi.J_muscles_exp(e_tot_opt_all,W.E_exp))/model_info.mass*h_opt;
@@ -1077,6 +1120,7 @@ for k=1:N
             (f_casadi.J_muscles(vA_opt(k,:)))*h_opt;
         dFTtilde_cost2 = dFTtilde_cost2 + B(j+1)*...
             (f_casadi.J_muscles(dFTtilde_col_opt(count,:)))*h_opt;
+			
         count = count + 1;
     end
 end
@@ -1099,29 +1143,90 @@ vA_costf2 = full(vA_cost2);
 dFTtilde_costf2 = full(dFTtilde_cost2);
 QdotdotArm_costf2 = full(QdotdotArm_cost2);
 
+% RECALCULATE J_OPTF if normalization ocurrs
+if S.weights.normalization
 
-contributionCost.absoluteValues = 1/(dist_trav_opt)*[E_costf,A_costf,...
+	J_optf = 0;
+	E_cost_opt = 0;
+	A_cost_opt = 0;
+	Qdotdot_cost_opt = 0;
+	Pass_cost_opt = 0;
+	Arm_cost_opt = 0;
+	
+	% weighted cost term
+	E_cost_opt = W.E*(E_costf2/dist_trav_opt - S.subject.IdealPoint_E)/(S.subject.NadirPoint_E-S.subject.IdealPoint_E);
+	
+	A_cost_opt = W.a*(A_costf2/dist_trav_opt - S.subject.IdealPoint_a)/(S.subject.NadirPoint_a-S.subject.IdealPoint_a);
+	
+	Qdotdot_cost_opt = W.q_dotdot*(Qdotdot_costf2/dist_trav_opt - S.subject.IdealPoint_q_dotdot)/(S.subject.NadirPoint_q_dotdot-S.subject.IdealPoint_q_dotdot);
+	
+	Pass_cost_opt = W.pass_torq*(Pass_costf2/dist_trav_opt - S.subject.IdealPoint_pass_torq)/(S.subject.NadirPoint_pass_torq-S.subject.IdealPoint_pass_torq);
+	
+	J_optf = E_cost_opt + A_cost_opt + Qdotdot_cost_opt + Pass_cost_opt;
+	
+	if nq.torqAct > 0
+		Arm_cost_opt = W.e_arm*(Arm_costf2/dist_trav_opt - S.subject.IdealPoint_e_arm)/(S.subject.NadirPoint_e_arm-S.subject.IdealPoint_e_arm);
+		J_optf = J_optf + Arm_cost_opt;
+	end
+	
+	% slack term
+	J_optf =  J_optf + W.slack_ctrl * (vA_costf2 + dFTtilde_costf2)/dist_trav_opt;
+	
+	if nq.arms > 0
+		J_optf = J_optf + W.slack_ctrl * QdotdotArm_costf2/dist_trav_opt;
+	end
+end
+
+
+% contribution of normlaized metabolic cost with weight
+if ~S.weights.normalization
+
+	contributionCost.absoluteValues = 1/(dist_trav_opt)*[E_costf,A_costf,...
     Arm_costf,Qdotdot_costf,Pass_costf,vA_costf,dFTtilde_costf,...
     QdotdotArm_costf];
+	
+	contributionCost.relativeValues = 1/(dist_trav_opt)*[E_costf,A_costf,...
+    Arm_costf,Qdotdot_costf,Pass_costf,vA_costf,dFTtilde_costf,...
+    QdotdotArm_costf]./J_optf*100;
+	
+elseif S.weights.normalization
 
+	contributionCost.absoluteValues = [E_cost_opt,A_cost_opt, Arm_costf2, Qdotdot_cost_opt, Pass_cost_opt, vA_costf/dist_trav_opt, dFTtilde_costf/dist_trav_opt, QdotdotArm_costf/dist_trav_opt];
+	
+	contributionCost.relativeValues = [E_cost_opt,A_cost_opt, Arm_costf2, Qdotdot_cost_opt,Pass_cost_opt, vA_costf/dist_trav_opt, dFTtilde_costf/dist_trav_opt, QdotdotArm_costf/dist_trav_opt]./J_optf*100;
+	
+end
+
+% contribution of real metabolic cost without weight
 contributionCost.absoluteValues_noweight = 1/(dist_trav_opt)*[E_costf2,A_costf2,...
     Arm_costf2,Qdotdot_costf2,Pass_costf2,vA_costf2,dFTtilde_costf2,...
     QdotdotArm_costf2];
-
-contributionCost.relativeValues = 1/(dist_trav_opt)*[E_costf,A_costf,...
-    Arm_costf,Qdotdot_costf,Pass_costf,vA_costf,dFTtilde_costf,...
-    QdotdotArm_costf]./J_optf*100;
+	
 contributionCost.relativeValuesRound2 = ...
     round(contributionCost.relativeValues,2);
+	
 contributionCost.labels = {'metabolic energy','muscle activation',...
     'actuator excitation','joint accelerations','limit torques','dadt','dFdt',...
     'arm accelerations'};
 
 % assertCost should be 0
-assertCost = abs(J_optf - 1/(dist_trav_opt)*(E_costf+A_costf + Arm_costf + ...
+if S.weights.normalization == false
+
+    assertCost = abs(J_optf - 1/(dist_trav_opt)*(E_costf+A_costf + Arm_costf + ...
     Qdotdot_costf + Pass_costf + vA_costf + dFTtilde_costf + QdotdotArm_costf));
 
+elseif S.weights.normalization == true
+
+    assertCost =  abs(J_optf - ...
+    (E_cost_opt + A_cost_opt + Qdotdot_cost_opt + Pass_cost_opt + Arm_cost_opt + ...
+    W.slack_ctrl * (vA_costf2 + dFTtilde_costf2 + QdotdotArm_costf2)/dist_trav_opt));
+
+end
+
 assertCost2 = abs(stats.iterations.obj(end) - J_optf);
+
+R.assert.Cost1 = assertCost;
+R.assert.Cost2 = assertCost2;
 
 if assertCost > 1*10^(-S.solver.tol_ipopt)
     disp('Issue when reconstructing optimal cost wrt sum of terms')

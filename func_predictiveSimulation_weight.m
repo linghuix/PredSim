@@ -4,14 +4,14 @@
 % variables muscle weakness/assistive torque/optimal fiber length/
 % /walking speed/
 
-% assistance_input  :  ['w1', 'w2', 'w3', 'w4', 'w5']
+% weight_input  :  ['w1', 'w2', 'w3', 'w4', 'w5']
 
 
 function [] = func_predictiveSimulation_weight(weight_input)
 
 
     % Display the array using disp
-    disp('Assistance [T1, Fmax, T2, T3] are:');
+    disp("weight_input  :  ['w1', 'w2', 'w3', 'w4', 'w5'] are:");
     disp(weight_input);
 
         
@@ -42,7 +42,7 @@ function [] = func_predictiveSimulation_weight(weight_input)
     
     % Loop through each number, convert to string, replace '.' with '_'
     for i = 1:length(weight_input)
-        formatted_numbers{i} = strrep(sprintf('%.2f', weight_input(i)), '.', '_');
+        formatted_numbers{i} = strrep(sprintf('%.3f', weight_input(i)), '.', '_');
     end
     S.weights.string = strjoin(formatted_numbers, '__');
     S.weights.type = ['bilevel']
@@ -78,7 +78,7 @@ function [] = func_predictiveSimulation_weight(weight_input)
     
     % S.metabolicE - metabolic energy
     % S.metabolicE.tanh_b = 100;
-    S.metabolicE.model = 'Bhargava2004';
+%     S.metabolicE.model = 'Bhargava2004';
 %    S.metabolicE.model = 'Umberger2010';
 %      S.metabolicE.model = 'Uchida2016';
     
@@ -221,7 +221,7 @@ function [] = func_predictiveSimulation_weight(weight_input)
         run_this_file_to_plot_figures
     end
 
-    disp('Assistance [T1, Fmax, T2, T3] are:');
+    disp("weight_input  :  ['w1', 'w2', 'w3', 'w4', 'w5'] are:");
     disp(weight_input);
         
 end

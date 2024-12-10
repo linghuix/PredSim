@@ -18,6 +18,8 @@ results_folder = fullfile(pathRepo, 'PredSimResults\DHondt_2023_3seg_normalbilev
 % Open a log file to save output
 logFile = fullfile(results_folder, 'bo_rmse.txt');
 savedfilename = fullfile(results_folder, 'bo_rmse.mat');
+define_NumSeedPoints = 50;
+define_MaxObjectiveEvaluations = 200;
 
 diary(logFile);  % Start logging to the file
 
@@ -44,8 +46,7 @@ vars = [
     optimizableVariable('w4', [0, 1], 'Type', 'real')
 ];
 
-define_NumSeedPoints = 50;
-define_MaxObjectiveEvaluations = 100;
+
 
 % Check if a saved progress file exists
 if isfile(savedfilename)
@@ -120,19 +121,21 @@ function objective = Simulation(w)
 %     return 
 
     % Generate result folder path
+%     w.w1=0.1;w.w2=0.2;w.w3=0.2;w.w4=0.1;
     w5 = 1- sum([w.w1, w.w2, w.w3, w.w4]);
     weights = [w.w1, w.w2, w.w3, w.w4 w5];
     formatted_numbers = cell(1, length(weights));
     % Loop through each number, convert to string, replace '.' with '_'
     for i = 1:length(weights)
-        formatted_numbers{i} = strrep(sprintf('%.1f', weights(i)), '.', '_');
+        formatted_numbers{i} = strrep(sprintf('%.3f', weights(i)), '.', '_');
     end
     File.string = strjoin(formatted_numbers, '__');
 
-    File.folder = [ File.string 'hipAssistance'];
+    File.folder = [ File.string 'weight'];
+
 
     folder_path_1 = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation\PredSimResults';
-    folder_path_2 = 'DHondt_2023_3seg_0.1strengthbilevel';
+    folder_path_2 = 'DHondt_2023_3seg_normalbilevel';
     folder_path_3 = 'DHondt_2023_3seg_v1.mat';
     File.path = fullfile(folder_path_1, folder_path_2, File.folder, folder_path_3);
 
@@ -141,7 +144,7 @@ function objective = Simulation(w)
         disp('File exists.');
     else
         disp('File does not exist. run MATLAB code to generate it');
-        predictiveSimulation(weights);
+        func_predictiveSimulation_weight(weights);
     end
 
     % Get ROM of kinematics

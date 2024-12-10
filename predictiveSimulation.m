@@ -7,10 +7,22 @@
 % assistance_input  :  ['T1', 'Fmax', 'T2', 'T3']
 
 
-function [] = predictiveSimulation(assistance_input)
-    % Display the array using disp
-    disp('Assistance [T1, Fmax, T2, T3] are:');
-    disp(assistance_input);
+function [] = predictiveSimulation(assistance_input, paraSet)
+
+    if strcmp(paraSet, 'trapezoid_firstfix')
+        % Display the array using disp
+        disp('Assistance [T1, Fmax, T2, T3] are:');
+        disp(assistance_input);
+
+    elseif strcmp(paraSet, 'trapezoid')
+        disp('Assistance [T1, Fmax, T2, T3, T4] are:');
+        disp(assistance_input);
+
+    elseif strcmp(paraSet, 'bio')
+        disp('Assistance [T1, T2, T3, T4, T5, F1, F2, F3] are:');
+        disp(assistance_input);
+        
+    end
 
     for ww = 0.1
         
@@ -45,21 +57,59 @@ function [] = predictiveSimulation(assistance_input)
             S.Exo.Hip.type = [''];
         
             if S.Exo.Hip.available
-                S.Exo.Hip.assist.parameter = assistance_input;
-                S.Exo.Hip.assist.label = {'T1', 'Fmax', 'T2', 'T3'};
+                
+                if strcmp(paraSet, 'trapezoid_firstfix')
+                    S.Exo.Hip.assist.parameter = assistance_input;
+                    S.Exo.Hip.assist.label = {'T1', 'Fmax', 'T2', 'T3'};
+    
+                    formatted_numbers = cell(1, length(assistance_input));
+                    % Loop through each number, convert to string, replace '.' with '_'
+                    for i = 1:length(assistance_input)
+                        formatted_numbers{i} = strrep(sprintf('%.1f', assistance_input(i)), '.', '_');
+                    end
+                    S.Exo.Hip.assist.string = strjoin(formatted_numbers, '__');
+    
+                    S.Exo.Hip.type = ['bilevel']
+            
+                    S.Exo.Hip.TorLeft = zeros(1,50);S.Exo.Hip.TorRight=zeros(1,50);
+                    [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern_T(assistance_input,0);
+                    S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
-                formatted_numbers = cell(1, length(assistance_input));
-                % Loop through each number, convert to string, replace '.' with '_'
-                for i = 1:length(assistance_input)
-                    formatted_numbers{i} = strrep(sprintf('%.1f', assistance_input(i)), '.', '_');
+                elseif strcmp(paraSet, 'trapezoid')
+                    S.Exo.Hip.assist.parameter = assistance_input;
+                    S.Exo.Hip.assist.label = {'T1', 'Fmax', 'T2', 'T3', 'T4'};
+%                     disp('Assistance [T1, Fmax, T2, T3, T4] are:');
+                    S.Exo.Hip.type = ['bilevel_trapezoid'];
+
+                    formatted_numbers = cell(1, length(assistance_input));
+                    % Loop through each number, convert to string, replace '.' with '_'
+                    for i = 1:length(assistance_input)
+                        formatted_numbers{i} = strrep(sprintf('%.1f', assistance_input(i)), '.', '_');
+                    end
+                    S.Exo.Hip.assist.string = strjoin(formatted_numbers, '__');
+
+                    S.Exo.Hip.TorLeft = zeros(1,50);
+                    S.Exo.Hip.TorRight=zeros(1,50);
+                    [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = T_trapezoid(assistance_input, 0);
+                    S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+
+                 elseif strcmp(paraSet, 'bio')
+                    S.Exo.Hip.assist.parameter = assistance_input;
+                    S.Exo.Hip.assist.label = {'T1', 'T2', 'T3', 'T4', 'T5', 'F1', 'F2', 'F3'};
+                    S.Exo.Hip.type = ['bilevel_bio'];
+
+                    formatted_numbers = cell(1, length(assistance_input));
+                    % Loop through each number, convert to string, replace '.' with '_'
+                    for i = 1:length(assistance_input)
+                        formatted_numbers{i} = strrep(sprintf('%.1f', assistance_input(i)), '.', '_');
+                    end
+                    S.Exo.Hip.assist.string = strjoin(formatted_numbers, '__');
+
+                    S.Exo.Hip.TorLeft = zeros(1,50);
+                    S.Exo.Hip.TorRight=zeros(1,50);
+                    [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = T_bio(assistance_input, 0);
+                    S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
                 end
-                S.Exo.Hip.assist.string = strjoin(formatted_numbers, '__');
-
-                S.Exo.Hip.type = ['bilevel']
-        
-                S.Exo.Hip.TorLeft = zeros(1,50);S.Exo.Hip.TorRight=zeros(1,50);
-                [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern_T(assistance_input,0);
-                S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
             end
         
@@ -211,13 +261,8 @@ function [] = predictiveSimulation(assistance_input)
                 addpath(fullfile(S.misc.main_path,'PlotFigures'))
                 % call plotting script
                 run_this_file_to_plot_figures
-            end
-
-            disp('Assistance [T1, Fmax, T2, T3] are:');
-            disp(assistance_input);
-        
+            end 
     end
-
 end
 
 
@@ -243,28 +288,6 @@ end
 % Outputs:
 %   TorLeft  - A vector containing the interpolated torque profile for the left leg
 %   TorRight - A vector containing the interpolated torque profile for the right leg
-%
-% Methodology:
-% - The function starts by extracting the gait phase times (T1, T2, T3) and peak torque (Fmax) from the 
-%   input vector.
-% - It then defines the torque profile points with zero torque at the start and end, and the peak torque 
-%   maintained between T1 and T2.
-% - Linear interpolation (`interp1`) is used to generate torque values over the entire gait phase.
-% - The function ensures the torque is aligned to a 100-point gait cycle by adding zeros for the phases 
-%   outside the defined times.
-% - The torque profile is then adjusted for left and right legs, where the left leg torque is shifted by 
-%   half a gait cycle.
-% - Depending on the `fullgaitcycle` flag, the function either returns a torque profile for the full gait 
-%   cycle (0-100%) or for half a gait cycle (0-50%).
-%
-% Usage Example:
-%   [TorLeft, TorRight] = Torque_pattern_T([20, 50, 60, 80], 1);
-%   This will generate the left and right torque patterns for a full gait cycle based on the input parameters.
-%
-% Notes:
-% - The function assumes a 100-point gait cycle, where each point corresponds to 1% of the cycle.
-% - The torque profile is symmetric between the left and right legs, but the left leg's profile is shifted 
-%   by 50% of the gait cycle to account for typical human walking patterns (where the right leg leads).
 
 
 % T1/T2/T3 0-99 percent   any two variables cannot be the same value
@@ -303,4 +326,130 @@ function [TorLeft, TorRight] = Torque_pattern_T(assistance_input, fullgaitcycle)
         TorLeft = TorLeft(1:50);
         TorRight = TorRight(1:50);
     end
+end
+
+function [TorLeft, TorRight, phase] = T_bio(assistance_input, fullgait)
+% Example usage:
+%  [l, r, g] = T_trapezoid([  15 20 80 90 10])   %{'T1', 'Fmax', 'T2', 'T3', 'T4'};
+%  plot(g, r)
+
+%  [l, r, g] = T_trapezoid([  15 20 80 90 10], 0)   %{'T1', 'Fmax', 'T2', 'T3', 'T4'};
+%  plot(g(1:50), r); hold on; plot(g(51:end), l)
+
+    phase = 0:99;
+
+    Ph_1 = assistance_input(1);
+    Ph_2 = assistance_input(2);
+    Ph_3 = assistance_input(3);
+    Ph_4 = assistance_input(4);
+    Ph_5 = assistance_input(5);
+    peakTor1 = assistance_input(6);
+    peakTor2 = assistance_input(7);
+    peakTor3 = assistance_input(8);
+
+    x = [0, Ph_1,    Ph_2, Ph_3, Ph_4, Ph_5, 99];
+    y = [0, 0, peakTor1, peakTor2, peakTor3, 0, 0];
+
+    Tor = generateCurve(x, y, 'pchip');
+    if fullgait == 1
+        TorLeft = [Tor.y(51:end) Tor.y(1:50)];      % right leg is first in exp
+        TorRight = Tor.y;
+    else
+        TorLeft = Tor.y(51:end);      % right leg is first in exp
+        TorRight = Tor.y(1:50);
+    end
+
+end
+
+
+function [TorLeft, TorRight, phase] = T_trapezoid(assistance_input, fullgait)
+% Example usage:
+%  [l, r, g] = T_trapezoid([  15 20 80 90 10])   %{'T1', 'Fmax', 'T2', 'T3', 'T4'};
+%  plot(g, r)
+
+%  [l, r, g] = T_trapezoid([  15 20 80 90 10], 0)   %{'T1', 'Fmax', 'T2', 'T3', 'T4'};
+%  plot(g(1:50), r); hold on; plot(g(51:end), l)
+
+    phase = 0:99;
+
+    Ph_1 = assistance_input(1);
+    peakTor = assistance_input(2);
+    Ph_2 = assistance_input(3);
+    Ph_3 = assistance_input(4);
+    Ph_4 = assistance_input(5);
+
+    x = [0, Ph_4,    Ph_1, Ph_2, Ph_3, 99];
+    y = [0, 0, peakTor, peakTor, 0, 0];
+
+    Tor = generateCurve(x, y, 'linear');
+    if fullgait == 1
+        TorLeft = [Tor.y(51:end) Tor.y(1:50)];      % right leg is first in exp
+        TorRight = Tor.y;
+    else
+        TorLeft = Tor.y(51:end);      % right leg is first in exp
+        TorRight = Tor.y(1:50);
+    end
+
+end
+
+
+function curve = generateCurve(x, y, method)
+% GENERATECURVE Generate a curve through given points using specified interpolation.
+%
+% Inputs:
+%   x      - A vector of x-coordinates of the points.
+%   y      - A vector of y-coordinates of the points (same length as x).
+%   method - A string specifying the interpolation method ('spline', 'linear',
+%           'nearest', 'pchip', 'cubic', 'v5cubic', 'makima', 'quadratic' etc.).
+%
+% !! Note : (x,y) points cannot have repeated point
+%
+% Output:
+%   curve - A structure containing the interpolated curve data:
+%           curve.x - Interpolated x-coordinates.
+%           curve.y - Interpolated y-coordinates.
+%
+% Example usage:
+%   x = [1, 2, 3, 4];
+%   y = [1, 4, 9, 16];
+%   curve = generateCurve(x, y, 'spline');
+%   plot(curve.x, curve.y, '-r', x, y, 'o');
+%
+% %% case 1
+% x_phase  = [0, 10, 30, 50, 70, 99];
+% y_torque = [0, 40, 20, 50, 0,  0];
+% curve = generateCurve(x_phase, y_torque, 'pchip');
+% plot(curve.x, curve.y, '-r', x_phase, y_torque, 'o'); % Plot interpolated curve and original points
+% 
+%
+% %% case 2
+% x_phase = [0, 5, 10, 30, 40, 50, 70, 100];
+% y_torque = [0, 0, 40, 0, 0, 50, 0, 0];
+% curve = generateCurve(x_phase, y_torque, 'pchip');
+% plot(curve.x, curve.y, '-r', x_phase, y_torque, 'o'); % Plot interpolated curve and original points
+
+    % Validate inputs
+    if length(x) ~= length(y)
+        error('Vectors x and y must have the same length.');
+    end
+    if length(x) < 2
+        error('At least two points are required to generate a curve.');
+    end
+    if ~ischar(method) && ~isstring(method)
+        error('Method must be a string specifying the interpolation method.');
+    end
+
+    % Generate a dense set of x-coordinates for interpolation
+    x_dense = linspace(min(x), max(x), 100); % Adjust density as needed
+
+    % Perform interpolation based on the selected method
+    try
+        y_dense = interp1(x, y, x_dense, method);
+    catch ME
+        error('Interpolation failed: %s', ME.message);
+    end
+
+    % Store the interpolated curve data in the output structure
+    curve.x = x_dense;
+    curve.y = y_dense;
 end

@@ -16,10 +16,25 @@ function analyze_PointKinematics()
 %     folders_forSearch = {'_0hipAssistance', '_10hipAssistance', '_20hipAssistance', '_30hipAssistance', '_40hipAssistance', ...
 %                '_50hipAssistance', '_60hipAssistance', '_70hipAssistance', ...
 %                '_80hipAssistance', '_90hipAssistance'};
-    folders_forSearch = {''};
+
+    % % weak muscle model
+    scenario_List = {['DHondt_2023_3seg' '_1strength'], ['DHondt_2023_3seg' '_v2.mot'], 'Normal';...
+                      'weakness\DHondt_2023_3seg_0.9strength', ['DHondt_2023_3seg' '_v2.mot'], '90% strength';...
+                      'weakness\DHondt_2023_3seg_0.8strength', ['DHondt_2023_3seg' '_v3.mot'], '80% strength';...
+                      'weakness\DHondt_2023_3seg_0.7strength', ['DHondt_2023_3seg' '_v3.mot'], '70% strength';...
+                      'weakness\DHondt_2023_3seg_0.6strength', ['DHondt_2023_3seg' '_job38.mot'], '60% strength'; ...
+                      'weakness\DHondt_2023_3seg_0.5strength', ['DHondt_2023_3seg' '_job44.mot'], '50% strength';...
+                      'weakness\DHondt_2023_3seg_0.4strength', ['DHondt_2023_3seg' '_job46.mot'], '40% strength'; ...
+                      'weakness\DHondt_2023_3seg_0.3strength', ['DHondt_2023_3seg' '_job59.mot'], '30% strength';...
+                      'weakness\DHondt_2023_3seg_0.2strength', ['DHondt_2023_3seg' '_job60.mot'], '20% strength'; ...
+                      'weakness\DHondt_2023_3seg_0.1strength', ['DHondt_2023_3seg' '_job64.mot'], '10% strength';...
+                      'weakness\DHondt_2023_3seg_0.05strength', ['DHondt_2023_3seg' '_job86.mot'], '5% strength'
+                      };
+
+    
 
     %% Define the root directory containing the results
-    root_folder =  fullfile(pathHere, 'PredSimResults\DHondt_2023_3seg_0.1strengthfixStepWidth');
+    root_folder =  fullfile(pathHere, 'PredSimResults\');
 
 
     % Define the model folder path
@@ -34,15 +49,15 @@ function analyze_PointKinematics()
 
 
     % Analyze motion data for each folder
-    for index = 1:length(folders_forSearch)
+    for index = 1:size(scenario_List, 1)
         % Construct the full path to the results folder
-        Results_folder = fullfile(root_folder, folders_forSearch{index});
+        Results_folder = fullfile(root_folder, scenario_List{index,1});
         
         % Construct the full path to the motion file (.mot)
-        motFile = fullfile(Results_folder, 'DHondt_2023_3seg_v2.mot');
+        motFile = fullfile(Results_folder, scenario_List{index,2});
 
         % Display a prompt indicating the current analysis folder
-        disp(['Running PointKinematics analysis for: ', folders_forSearch{index}]);
+        disp(['Running PointKinematics analysis for: ', scenario_List{index,1}]);
         disp(['motion file: ', motFile]);
 
         % % EDIT
@@ -66,7 +81,7 @@ function analyze_PointKinematics()
         save(fullfile(Results_folder, 'metric.mat'), 'S');
 
         % Display a prompt indicating completion of the current folder's analysis
-        disp(['Completed analysis for: ', folders_forSearch{index}]);
+        disp(['Completed analysis for: ', scenario_List{index,1}]);
 
 
 
@@ -91,7 +106,7 @@ function analyze_PointKinematics()
         save(fullfile(Results_folder, 'metric.mat'), 'S');
 
         % Display a prompt indicating completion of the current folder's analysis
-        disp(['Completed analysis for: ', folders_forSearch{index}]);
+        disp(['Completed analysis for: ', scenario_List{index,1}]);
 
 
 
@@ -116,7 +131,7 @@ function analyze_PointKinematics()
         save(fullfile(Results_folder, 'metric.mat'), 'S');
 
         % Display a prompt indicating completion of the current folder's analysis
-        disp(['Completed analysis for: ', folders_forSearch{index}]);
+        disp(['Completed analysis for: ', scenario_List{index,1}]);
 
 
 
@@ -142,7 +157,7 @@ function analyze_PointKinematics()
         save(fullfile(Results_folder, 'metric.mat'), 'S');
 
         % Display a prompt indicating completion of the current folder's analysis
-        disp(['Completed analysis for: ', folders_forSearch{index}]);
+        disp(['Completed analysis for: ', scenario_List{index,1}]);
 
 
 
@@ -168,7 +183,7 @@ function analyze_PointKinematics()
         save(fullfile(Results_folder, 'metric.mat'), 'S');
 
         % Display a prompt indicating completion of the current folder's analysis
-        disp(['Completed analysis for: ', folders_forSearch{index}]);
+        disp(['Completed analysis for: ', scenario_List{index,1}]);
     end
 end
 

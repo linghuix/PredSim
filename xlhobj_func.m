@@ -4,11 +4,12 @@
 
 % matfile - mat file location
 function [metric] = xlhobj_func(matfile, string)
-
+    
     if nargin < 2
         string = "weighted_rmse"; % Default value
     end
     
+%     matfile = "C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_0.1strengthbilevel\1_0__8_2__97_0__98_0hipAssistance\DHondt_2023_3seg_v1.mat"
     result = load(matfile);
 
     lumbar_bending = result.R.kinematics.Qs(:, result.model_info.ExtFunIO.coordi.lumbar_bending);
@@ -20,7 +21,7 @@ function [metric] = xlhobj_func(matfile, string)
         metric = metric_rmse(result);
 
     elseif strcmp(string, "rmse")
-        metric_rmse_even(result);
+        metric = metric_rmse_even(result);
 
     elseif strcmp(string, "pelvis_trunk_rom")
         metric = metric_ROM(pelvis_list, trunk_angle);
@@ -98,9 +99,6 @@ function [RMSE] = metric_rmse_even(results)
     control = load(control_paths);
     
     weight = ones(1,33); 
-    weight(results.model_info.ExtFunIO.coordi.pelvis_list) = 1;
-    weight(results.model_info.ExtFunIO.coordi.lumbar_bending) = 1;
-
     weight = weight./sum(weight);
 
     r = 100*ones(1,33);

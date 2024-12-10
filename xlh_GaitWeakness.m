@@ -18,28 +18,29 @@ results_folder = fullfile(pathRepo, 'PredSimResults');
 % model_subject = 'Falisse_et_al_2022';
 model_subject = 'DHondt_2023_3seg';
 % Define file paths for different result scenarios
-scenario_List = {[model_subject '_1strength'], [model_subject '_v1.mat'], 'Normal';...
-                  [model_subject '_0.9strength'], [model_subject '_v1.mat'], '90% strength';...
-                  [model_subject '_0.8strength'], [model_subject '_v1.mat'], '80% strength';...
-                  [model_subject '_0.7strength'], [model_subject '_v1.mat'], '70% strength';...
-                  [model_subject '_0.6strength'], [model_subject '_v1.mat'], '60% strength'; ...
-                  [model_subject '_0.5strength'], [model_subject '_v1.mat'], '50% strength';...
-                  [model_subject '_0.4strength'], [model_subject '_v1.mat'], '40% strength'; ...
-                  [model_subject '_0.3strength'], [model_subject '_v1.mat'], '30% strength';...
-                  [model_subject '_0.2strength'], [model_subject '_v1.mat'], '20% strength'; ...
-                  [model_subject '_0.1strength'], [model_subject '_v1.mat'], '10% strength';...
-                  [model_subject '_0.05strength'], [model_subject '_v1.mat'], '5% strength'
+scenario_List = { 'weakness\DHondt_2023_3seg_0.9strength', [model_subject '_v2.mat'], '90% strength';
+                  'weakness\DHondt_2023_3seg_0.8strength', [model_subject '_v3.mat'], '80% strength';
+                  'weakness\DHondt_2023_3seg_0.7strength', [model_subject '_v3.mat'], '70% strength';
+                  'weakness\DHondt_2023_3seg_0.6strength', [model_subject '_job38.mat'], '60% strength';
+                  'weakness\DHondt_2023_3seg_0.5strength', [model_subject '_job44.mat'], '50% strength';
+                  'weakness\DHondt_2023_3seg_0.4strength', [model_subject '_job46.mat'], '40% strength';
+                  'weakness\DHondt_2023_3seg_0.3strength', [model_subject '_job59.mat'], '30% strength';
+                  'weakness\DHondt_2023_3seg_0.2strength', [model_subject '_job60.mat'], '20% strength';
+                  'weakness\DHondt_2023_3seg_0.1strength', [model_subject '_job64.mat'], '10% strength';
+                  'weakness\DHondt_2023_3seg_0.05strength', [model_subject '_job86.mat'], '5% strength';
+                  [model_subject '_1strength'], [model_subject '_v2.mat'], 'Normal';
                   };
 
 
 % Construct full file paths for each scenario
 numScenario = size(scenario_List,1);
 result_paths = cell(1, numScenario);
-BodyKinematics_paths = cell(1, numScenario);
+BodyKinematics_paths = cell(1, numScenario); BodyV_paths = cell(1, numScenario);
 legend_names = cell(1, numScenario);
 for i = 1:numScenario
     result_paths{i} = fullfile(results_folder, scenario_List{i,1}, scenario_List{i,2});
     BodyKinematics_paths{i} = fullfile(results_folder, scenario_List{i}, ['_3-segment_foot_model_fixed_knee_axis_BodyKinematics_pos_global.sto']);
+    BodyV_paths{i} = fullfile(results_folder, scenario_List{i}, ['_3-segment_foot_model_fixed_knee_axis_BodyKinematics_vel_global.sto']);
 	legend_names{i} = scenario_List{i,3};
 end
 
@@ -48,6 +49,7 @@ end
 trunk_ang_toGRD = [];
 colors = hsv(length(result_paths));
 colorIndex = 1;
+colors_lines = [];
 for i=1:length(result_paths)
     % load selected result
     load(result_paths{i},'R','model_info');
@@ -55,7 +57,9 @@ for i=1:length(result_paths)
     if strcmp(scenario_List{i, 3}, 'Normal')
         colors(colorIndex,:) = [0 0 0];
     end
-    
+    colors_lines = [colors_lines; colors(colorIndex,:)];
+
+
     % load absolute value
     objective_V = R.objective.absoluteValues;
     E_cost = objective_V(1);
@@ -80,6 +84,7 @@ for i=1:length(result_paths)
 
     % load bodyKinematics
     Data_bodyKinematics = readtable(BodyKinematics_paths{i}, 'FileType', 'text');
+    Data_bodyV = readtable(BodyV_paths{i}, 'FileType', 'text');
 
     legendName = replace(legend_names{i},'_',' ');
 
@@ -203,11 +208,53 @@ for i=1:length(result_paths)
 
         title('Y CoM displacement')
 
+
+   % Extrapolated CoM displacement
+   figure(6)
+
+        eigenfrequency = sqrt(9.8/(1.34*0.91));    % g/(1.34*L)
+        XCoM = Data_bodyKinematics.center_of_mass_Z + Data_bodyV.center_of_mass_Z/eigenfrequency;
+        plot(Data_bodyKinematics.time, XCoM, 'color',colors(colorIndex,:), 'DisplayName',legendName,'LineWidth',2) 
+        hold off
+        xlabel('time (second)');
+        ylabel('displacement (meter)');
+        legend()
+        hold on
+        
+        title('Extrapolated CoM displacement')
+
+
     colorIndex = colorIndex+1;
 end
 
 
 %%  out of loop
+
+% figure for external Knee moment arm
+figure(100)
+MomArm_scenario_List = cell(size(scenario_List,1), size(scenario_List,2) + 1 );
+for i = 1:length(result_paths)
+    MomArm_scenario_List{i, 1} = scenario_List{i, 1};
+    MomArm_scenario_List{i, 2} = scenario_List{i, 2};
+    MomArm_scenario_List{i, 3} = scenario_List{i, 3};
+    MomArm_scenario_List{i, 4} = colors_lines(i,:);
+end
+
+xlh_kneeMomArm(MomArm_scenario_List, true);
+
+
+% figure for step width
+Step_scenario_List = cell(size(scenario_List,1), size(scenario_List,2) + 1 );
+for i = 1:length(result_paths)
+    Step_scenario_List{i, 1} = scenario_List{i, 1};
+    Step_scenario_List{i, 2} = 'metric.mat';
+    Step_scenario_List{i, 3} = scenario_List{i, 3};
+    Step_scenario_List{i, 4} = colors_lines(i,:);
+end
+xlh_stepwidth(Step_scenario_List, true)
+
+
+
 % figure for ROM of trunck swing during walking
 figure(10)
 

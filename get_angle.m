@@ -1,6 +1,9 @@
+
 % Return -180 - +180 degree.
-% sign   postive - from vector_1 to vector_2
+% sign   postive  - Vector_1 lies to the LEFT of Vector_2 
+%        negative - Vector_1 lies to the RIGHT of Vector_2 
 % 2D
+
 function Angle = get_angle(vector_1, vector_2)
 
     % angle < 90 or > -90

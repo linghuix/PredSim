@@ -1,69 +1,102 @@
 
-% load('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_0.1strengthfixStepWidth\metric.mat')
-% load('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_0.1strength\metric.mat')
-% load('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_1strength\metric.mat')
-load('C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_0.1strengthfixStepWidth\metric.mat')
+% xlh_stepWidth calculates and optionally plots the step width for different scenarios.
+%
+% This function computes the step width (difference in lateral positions of the 
+% right and left foot markers at landing) for each scenario provided in the input 
+% list. Optionally, it can plot the results using customizable colors for each scenario.
+%
+% Inputs:
+%   - scenario_List: A cell array where each row defines a scenario with the following columns:
+%       1. Scenario folder name (string)
+%       2. metric MAT file name (string)
+%       3. Legend name for labeling the plot (string)
+%       4. RGB color triplet for plotting (1x3 numeric array)
+%   - plotFlag: A boolean flag to enable (true) or disable (false) plotting. Default is false.
+%
+% Outputs:
+%   - step_width_results: A structured array with the following fields:
+%       1. name: The legend name of the scenario.
+%       2. step_width: The computed step width for the scenario.
+%
+% Example Usage:
+%   % Run with default scenarios and enable plotting:
+%   results = xlh_stepWidth([], true);
+%
+%   % Run with a custom scenario list and disable plotting:
+%   scenario_List = {
+%       'Scenario1', 'file1.mat', 'Scenario 1', [0.5, 0.7, 0.9];
+%       'Scenario2', 'file2.mat', 'Scenario 2', [0.9, 0.3, 0.5];
+%   };
+%   results = xlh_stepWidth(scenario_List, false);
+%
+% Author: [linghui]
+% Date: [01/12/2024]
 
+function [step_width_results] = xlh_stepwidth(scenario_List, plotFlag)
 
-% vertical
-[val,loca] = min(S.Foot_r2.xyz(:,2))
+    %% Default Input Handling
+    if nargin < 1 || isempty(scenario_List)
+        scenario_List = {   'DHondt_2023_3seg_0.1strengthfixStepWidth', 'metric.mat', '10% strength fix', [0.2, 0.6, 0.8];
+                            'DHondt_2023_3seg_0.1strength', 'metric.mat', '10% strength', [0.8, 0.2, 0.2];
+                            'DHondt_2023_3seg_1strength', 'metric.mat', 'Normal', [0, 0, 0];
+                        };
+        warning('Input scenario_List is empty. Using default list.');
+    end
 
-% medial lateral
-lateral = S.Foot_r2.xyz(:,3);
-R1 = lateral(loca)
+    if nargin < 2 || isempty(plotFlag)
+        plotFlag = true; % Default to no plotting
+    end
 
+    %% Initialize Variables
+    root_folder = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation\PredSimResults';
 
+    numScenario = size(scenario_List, 1);
+    result_paths = cell(1, numScenario);
+    legend_names = cell(1, numScenario);
+    plot_colors = cell(1, numScenario);
+    step_width_results = struct; % Store results for all scenarios
 
+    % Prepare paths, names, and colors
+    for i = 1:numScenario
+        result_paths{i} = fullfile(root_folder, scenario_List{i, 1}, scenario_List{i, 2});
+        legend_names{i} = scenario_List{i, 3};
+        plot_colors{i} = scenario_List{i, 4};
+    end
 
+    %% Process Each Scenario
+    step_widths = zeros(1, numScenario); % Preallocate step widths
+    for i = 1:numScenario
+        R = load(result_paths{i});
 
-% vertical
-[val,loca] = min(S.Foot_l2.xyz(:,2))
+        % Get marker Foot_r2's lateral location when landing
+        [~, loca_r] = min(R.S.Foot_r2.xyz(:, 2)); % Vertical min (landing)
+        lateral_r = R.S.Foot_r2.xyz(loca_r, 3); % Lateral position
 
-% medial lateral
-lateral = S.Foot_l2.xyz(:,3);
-L1 = lateral(loca)
+        % Get marker Foot_l2's lateral location when landing
+        [~, loca_l] = min(R.S.Foot_l2.xyz(:, 2)); % Vertical min (landing)
+        lateral_l = R.S.Foot_l2.xyz(loca_l, 3); % Lateral position
 
+        % Compute Step Width
+        step_width = lateral_r - lateral_l;
+        step_widths(i) = step_width;
 
-stepWith = R1 - L1
+        % Store Results
+        step_width_results(i).name = legend_names{i};
+        step_width_results(i).step_width = step_width;
+    end
 
+    %% Plot Results if Enabled
+    if plotFlag
+        figure;
+        for i = 1:numScenario
+            bar(i, step_widths(i), 'FaceColor', plot_colors{i}, 'DisplayName', legend_names{i});
+            hold on;
+        end
+        set(gca, 'XTick', 1:numScenario, 'XTickLabel', legend_names, 'XTickLabelRotation', 45);
+        ylabel('Step Width (m)');
+        title('Step Width for Different Scenarios');
+        legend show;
+        hold off;
+    end
 
-%% keen joint center
-load('PredSimResults\DHondt_2023_3seg_0.1strength\DHondt_2023_3seg_v1.mat')
-load('PredSimResults\DHondt_2023_3seg_0.1strength\metric.mat')
-
-
-% load('PredSimResults\DHondt_2023_3seg_1strength\DHondt_2023_3seg_v1.mat')
-% load('PredSimResults\DHondt_2023_3seg_1strength\metric.mat')
-
-knee = (S.rknee.xyz + S.rkneemed.xyz)/2;
-knee = knee(1:200,:);
-
-% load R
-vector_cop_toknee = knee - R.ground_reaction.COP_r;
-
-vector_F = R.ground_reaction.GRF_r;
-th = []; moment_arm = [];
-for i = R.ground_reaction.idx_stance_r'
-
-    vector_1 = vector_cop_toknee(i,2:3);
-    vector_2 = vector_F(i,2:3);
-
-    dot_product = dot(vector_1, vector_2);
-    
-%     % 计算模
-    norm_A = norm(vector_1);
-    norm_B = norm(vector_2);
-
-    
-    % 计算夹角（以度为单位）
-    theta_2 = get_angle([0 1], vector_2);
-    theta_1 = get_angle([0 1], vector_1);
-
-    theta = theta_2-theta_1
-    moment_arm_i = norm_A * sind(theta);
-
-    th = [th theta];
-    moment_arm = [moment_arm moment_arm_i];
 end
-
-plot(moment_arm)

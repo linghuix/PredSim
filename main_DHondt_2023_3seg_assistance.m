@@ -8,74 +8,57 @@ function [] = main_DHondt_2023_3seg_assistance()
     
     % weakness / energy model / initial guess / assistance parameters 
     % / walking speed / folderName
-    Setting = { {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %5
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %6
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %7
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %8
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %9
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %10
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %11
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %12
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %13
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %14
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %15
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %1
-                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %2
-                {0.1, 'Bhargava2004', {2,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %3
-                {0.1, 'Bhargava2004', {1,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' peakTor}, 1.33, 'assistance'},...       %4
-                
+    Setting = { {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 20 59 60]}, 1.33, 'assistance'},...     %1
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 20 59 60]}, 1.33, 'assistance'},...     %2
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true '4-para-pattern' [0 20 59 60]}, 1.33, 'assistance'},...                                 %3
+                {0.1, 'Bhargava2004', {1},  {true '4-para-pattern' [0 20 59 60]}, 1.33, 'assistance'},...                                                            %4 Quasi-random
+				{0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 40 59 60]}, 1.33, 'assistance'},...     %5
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 40 59 60]}, 1.33, 'assistance'},...     %6
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true '4-para-pattern' [0 40 59 60]}, 1.33, 'assistance'},...                                 %7
+                {0.1, 'Bhargava2004', {1},  {true '4-para-pattern' [0 40 59 60]}, 1.33, 'assistance'},...                                                            %8 Quasi-random
+				{0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 60 59 60]}, 1.33, 'assistance'},...     %9
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 60 59 60]}, 1.33, 'assistance'},...     %10
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true '4-para-pattern' [0 60 59 60]}, 1.33, 'assistance'},...                                 %11
+                {0.1, 'Bhargava2004', {1},  {true '4-para-pattern' [0 60 59 60]}, 1.33, 'assistance'},...                                                            %12 Quasi-random
+				{0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 80 59 60]}, 1.33, 'assistance'},...     %13
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true '4-para-pattern' [0 80 59 60]}, 1.33, 'assistance'},...     %14
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true '4-para-pattern' [0 80 59 60]}, 1.33, 'assistance'},...                                 %15
+                {0.1, 'Bhargava2004', {1},  {true '4-para-pattern' [0 80 59 60]}, 1.33, 'assistance'},...                                                            %16 Quasi-random
+                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' 0.3*1*62}, 1.33, 'assistance'},...           %17 % use the 30% biological moment (1 Nm*kg) for assistance to check the effect of assistance.
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_back' 0.3*1*62}, 1.33, 'assistance'},...           %18
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true 'MF_back' 0.3*1*62}, 1.33, 'assistance'},...       							    %19
+                {0.1, 'Bhargava2004', {1},  {true 'MF_back' 0.3*1*62}, 1.33, 'assistance'},...       														    %20
+                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' 0.3*1*62}, 1.33, 'assistance'},...           %21
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MS_back' 0.3*1*62}, 1.33, 'assistance'},...           %22
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true 'MS_back' 0.3*1*62}, 1.33, 'assistance'},...       							    %23
+                {0.1, 'Bhargava2004', {1},  {true 'MS_back' 0.3*1*62}, 1.33, 'assistance'},...       														    %24
+                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'PF_back' 0.3*1*62}, 1.33, 'assistance'},...           %25
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'PF_back' 0.3*1*62}, 1.33, 'assistance'},...           %26
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true 'PF_back' 0.3*1*62}, 1.33, 'assistance'},...       							    %27
+                {0.1, 'Bhargava2004', {1},  {true 'PF_back' 0.3*1*62}, 1.33, 'assistance'},...       														    %28
+                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'PS_back' 0.3*1*62}, 1.33, 'assistance'},...           %29
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'PS_back' 0.3*1*62}, 1.33, 'assistance'},...           %30
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true 'PS_back' 0.3*1*62}, 1.33, 'assistance'},...       							    %31
+                {0.1, 'Bhargava2004', {1},  {true 'PS_back' 0.3*1*62}, 1.33, 'assistance'},...       														    %32
+                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_MS_back' 0.3*1*62}, 1.33, 'assistance'},...        %33
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'MF_MS_back' 0.3*1*62}, 1.33, 'assistance'},...        %34
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true 'MF_MS_back' 0.3*1*62}, 1.33, 'assistance'},...       							    %35
+                {0.1, 'Bhargava2004', {1},  {true 'MF_MS_back' 0.3*1*62}, 1.33, 'assistance'},...       														%36
+                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'PF_PS_back' 0.3*1*62}, 1.33, 'assistance'},...        %37
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'PF_PS_back' 0.3*1*62}, 1.33, 'assistance'},...        %38
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true 'PF_PS_back' 0.3*1*62}, 1.33, 'assistance'},...       							    %39
+                {0.1, 'Bhargava2004', {1},  {true 'PF_PS_back' 0.3*1*62}, 1.33, 'assistance'},...       														%40
+                {0.1, 'Bhargava2004', {4,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'Net_back' 0.3*1*62}, 1.33, 'assistance'},...          %41
+                {0.1, 'Bhargava2004', {3,'PredSimResults\weakness\DHondt_2023_3seg_0.1strength'},  {true 'Net_back' 0.3*1*62}, 1.33, 'assistance'},...          %42
+                {0.1, 'Bhargava2004', {2,'OCP\IK_Guess_Full_GC.mot'},  {true 'Net_back' 0.3*1*62}, 1.33, 'assistance'},...       							    %43
+                {0.1, 'Bhargava2004', {1},  {true 'Net_back' 0.3*1*62}, 1.33, 'assistance'},...       														    %44
     };
-    
-    for index = 1:4
+
+    disp('Starting 3 hours delay...');
+    pause(3600*3); % Wait for 7200 seconds (2 hours)
+    disp('Delay complete.');
+
+    for index = 31:44
         % This script starts the predictive simulation of human movement. The
         % required inputs are necessary to start the simulations. Optional inputs,
         % if left empty, will be taken from getDefaultSettings.m.
@@ -83,7 +66,7 @@ function [] = main_DHondt_2023_3seg_assistance()
         % path to the repository folder
         [pathRepo,~,~] = fileparts(mfilename('fullpath'));
         % path to the folder that contains the repository folder
-        [pathRepoFolder,~,~] = fileparts(pathRepo);
+        [~,~,~] = fileparts(pathRepo);
         
         %% Initialize user-defined settings structure S
         pathDefaultSettings = fullfile(pathRepo,'DefaultSettings');
@@ -104,56 +87,66 @@ function [] = main_DHondt_2023_3seg_assistance()
         S.Exo.Hip.available = Setting{index}{4}{1};    %% true if assistance is offered
         S.Exo.Hip.type = [];
 
-    if S.Exo.Hip.available
-        
-        S.Exo.Hip.type = [Setting{index}{4}{2}];
-        S.Exo.Hip.maxTor = Setting{index}{4}{3};
-        
-        if strcmp(S.Exo.Hip.type, 'MF_back')
-        % MF  negative is abduction
-            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, -peakTor, 0);
-            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+		if S.Exo.Hip.available
+			
+			S.Exo.Hip.type = [Setting{index}{4}{2}];
+			
+			if strcmp(S.Exo.Hip.type, 'MF_back')
+			% MF  negative is abduction
+				S.Exo.Hip.maxTor = Setting{index}{4}{3};
+				[S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(2, 17, 32, -S.Exo.Hip.maxTor, 0);
+				S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
-        elseif strcmp(S.Exo.Hip.type, 'MS_back')
-        % MS
-            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, -peakTor, 0);
-            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+			elseif strcmp(S.Exo.Hip.type, 'MS_back')
+			% MS
+				S.Exo.Hip.maxTor = Setting{index}{4}{3};
+				[S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(30, 45, 60, -S.Exo.Hip.maxTor, 0);
+				S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
-        elseif strcmp(S.Exo.Hip.type, 'PF_back')
-        % PF
-            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, -peakTor, 0);
-            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+			elseif strcmp(S.Exo.Hip.type, 'PF_back')
+			% PF
+				S.Exo.Hip.maxTor = Setting{index}{4}{3};
+				[S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(10, 25, 40, -S.Exo.Hip.maxTor, 0);
+				S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
-        elseif strcmp(S.Exo.Hip.type, 'PS_back')
-        % PS
-            [S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, -peakTor, 0);
-            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+			elseif strcmp(S.Exo.Hip.type, 'PS_back')
+			% PS
+				S.Exo.Hip.maxTor = Setting{index}{4}{3};
+				[S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern(37, 52, 67, -S.Exo.Hip.maxTor, 0);
+				S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
-        elseif strcmp(S.Exo.Hip.type, 'MF_MS_back')
-        % MF+MS
-            [TorLeft_1,TorRight_1] = Torque_pattern(2, 17, 32, -peakTor, 0);
-            [TorLeft_2,TorRight_2] = Torque_pattern(30, 45, 60, -peakTor, 0);
-            S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
-            S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
-            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+			elseif strcmp(S.Exo.Hip.type, 'MF_MS_back')
+			% MF+MS
+				S.Exo.Hip.maxTor = Setting{index}{4}{3};
+				[TorLeft_1,TorRight_1] = Torque_pattern(2, 17, 32, -S.Exo.Hip.maxTor, 0);
+				[TorLeft_2,TorRight_2] = Torque_pattern(30, 45, 60, -S.Exo.Hip.maxTor, 0);
+				S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
+				S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+				S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
-        elseif strcmp(S.Exo.Hip.type, 'PF_PS_back')
-        % PF+PS
-            [TorLeft_1,TorRight_1] = Torque_pattern(10, 25, 40, -peakTor, 0);
-            [TorLeft_2,TorRight_2] = Torque_pattern(37, 52, 67, -peakTor, 0);
-            S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
-            S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
-            S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+			elseif strcmp(S.Exo.Hip.type, 'PF_PS_back')
+			% PF+PS
+				S.Exo.Hip.maxTor = Setting{index}{4}{3};
+				[TorLeft_1,TorRight_1] = Torque_pattern(10, 25, 40, -S.Exo.Hip.maxTor, 0);
+				[TorLeft_2,TorRight_2] = Torque_pattern(37, 52, 67, -S.Exo.Hip.maxTor, 0);
+				S.Exo.Hip.TorLeft = TorLeft_1 + TorLeft_2;
+				S.Exo.Hip.TorRight = TorRight_1 + TorRight_2;
+				S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
 
-        elseif strcmp(S.Exo.Hip.type, 'Net_back')
-            Tor = load('NetDiffTor.mat');
-            S.Exo.Hip.TorLeft  = Tor.netDiff_nor_10percent_L;
-            S.Exo.Hip.TorRight = Tor.netDiff_nor_10percent_R;
-            S.Exo.Hip.TorBack  = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
-        end
-    end
-
-
+			elseif strcmp(S.Exo.Hip.type, 'Net_back')
+				S.Exo.Hip.maxTor = 0;
+				Tor = load('NetDiffTor.mat');
+				S.Exo.Hip.TorLeft  = Tor.netDiff_nor_10percent_L;
+				S.Exo.Hip.TorRight = Tor.netDiff_nor_10percent_R;
+				S.Exo.Hip.TorBack  = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+				
+			elseif strcmp(S.Exo.Hip.type, '4-para-pattern')
+				S.Exo.Hip.patternVector = Setting{index}{4}{3}		;% [T1, Fmax, T2, T3]
+				S.Exo.Hip.maxTor = S.Exo.Hip.patternVector(1)*1000000+S.Exo.Hip.patternVector(3)*10000+S.Exo.Hip.patternVector(4)*100+S.Exo.Hip.patternVector(2);
+				[S.Exo.Hip.TorLeft,S.Exo.Hip.TorRight] = Torque_pattern_T(S.Exo.Hip.patternVector, 0);
+				S.Exo.Hip.TorBack = (S.Exo.Hip.TorLeft - S.Exo.Hip.TorRight)*3/13;
+			end
+		end
 
     
         % % path to folder where you want to store the results of the OCP
@@ -175,7 +168,19 @@ function [] = main_DHondt_2023_3seg_assistance()
                 S.subject.IG_selection_gaitCyclePercent = 100;
         % Sub Optmial solution at closest level of strength 
             case 3
-                filePaths = getFilePaths(Setting{index}{3}{2}, '*.mat');
+                
+                while true
+                    filePaths = getFilePaths(Setting{index}{3}{2}, 'DHondt_2023_3seg*.mat');
+                    % Check if the number of files is equal to the target count
+                    if numel(filePaths) == 4
+                        disp('Found the target number of files.');
+                        break; % Exit the loop if the condition is met
+                    else
+                        disp(['Current file count: ', num2str(numel(filePaths)), '. Waiting for 10 minutes...']);
+                        pause(600); % Wait for 5 minute before checking again
+                    end
+                end
+
                 obejctiveValue = zeros(1,4);
                 % Loop over each file path and load the .mat file
                 for i = 1:length(filePaths)
@@ -183,16 +188,31 @@ function [] = main_DHondt_2023_3seg_assistance()
                     data = load(filePath);   % Load the .mat file
                     disp(['Loaded file: ', filePath]);
                     obejctiveValue(i) = sum(data.R.objective.absoluteValues);
-                    disp(['Objective value is: ', obejctiveValue(i)]);
+                    disp(['Objective value is: %d', num2str(obejctiveValue(i))]);
                 end
-                [idx1_lowest, idx2] = findTwoLowestWithDifferenceOrRandom(obejctiveValue, 2);
+                [~, idx2] = findTwoLowestWithDifferenceOrRandom(obejctiveValue, 2);
                 
-                disp(['Loaded file For inital Guess: ', filePaths{idx2}]);
-                S.subject.IG_selection = fullfile(S.misc.main_path, filePaths{idx2}); 
+                % 使用 regexprep 更改文件后缀
+                newFilePath = regexprep(filePaths{idx2}, '\.mat$', '.mot');
+                disp(['Loaded file For inital Guess: ', newFilePath]);
+                S.subject.IG_selection = fullfile(S.misc.main_path, newFilePath); 
                 S.subject.IG_selection_gaitCyclePercent = 100;
         % Optmial Solution at closest level of strength
             case 4
-                filePaths = getFilePaths(Setting{index}{3}{2}, '*.mat');
+                
+                while true
+                    filePaths = getFilePaths(Setting{index}{3}{2}, 'DHondt_2023_3seg*.mat');
+
+                    % Check if the number of files is equal to the target count
+                    if numel(filePaths) == 4
+                        disp('Found the target number of files.');
+                        break; % Exit the loop if the condition is met
+                    else
+                        disp(['Current file count: ', num2str(numel(filePaths)), '. Waiting for 10 minutes...']);
+                        pause(300); % Wait for 5 minute before checking again
+                    end
+                end
+
                 obejctiveValue = zeros(1,4);
                 % Loop over each file path and load the .mat file
                 for i = 1:length(filePaths)
@@ -200,10 +220,14 @@ function [] = main_DHondt_2023_3seg_assistance()
                     data = load(filePath);   % Load the .mat file
                     disp(['Loaded file: ', filePath]);
                     obejctiveValue(i) = sum(data.R.objective.absoluteValues);
+                    disp(['Objective value is: %d', num2str(obejctiveValue(i))]);
                 end
-                [idx1_lowest, idx2] = findTwoLowestWithDifferenceOrRandom(obejctiveValue, 2);
+                [idx1_lowest, ~] = findTwoLowestWithDifferenceOrRandom(obejctiveValue, 2);
 
-                S.subject.IG_selection = fullfile(S.misc.main_path, filePaths{idx1_lowest}); 
+                % 使用 regexprep 更改文件后缀
+                newFilePath = regexprep(filePaths{idx1_lowest}, '\.mat$', '.mot');
+                disp(['Loaded file For inital Guess: ', newFilePath]);
+                S.subject.IG_selection = fullfile(S.misc.main_path, newFilePath); 
                 S.subject.IG_selection_gaitCyclePercent = 100;
         end
     
@@ -212,7 +236,7 @@ function [] = main_DHondt_2023_3seg_assistance()
         osim_path = fullfile(pathRepo,'Subjects',S.subject.name,[S.subject.name '.osim']);
         
         % % Do you want to run the simulation as a batch job (parallel computing toolbox)
-        S.solver.run_as_batch_job = 0;
+        S.solver.run_as_batch_job = 1;
         
         %% Optional inputs
         % see README.md in the main folder for information about these optional
@@ -353,6 +377,11 @@ function [] = main_DHondt_2023_3seg_assistance()
     end
 
 end
+
+
+
+
+
 %% choose lowest optimal value one
 
 % Here’s a MATLAB code snippet that searches a specified folder for files
@@ -447,3 +476,42 @@ function [idx1, idx2] = findTwoLowestWithDifferenceOrRandom(numbers, minDiff_two
 end
 
 
+
+
+% T1/T2/T3 0-99 percent   any two variables cannot be the same value
+% Fmax  0-99 Nm
+function [TorLeft, TorRight] = Torque_pattern_T(assistance_input, fullgaitcycle)
+    % T is int type, Fmax is float type
+    % S.Exo.Hip.assist.label = {'T1', 'Fmax', 'T2', 'T3'};
+    gaitPhase_1 = assistance_input(1);
+    peakTor = assistance_input(2);
+    gaitPhase_2 = assistance_input(3);
+    gaitPhase_3 = assistance_input(4);
+    
+    % 输入数据点
+    if gaitPhase_1 == 0
+        gaitPhase = [gaitPhase_1, gaitPhase_2, gaitPhase_3];
+        tor = [peakTor, peakTor, 0];
+    else
+        gaitPhase = [0, gaitPhase_1, gaitPhase_2, gaitPhase_3];
+        tor = [0, peakTor, peakTor, 0];
+    end
+
+
+    GaitPhase = linspace(min(gaitPhase), max(gaitPhase), max(gaitPhase)-min(gaitPhase)+1);
+    Tor = interp1(gaitPhase, tor, GaitPhase, 'linear');
+    
+    GaitPhase = 1:100;
+    Tor = [zeros(1,(min(gaitPhase)-1)) Tor zeros(1, 99-(max(gaitPhase)))];
+
+    TorLeft = [Tor(51:end) Tor(1:50)];      % right leg is first in exp
+    TorRight = Tor;
+    
+    
+    if fullgaitcycle == 1
+        
+    else
+        TorLeft = TorLeft(1:50);
+        TorRight = TorRight(1:50);
+    end
+end

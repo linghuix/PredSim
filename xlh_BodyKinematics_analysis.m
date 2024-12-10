@@ -7,26 +7,41 @@ function analyze_RoM()
     clear;
 
     % Define the folders corresponding to different levels of hip assistance
-    folders = {'_10hipAssistance', '_20hipAssistance', '_30hipAssistance', '_40hipAssistance', ...
-               '_50hipAssistance', '_60hipAssistance', '_70hipAssistance', ...
-               '_80hipAssistance', '_90hipAssistance'};
+%     folders = {'_10hipAssistance', '_20hipAssistance', '_30hipAssistance', '_40hipAssistance', ...
+%                '_50hipAssistance', '_60hipAssistance', '_70hipAssistance', ...
+%                '_80hipAssistance', '_90hipAssistance'};
+
+    % % weak muscle model
+    scenario_List = {['DHondt_2023_3seg' '_1strength'], ['DHondt_2023_3seg' '_v2.mot'], 'Normal';...
+                      'weakness\DHondt_2023_3seg_0.9strength', ['DHondt_2023_3seg' '_v2.mot'], '90% strength';...
+                      'weakness\DHondt_2023_3seg_0.8strength', ['DHondt_2023_3seg' '_v3.mot'], '80% strength';...
+                      'weakness\DHondt_2023_3seg_0.7strength', ['DHondt_2023_3seg' '_v3.mot'], '70% strength';...
+                      'weakness\DHondt_2023_3seg_0.6strength', ['DHondt_2023_3seg' '_job38.mot'], '60% strength'; ...
+                      'weakness\DHondt_2023_3seg_0.5strength', ['DHondt_2023_3seg' '_job44.mot'], '50% strength';...
+                      'weakness\DHondt_2023_3seg_0.4strength', ['DHondt_2023_3seg' '_job46.mot'], '40% strength'; ...
+                      'weakness\DHondt_2023_3seg_0.3strength', ['DHondt_2023_3seg' '_job59.mot'], '30% strength';...
+                      'weakness\DHondt_2023_3seg_0.2strength', ['DHondt_2023_3seg' '_job60.mot'], '20% strength'; ...
+                      'weakness\DHondt_2023_3seg_0.1strength', ['DHondt_2023_3seg' '_job64.mot'], '10% strength';...
+                      'weakness\DHondt_2023_3seg_0.05strength', ['DHondt_2023_3seg' '_job86.mot'], '5% strength'
+                      };
+
 
     % Define the root directory containing the results
-    root_folder = 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\PredSimResults\DHondt_2023_3seg_0.1strengthNet_back';
+    root_folder = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation\PredSimResults\';
     
     % Define the model folder path
-    Model_folder = 'C:\Users\lingh\OneDrive - KTH\ExMaterials\7-Doctor\Research\2-simulation\Subjects';
+    Model_folder = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation\Subjects';
     
     % Define the path to the OpenSim model file
     osim_path = [Model_folder '\DHondt_2023_3seg\DHondt_2023_3seg.osim'];
     
     % Analyze motion data for each folder
-    for index = 1:length(folders)
+    for index = 1:size(scenario_List, 1)
         % Construct the full path to the results folder
-        Results_folder = fullfile(root_folder, folders{index});
+        Results_folder = fullfile(root_folder, scenario_List{index,1});
         
         % Construct the full path to the motion file (.mot)
-        mot = fullfile(Results_folder, 'DHondt_2023_3seg_v1.mot');
+        mot = fullfile(Results_folder, scenario_List{index ,2});
 
         if exist(mot, 'file') == 2  % Check if the file exists
             
@@ -36,14 +51,14 @@ function analyze_RoM()
         end
 
         % Display a prompt indicating the current analysis folder
-        disp(['Running analysis for: ', folders{index}]);
+        disp(['Running analysis for: ', scenario_List{index, 1}]);
         disp(['motion file: ', mot]);
 
         % Run the analysis for the current folder
         run_BodyKinematics_analysis(osim_path, mot, Results_folder);
 
         % Display a prompt indicating completion of the current folder's analysis
-        disp(['Completed analysis for: ', folders{index}]);
+        disp(['Completed analysis for: ', scenario_List{index, 1}]);
     end
 end
 

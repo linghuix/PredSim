@@ -118,7 +118,7 @@ function [] = main_DHondt_2023_3seg_weakgait()
                     data = load(filePath);   % Load the .mat file
                     disp(['Loaded file: ', filePath]);
                     obejctiveValue(i) = sum(data.R.objective.absoluteValues);
-                    disp(['Objective value is: ', num2str(obejctiveValue(i))]);
+                    disp(['Objective value is: %d', num2str(obejctiveValue(i))]);
                 end
                 [idx1_lowest, idx2] = findTwoLowestWithDifferenceOrRandom(obejctiveValue, 2);
                 
@@ -150,7 +150,7 @@ function [] = main_DHondt_2023_3seg_weakgait()
                     data = load(filePath);   % Load the .mat file
                     disp(['Loaded file: ', filePath]);
                     obejctiveValue(i) = sum(data.R.objective.absoluteValues);
-                    disp(['Objective value is: ', num2str(obejctiveValue(i))]);
+                    disp(['Objective value is: %d', num2str(obejctiveValue(i))]);
                 end
                 [idx1_lowest, idx2] = findTwoLowestWithDifferenceOrRandom(obejctiveValue, 2);
 
@@ -307,6 +307,11 @@ function [] = main_DHondt_2023_3seg_weakgait()
     end
 
 end
+
+
+
+
+
 %% choose lowest optimal value one
 
 % Here’s a MATLAB code snippet that searches a specified folder for files
