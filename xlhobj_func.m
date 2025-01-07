@@ -25,6 +25,9 @@ function [metric] = xlhobj_func(matfile, string)
 
     elseif strcmp(string, "pelvis_trunk_rom")
         metric = metric_ROM(pelvis_list, trunk_angle);
+
+    elseif strcmp(string, "DHondt_4seg_rmse")
+        metric = metric_rmse_DHondt_et_al(result);
     end
 
 end
@@ -114,4 +117,56 @@ function [RMSE] = metric_rmse_even(results)
     end
     
     RMSE = sum(r.* weight);
+end
+
+
+
+function [RMSE] = metric_rmse_DHondt_et_al(results)
+
+    joints_ref = {'pelvis_tilt'	'pelvis_list'	'pelvis_rotation'	'pelvis_tx'	'pelvis_ty'	'pelvis_tz'	'hip_flexion'	'hip_adduction'	'hip_rotation'	'knee_angle'	'ankle_angle'	'subtalar_angle'	'mtj_angle'	'mtp_angle'	'lumbar_extension'	'lumbar_bending'	'lumbar_rotation'	'arm_flex'	'arm_add'	'arm_rot'	'elbow_flex'};
+    joints_sim = {'pelvis_tilt', 'pelvis_list', 'pelvis_rotation', 'pelvis_tx',	'pelvis_ty',	'pelvis_tz', 	'hip_flexion_r',	'hip_adduction_r',	'hip_rotation_r', 'knee_angle_r','ankle_angle_r','subtalar_angle_r','mtj_angle_r','mtp_angle_r', 'lumbar_extension','lumbar_bending','lumbar_rotation','arm_flex_r','arm_add_r','arm_rot_r','elbow_flex_r'};
+
+    pathRepo = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation';
+    control_paths = fullfile(pathRepo, '\PredSimResults\DHondt_2023_3seg_normalbilevel\', 'Fal_s1.mat');
+    control = load(control_paths);
+
+    RefData = 'Fal_s1_mtjcf3_FK_custom_right';
+    
+    data_field = ['IK_' RefData(8:end)];
+    Qref = control.Data.(data_field);
+    
+    data_field = ['ID_' RefData(8:end)];
+    Tref = control.Data.(data_field);
+    
+    data_field = ['P_' RefData(8:end)];
+    Pref = control.Data.(data_field);
+    
+
+%     results = load(fullfile(pathRepo, 'PredSimResults\ReferenceResults\DHondt_et_al_2024_4seg', 'DHondt_et_al_2024_4seg_paper.mat'));
+    Qsim = results.R.kinematics.Qs;
+    colheadersim = results.R.colheaders.coordinates;
+%     weight = ones(1,legnth(joints_ref)); 
+%     weight = weight./sum(weight);
+
+    r = 100*ones(1,length(joints_ref));
+
+    for j = 1:length(joints_ref)
+        
+        idx_jref = strcmp(Qref.colheaders,joints_ref{j});
+        Qs_mean_ref = Qref.Qall_mean(:,idx_jref);
+        Qs_std_ref = Qref.Qall_std(:,idx_jref);
+
+        idx_jsim = strcmp(colheadersim,joints_sim{j});
+        Qs_jsim = Qsim(:,idx_jsim);
+        if length(Qs_jsim) == 200
+            Qs_jsim = Qs_jsim(1:100);
+        end
+        
+        Qs_std_ref(Qs_std_ref == 0) = 100;
+        Qs_std_ref(Qs_std_ref == 100) = min(Qs_std_ref);
+        rmse_i = sqrt( mean( ((Qs_mean_ref - Qs_jsim)./Qs_std_ref).^2 ) );
+        r(j) = rmse_i;
+    end
+    
+    RMSE = mean(r);
 end

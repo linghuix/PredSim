@@ -1,8 +1,8 @@
 
 
 % Set a fixed random seed for reproducibility
-Random_Seed = 89;   
-rng(Random_Seed);  % Choose any fixed seed value ramdonly 78.0989   96.2554   59.7617   64.0274
+Random_Seed = 78.0989;   
+rng(Random_Seed);  % Choose any fixed seed value ramdonly 89  78.0989   96.2554   59.7617   64.0274
 
 % Start a parallel pool if not already active
 if isempty(gcp('nocreate'))
@@ -16,8 +16,8 @@ global savedfilename
 pathRepo = 'C:\Users\lingh\OneDrive - KTH\MyFile\7-Doctor\Research\2-simulation';
 results_folder = fullfile(pathRepo, 'PredSimResults\DHondt_2023_3seg_0.1strengthbilevel');
 % Open a log file to save output
-logFile = fullfile(results_folder, 'bayesian_optimization_rmse_bilevel_bio.txt');
-savedfilename = fullfile(results_folder, 'bayesian_optimization_rmse_bilevel_bio.mat');
+logFile = fullfile(results_folder, 'bayesian_optimization_rmse_bilevel_bio_78.txt');
+savedfilename = fullfile(results_folder, 'bayesian_optimization_rmse_bilevel_bio_78.mat');
 
 define_NumSeedPoints = 50;
 define_MaxObjectiveEvaluations = 200;

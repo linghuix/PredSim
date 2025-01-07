@@ -148,7 +148,7 @@ function objective = Simulation(w)
     end
 
     % Get ROM of kinematics
-    ROM = xlhobj_func(File.path, "rmse");
+    ROM = xlhobj_func(File.path, "DHondt_4seg_rmse");
     objective = ROM;
 end
 
